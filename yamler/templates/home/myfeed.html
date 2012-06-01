@@ -22,57 +22,59 @@
         </div><!--消息块 end-->
         
         <script id="msgTemplate" type="text/x-jquery-tmpl">
-            <div class="msgList_show">
-            	<div class="msgList_left">
-                    <img src="{{ url_for('static', filename='images/index_img/no_photo_small.gif') }}" />
-                </div>
-                <div class="msglist_right">
+            <div class="msgList_show" id="list_show${id}">
+                <!--<div class="msgList_left"> <img src="{{ url_for('static', filename='images/index_img/no_photo_small.gif') }}" /> </div>-->
                 {% raw %}
+                <div class="msglist_right">
                 {{if ismine}}
-                    <h2><a href="">${realname}</a></h2>
-                    <p id="title${id}">${title}</p>
+                    <p id="title${id}">
+                        <span><a href="">${realname}</a></span>
+                        ${title}
+                    </p>
                     {{if share_users}}
                         <p>我分享给<span id="share_users${id}">${share_users}</span></p>
                     {{/if}}
                     <div class="Reply_link"> 
-                        <a href="javascript:;" class="reply_to" id="${id}">回复</a> 
+                        ${created_at}
                         {{if status}}
-                        -<span id="status${id}">完成</span>
+                        <span id="status${id}">完成</span>
                         {{else}}
-                        -<span id="status${id}">未完成</span>
+                        <span id="status${id}">未完成</span>
                         {{/if}}
-                        <a href="/task/update/${id}"  title="${id}" class="modify_task">修改</a>
-                        -${created_at}
+                        <span id="operator${id}" class="operator">
+                            <a href="javascript:;" class="reply_to" id="${id}">回复</a> 
+                            <a href="javascript:;" class="reply_to" id="${id}">分享</a> 
+                            <a href="/task/update/${id}"  title="${id}" class="modify_task">修改</a>
+                            <a href="javascript:;" name="${id}" class="delete_task">删除</a>
+                        </span>
                     </div>
                     <div id="comment_list${id}"></div>
                     <div id="comment${id}"></div>
                 {{/if}}
-                {% endraw %}
 
-                {% raw %}
                 {{if other}}
-                    <h2><a href="">${realname}</a></h2>
-                    <p>${title}</p>
+                    <p>
+                        <span><a href="">${realname}</a></span>
+                        ${title}
+                    </p>
                     <p><a href="">${realname}</a>分享给我 </p>
                     <div class="Reply_link"> 
-                        <a href="javascript:;" class="reply_to" id="${id}">回复</a> 
+                        ${created_at}
                         {{if status}}
-                        -<span id="status${id}">完成</span>
+                        <span id="status${id}">完成</span>
                         {{else}}
-                        -<span id="status${id}">未完成</span>
+                        <span id="status${id}">未完成</span>
                         {{/if}}
-                        -${created_at}
+                        <a href="javascript:;" class="reply_to" id="${id}">回复</a> 
                     </div>
                     <div id="comment_list${id}"></div>
                     <div id="comment${id}"></div>
                 {{/if}}
-                {% endraw %} 
-                 
-                </div>
+            </div>
+            {% endraw %} 
 
                 <div class="clear"></div>
             </div>
-            <hr/>
         </script>
         
         
@@ -80,6 +82,14 @@
             <li><a href="/home/myfeed">查看全部</a></li>
             <li><a href="/home/myfeed?t=1">只查看我的</a></li>
             <li><a href="/home/myfeed?t=2">与我分享的</a></li>
+            <li>
+                <select>
+                    <option>今天</option> 
+                    <option>本周</option> 
+                    <option>本月</option> 
+                    <option>全部</option> 
+                </select> 
+            </li>
         </ul>   
         <br/> 
         <div id="msg_list" class="msg_list">
@@ -225,7 +235,27 @@
                         });
                     }
                 });
-
+                /* 
+                $(".msgList_show").mousemove(function() {
+                    $(this).find('.operator').show();
+                });
+            
+                $(".msgList_show").mouseout(function() {
+                    $(this).find('.operator').hide();
+                });
+                */
+                //删除的按钮
+                $(".delete_task").click(function() {
+                    if(confirm('确定要删除这条记录'))  
+                    {
+                        var id = $(this).attr('name');
+                        if(id) {
+                            $.getJSON('/task/delete/'+id, function(res) {
+                                $("#list_show"+res.id).remove();
+                            });
+                        }
+                    }
+                });
                 //回复列表和回复框
                 $(".reply_to").click(function(){
                     var id = $(this).attr('id') 

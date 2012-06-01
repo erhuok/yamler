@@ -31,12 +31,12 @@ def mytask():
 @mod.route('/publish', methods=['GET', 'POST'])
 def publish():
     if request.method == 'POST' and request.form['title']:
-        g.db.execute(tasks.insert().values({tasks.c.title: request.form['title'], 
+        res = g.db.execute(tasks.insert().values({tasks.c.title: request.form['title'], 
                                             tasks.c.user_id: g.user.id,
                                             tasks.c.created_at: datetime.datetime.now(), 
                                             tasks.c.to_user_id: request.form['to_user_id'].lstrip(',')
                                            })) 
-        return jsonify(title=request.form['title'], ismine=True, realname=g.user.realname, share_users=request.form['share_users'])
+        return jsonify(title=request.form['title'], ismine=True, realname=g.user.realname, share_users=request.form['share_users'], id=res.lastrowid)
 
 @mod.route('/getMyFeed')
 def getMyFeed():
@@ -46,7 +46,6 @@ def getMyFeed():
     skip = (page-1) * limit
     if t == 1:
         rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id=:user_id ORDER BY created_at DESC LIMIT :skip, :limit"),user_id=g.user.id, skip=skip, limit=limit).fetchall();
-        print rows
     elif t == 2:
         rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC LIMIT :skip, :limit"),to_user_id=g.user.id, skip=skip, limit=limit).fetchall();
     else:
@@ -59,7 +58,7 @@ def getMyFeed():
         new_row = {}
         new_row['id'] = row['id']
         new_row['user_id'] = row['user_id'] 
-        new_row['created_at'] = row['created_at'].strftime('%Y-%m-%d %T') if row['created_at'] else ''
+        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%M') if row['created_at'] else ''
         new_row['title'] = row['title'] 
         new_row['status'] = row['status'] 
         if row['to_user_id']:

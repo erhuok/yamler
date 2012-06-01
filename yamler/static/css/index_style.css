@@ -122,7 +122,7 @@
 
 .column_two .msg_list .msgList_show{}
 .msgList_left{ float:left; width:48px; margin-right:12px;}
-.msglist_right{ float:left; width:486px;}
+.msglist_right{ float:left; width:486px;border-bottom: 1px solid #E8E8E8; padding:5px;}
 .msgList_show .msglist_right h2{ font-weight:bold; }
 .msgList_show .msglist_right p{ padding:5px 0; color:#666; line-height:1.5em;}
 .msgList_show .msglist_right .Reply_text{ margin-top:10px; position:relative; display:none;}
@@ -135,7 +135,6 @@
 /*******第二列样式 end********/
 
 .column_three{}
-
 
 
 

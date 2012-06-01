@@ -84,7 +84,6 @@ def task_get():
     t = int(request.args.get('t',0))
     if t == 1:
         rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id=:user_id ORDER BY created_at DESC"),user_id=user_id).fetchall();
-        print rows
     elif t == 2:
         rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC"),to_user_id=user_id).fetchall();
     else:
@@ -226,3 +225,5 @@ def user_get():
             data = [dict(zip(row.keys(), row)) for row in rows]  
             return jsonify(error=0, data=data)
     return jsonify(error=1)
+
+
