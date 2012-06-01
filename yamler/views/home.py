@@ -45,11 +45,11 @@ def getMyFeed():
     limit = 20
     skip = (page-1) * limit
     if t == 1:
-        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id=:user_id ORDER BY created_at DESC LIMIT :skip, :limit"),user_id=g.user.id, skip=skip, limit=limit).fetchall();
+        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE user_id=:user_id ORDER BY created_at DESC LIMIT :skip, :limit"),user_id=g.user.id, skip=skip, limit=limit).fetchall();
     elif t == 2:
-        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC LIMIT :skip, :limit"),to_user_id=g.user.id, skip=skip, limit=limit).fetchall();
+        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC LIMIT :skip, :limit"),to_user_id=g.user.id, skip=skip, limit=limit).fetchall();
     else:
-        s = text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id = :user_id UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC LIMIT :skip, :limit") 
+        s = text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE user_id = :user_id UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC LIMIT :skip, :limit") 
         rows = g.db.execute(s, user_id=g.user.id, to_user_id=g.user.id, skip=skip, limit=limit).fetchall()
     user_sql = text("SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ( :id )")
     data = []
@@ -57,6 +57,7 @@ def getMyFeed():
     for row in rows:
         new_row = {}
         new_row['id'] = row['id']
+        new_row['comment_count'] = row['comment_count']
         new_row['user_id'] = row['user_id'] 
         new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%M') if row['created_at'] else ''
         new_row['title'] = row['title'] 

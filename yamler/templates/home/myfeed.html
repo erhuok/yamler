@@ -42,8 +42,8 @@
                         <span id="status${id}">未完成</span>
                         {{/if}}
                         <span id="operator${id}" class="operator">
-                            <a href="javascript:;" class="reply_to" id="${id}">回复</a> 
-                            <a href="javascript:;" class="reply_to" id="${id}">分享</a> 
+                            <a href="javascript:;" class="reply_to" id="${id}">回复(${comment_count})</a> 
+                            <!--<a href="/task/share/${id}" class="share_to" name="${id}">分享</a> -->
                             <a href="/task/update/${id}"  title="${id}" class="modify_task">修改</a>
                             <a href="javascript:;" name="${id}" class="delete_task">删除</a>
                         </span>
@@ -235,6 +235,10 @@
                         });
                     }
                 });
+                //分享按钮
+                $('.share_to').fancybox({
+                
+                });
                 /* 
                 $(".msgList_show").mousemove(function() {
                     $(this).find('.operator').show();
@@ -256,6 +260,7 @@
                         }
                     }
                 });
+               
                 //回复列表和回复框
                 $(".reply_to").click(function(){
                     var id = $(this).attr('id') 

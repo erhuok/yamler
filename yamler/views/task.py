@@ -38,6 +38,12 @@ def update(id):
         data_users.append({'value': company_row['realname'], 'id': company_row['id']})
     return render_template('task/update.html', row=row, data_users=json.dumps(data_users), share_users_default=json.dumps(row['share_users'])) 
 
+@mod.route('/share/<int:id>')
+def share():
+
+    return render_template('task/share')
+
+
 @mod.route('/get/<int:id>')
 def get(id):
     row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=id).first()

@@ -26,9 +26,11 @@ def get(task_id):
 def create(task_id):
     if request.form['comment_content'] and g.user.id:
         created_at = datetime.datetime.now()
-        g.db.execute(task_comments.insert().values({task_comments.c.user_id: g.user.id, 
+        res = g.db.execute(task_comments.insert().values({task_comments.c.user_id: g.user.id, 
                                                     task_comments.c.task_id: task_id, 
                                                     task_comments.c.content: request.form['comment_content'], 
                                                     task_comments.c.created_at: created_at,
                                                    }))
+        if res.lastrowid:
+            g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1 WHERE id = :id"), id=task_id)
         return jsonify(content=request.form['comment_content'], task_id=task_id, realname=g.user.realname, created_at=created_at.strftime('%Y-%m-%d %T'))
