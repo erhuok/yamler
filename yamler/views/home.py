@@ -46,11 +46,11 @@ def getMyFeed():
     limit = 20
     skip = (page-1) * limit
     if t == 1:
-        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE user_id=:user_id ORDER BY created_at DESC LIMIT :skip, :limit"),user_id=g.user.id, skip=skip, limit=limit).fetchall();
+        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE user_id=:user_id AND is_del='0' ORDER BY created_at DESC LIMIT :skip, :limit"),user_id=g.user.id, skip=skip, limit=limit).fetchall();
     elif t == 2:
-        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC LIMIT :skip, :limit"),to_user_id=g.user.id, skip=skip, limit=limit).fetchall();
+        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE to_user_id IN (:to_user_id) AND is_del='0' ORDER BY created_at DESC LIMIT :skip, :limit"),to_user_id=g.user.id, skip=skip, limit=limit).fetchall();
     else:
-        s = text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE user_id = :user_id UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status, comment_count FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC LIMIT :skip, :limit") 
+        s = text("SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count FROM tasks WHERE user_id = :user_id AND is_del='0' UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status, comment_count FROM tasks WHERE to_user_id IN (:to_user_id) AND is_del='0' ORDER BY created_at DESC LIMIT :skip, :limit") 
         rows = g.db.execute(s, user_id=g.user.id, to_user_id=g.user.id, skip=skip, limit=limit).fetchall()
     user_sql = text("SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ( :id )")
     data = []
