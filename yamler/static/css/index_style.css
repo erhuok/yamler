@@ -131,6 +131,8 @@
 .msgList_show .msglist_right .Reply_text span{ background:url("../images/index_img/Icon_reply01.png") no-repeat; position:absolute; top:-5px;
  left:20px; display:block; width:9px; height:5px;}
 
+ .top_list_tab { list-style-type:none;}
+ .top_list_tab li {float:left; line-height:10px; margin-left:5px;}
 
 /*******第二列样式 end********/
 

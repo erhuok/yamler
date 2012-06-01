@@ -77,17 +77,19 @@
         </script>
         
         
-        <ul> 
+        <ul class="top_list_tab"> 
             <li><a href="/home/myfeed">查看全部</a></li>
             <li><a href="/home/myfeed?t=1">只查看我的</a></li>
             <li><a href="/home/myfeed?t=2">与我分享的</a></li>
             <li>
-                <select>
-                    <option>今天</option> 
-                    <option>本周</option> 
-                    <option>本月</option> 
-                    <option>全部</option> 
+                <!--
+                <select id="datetime_select">
+                    <option value="0">全部</option> 
+                    <option value="1">今天</option> 
+                    <option value="2">本周</option> 
+                    <option value="3">本月</option> 
                 </select> 
+                -->
             </li>
         </ul>   
         <br/> 
@@ -141,7 +143,34 @@
         function extractLast( term ) {
             return split( term ).pop();
         }
-
+        function getRequest()  
+        {  
+            var url = location.search; //获取url中"?"符后的字串  
+            var theRequest = new Object();  
+            if(url.indexOf("?") != -1)  
+            {  
+                var str = url.substr(1);  
+                var strs = str.split("&");  
+                for(var i = 0; i < strs.length; i ++)  
+                {  
+                    theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);  
+                }  
+            }  
+            return theRequest;  
+        }    
+        //时间选择
+        /*
+        $("#datetime_select").change(function() {
+            var value = $(this).val();
+            var params = location.search;
+            if(params) {
+                alert(params)
+            } else {
+                params = "?date="+params; 
+            }
+            //window.location.href = '/home/myfeed' + params;
+        });
+        */
         $.getJSON('/company/get', function(res) {
             $("#array_tag_handler").tagHandler({
                 //assignedTags: [ 'C', 'Perl', 'PHP' ],
