@@ -18,6 +18,7 @@ def index():
     return 'ok'
 
 @mod.route('/myfeed', methods=['GET', 'POST'])
+@required_login
 def myfeed():
     group_rows = g.db.execute(select([groups, groups.c.company_id==18])).fetchall()
     return render_template('home/myfeed.html', group_rows=group_rows, pagename='myfeed', args=request.args)

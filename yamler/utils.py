@@ -10,12 +10,12 @@ def request_wants_json():
 def required_login(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if g.user.id is None:
+        if g.user is None:
             flash(u'需要登录才能访问')
             return redirect(url_for('user.login', next=request.path))
-        if g.user.is_active == 0:
-            flash(u'账户还未激活，请等待......')
-            return redirect(url_for('user.active'))
+        #if g.user.is_active == 0:
+            #flash(u'账户还未激活，请等待......')
+            #return redirect(url_for('user.active'))
         return f(*args, **kwargs)
     return decorated_function
 
