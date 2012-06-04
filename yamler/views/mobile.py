@@ -7,6 +7,7 @@ from yamler.models.companies import Company, companies
 from yamler.models.user_relations import UserRelation 
 from sqlalchemy.sql import between
 from sqlalchemy import or_, and_, select, text
+import datetime
 
 mod = Blueprint('mobile',__name__,url_prefix='/mobile')
 
@@ -238,3 +239,9 @@ def commit_get():
         rows = g.db.execute(text("SELECT id, user_id, task_id, content FROM task_comments WHERE task_id=:task_id"), task_id=request.form['task_id']).fetchall() 
         data = [dict(zip(row.keys(), row)) for row in rows]
         return jsonify(error=0, data=data)
+
+@mod.route('/comment/create', methods=['POST'])
+def comment_create():
+    if request.method == 'POST' and request.form.has_key('task_id') and request.form.has_key('content') and request.form.has_key('user_id'):
+        res = g.db.execute(text("INSERT INTO task_comments (user_id, task_id, content, created_at) VALUES (:user_id, :task_id, :content, :created_at)"),user_id=request.form['user_id'], task_id=request.form['task_id'], content=request.form['content'], created_at=datetime.datetime.now())
+        return jsonify(error=0, id=res.lastrowid) 

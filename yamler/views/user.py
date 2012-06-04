@@ -32,10 +32,11 @@ def register():
     form = RegistrationForm(request.form)
     if request.method=='POST' and form.validate():
         user=User(form.username.data, 
-                    form.password.data, 
-                    is_active=1,
-                    realname = request.form['realname'] if request.form.has_key('realname')   else '',
-                   )
+                  form.password.data, 
+                  is_active=1,
+                  realname = request.form['realname'] if request.form.has_key('realname')   else '',
+                  company_id = request.args.get('company_id','0') 
+                 )
         result = User.query.filter_by(username=user.username).first()
         if result:
             return redirect(url_for('user.register'))
@@ -43,7 +44,7 @@ def register():
         db_session.commit()
         session['user_id']=user.id 
         flash('Thanks for registering')
-        return redirect(url_for('company.create'))
+        return redirect(url_for('home.myfeed'))
     return render_template('user/register.html', form=form)
 
 @mod.route('/active', methods=['GET', 'POST'])
