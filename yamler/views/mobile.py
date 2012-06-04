@@ -81,11 +81,16 @@ def task_create():
 @mod.route('/task/get',methods=['POST'])
 def task_get():
     user_id = request.form['user_id']
-    t = int(request.args.get('t',0))
+    t = int(request.form['t']) if request.form.has_key('t') else 0
     if t == 1:
         rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id=:user_id ORDER BY created_at DESC"),user_id=user_id).fetchall();
     elif t == 2:
-        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC"),to_user_id=user_id).fetchall();
+        if request.form.has_key('start_time') and request.form.has_key('end_time'):
+            sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) AND created_at between :start_time and :end_time ORDER BY created_at DESC"
+            rows = g.db.execute(text(sql),to_user_id=user_id, start_time=request.form['start_time'], end_time=request.form['end_time']).fetchall();
+        else:
+            sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC"
+            rows = g.db.execute(text(sql),to_user_id=user_id).fetchall();
     else:
         s = text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id = :user_id UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC") 
         rows = g.db.execute(s, user_id=user_id, to_user_id=user_id).fetchall()
@@ -227,3 +232,9 @@ def user_get():
     return jsonify(error=1)
 
 
+@mod.route('/comment/get', methods=['POST'])
+def commit_get():
+    if request.method == 'POST' and request.form.has_key('task_id'):
+        rows = g.db.execute(text("SELECT id, user_id, task_id, content FROM task_comments WHERE task_id=:task_id"), task_id=request.form['task_id']).fetchall() 
+        data = [dict(zip(row.keys(), row)) for row in rows]
+        return jsonify(error=0, data=data)
