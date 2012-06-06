@@ -1,0 +1,398 @@
+{% extends "layout_board.html" %}
+{% block content_top %}
+    <!--主体头部-->
+    <div id="board-header" class="clearfix">
+        <a class="app-icon dark-hover board-icon js-open-board-menu-icon"></a>
+        <div class="board-title">
+            <h2>
+                <a class="js-board-title js-open-board-menu-title" href="#">{{ board_row.title }}</a>
+            </h2>
+            <h4 class="quiet org-name"></h4>
+            <div id="permission-level">
+                <span class="app-icon small-icon public-status private-icon" title=""></span>
+            </div>
+            <div class="desc-btn js-open-desc">
+                <span class="app-icon small-icon edit-icon dark-hover"></span>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<!--第一块-->
+<div class="list">
+    <div class="list-header clearfix">
+        <span class="app-icon small-icon list-icon"></span>
+        <div class="list-title non-empty clearfix editable" attr="name">
+            <h2 class="hide-on-edit current ">代办事项</h2>
+            <p class="num-cards"></p>
+            <div class="edit edit-heavy clearfix">
+                <textarea class="field single-line" type="text"></textarea>
+            </div>
+            <a class="app-icon small-icon dark-hover menu-icon js-open-list-menu" href="#"></a>
+        </div>
+    </div>
+    <div class="list-card-area">
+        <div class="list-gradient-top"></div>
+        <div class="list-gradient-bottom"></div>
+        <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" style="max-height: 231px;" id="todo_list">
+            {% for row in todo %}
+            <div class="list-card js-member-droppable clearfix ui-droppable" id="list{{ row.id }}">
+                <div class="card-labels clearfix"></div>
+                <span class="card-operation app-icon dark-hover small-icon menu-icon js-card-menu"></span>
+                <a class="fancybox list-card-title clear" href="/task/update/{{ row.id }}" title="{{ row.title }}">
+                    <span class="card-short-id hide">#{{ row.id }} </span>
+                    {{ row.title }}
+                </a>
+                <div class="badges"></div>
+                <div class="list-card-members"></div>
+            </div>
+            {% endfor %}
+        </div>
+        <!--添加消息块-->
+        <form class="card-composer" id="todo_form">
+            <div class="list-card js-composer" style="padding-bottom: 0px;">
+                <div class="card-labels clearfix"></div>
+                <textarea class="js-card-title" name="title"></textarea>
+                <input type="hidden" name="status" value='0'/>
+                <input type="hidden" name="board_id" value="{{ board_id }}"/>
+                <div class="list-card-members"></div>
+            </div>
+            <div class="cc-controls clearfix">
+                <input class="primary confirm js-add-card" type="button" value="添加" name="todo">
+                <a class="app-icon close-icon dark-hover cancel js-cancel" href="#"></a>
+                <a class="cc-opt app-icon dark-hover menu-icon js-cc-menu" href="#"></a>
+            </div>
+        </form>
+        <!--添加消息块 end-->
+    </div>
+    <a class="open-card-composer js-open-card-composer" href="#">添加点......</a>
+</div>
+<!--第一块 end-->
+
+<!--第二块-->
+<div class="list active-list">
+    <div class="list-header clearfix">
+        <span class="app-icon small-icon list-icon"></span>
+        <div class="list-title non-empty clearfix editable" attr="name">
+            <h2 class="hide-on-edit current ">正在进行</h2>
+            <p class="num-cards"></p>
+            <div class="edit edit-heavy clearfix">
+                <textarea class="field single-line" type="text"></textarea>
+            </div>
+            <a class="app-icon small-icon dark-hover menu-icon js-open-list-menu" href="#"></a>
+        </div>
+    </div>
+    <div class="list-card-area">
+        <div class="list-gradient-top"></div>
+        <div class="list-gradient-bottom"></div>
+        <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" style="max-height: 231px;" id="doing_list">
+            {% for row in doing %}
+            <div class="list-card js-member-droppable clearfix ui-droppable" id="list{{ row.id }}">
+                <div class="card-labels clearfix"></div>
+                <span class="card-operation app-icon dark-hover small-icon menu-icon js-card-menu"></span>
+                <a class="fancybox list-card-title clear" href="/task/update/{{ row.id }}" title="{{ row.title }}">
+                    <span class="card-short-id hide">#{{ row.id }} </span>
+                    {{ row.title }}
+                </a>
+                <div class="badges"></div>
+                <div class="list-card-members"></div>
+            </div>
+            {% endfor %}
+        </div>
+        <!--添加消息块-->
+        <form class="card-composer" id="doing_form">
+            <div class="list-card js-composer" style="padding-bottom: 0px;">
+                <div class="card-labels clearfix"></div>
+                <textarea class="js-card-title" name="title"></textarea>
+                <input type="hidden" name="status" value='2'/>
+                <input type="hidden" name="board_id" value="{{ board_id }}"/>
+                <div class="list-card-members"></div>
+            </div>
+            <div class="cc-controls clearfix">
+                <input class="primary confirm js-add-card" type="button" value="添加" name="doing">
+                <a class="app-icon close-icon dark-hover cancel js-cancel" href="#"></a>
+                <a class="cc-opt app-icon dark-hover menu-icon js-cc-menu" href="#"></a>
+            </div>
+        </form>
+        <!--添加消息块 end-->
+
+    </div>
+    <a class="open-card-composer js-open-card-composer" href="#">添加点......</a>
+</div>
+<!--第二块 end-->
+
+<!--第三块-->
+<div class="list">
+    <div class="list-header clearfix">
+        <span class="app-icon small-icon list-icon"></span>
+        <div class="list-title non-empty clearfix editable" attr="name">
+            <h2 class="hide-on-edit current ">已经完成</h2>
+            <p class="num-cards"></p>
+            <div class="edit edit-heavy clearfix">
+                <textarea class="field single-line" type="text"></textarea>
+            </div>
+            <a class="app-icon small-icon dark-hover menu-icon js-open-list-menu" href="#"></a>
+        </div>
+    </div>
+    <div class="list-card-area">
+        <div class="list-gradient-top"></div>
+        <div class="list-gradient-bottom"></div>
+        <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" style="max-height: 231px;" id="done_list">
+            {% for row in done %}
+            <div class="list-card js-member-droppable clearfix ui-droppable" id="list{{ row.id }}">
+                <div class="card-labels clearfix"></div>
+                <span class="card-operation app-icon dark-hover small-icon menu-icon js-card-menu"></span>
+                <a class="fancybox list-card-title clear" href="/task/update/{{ row.id }}" title="{{ row.title }}">
+                    <span class="card-short-id hide">#{{ row.id }} </span>
+                    {{ row.title }} 
+                </a>
+                <div class="badges"></div>
+                <div class="list-card-members"></div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!--添加消息块-->
+        <form class="card-composer" id="done_form">
+            <div class="list-card js-composer" style="padding-bottom: 0px;">
+                <div class="card-labels clearfix"></div>
+                    <textarea class="js-card-title" name="title"></textarea>
+                    <input type="hidden" name="status" value='1'/>
+                    <input type="hidden" name="board_id" value="{{ board_id }}"/>
+                <div class="list-card-members"></div>
+            </div>
+            <div class="cc-controls clearfix">
+                <input class="primary confirm js-add-card" type="button" value="添加" name="done">
+                <a class="app-icon close-icon dark-hover cancel js-cancel" href="#"></a>
+                <a class="cc-opt app-icon dark-hover menu-icon js-cc-menu" href="#"></a>
+            </div>
+        </form>
+        <!--添加消息块 end-->
+    </div>
+    <a class="open-card-composer js-open-card-composer" href="#">添加点......</a>
+</div>
+<!--第三块 end-->
+
+<!--单条任务模板 start-->
+<script id="task_template" type="text/x-jquery-tmpl">
+    <div class="list-card js-member-droppable clearfix ui-droppable" id="list${id}">
+        <div class="card-labels clearfix"></div>
+        <span class="card-operation app-icon dark-hover small-icon menu-icon js-card-menu"></span>
+        <a class="fancybox list-card-title clear" href="/task/update/${id}">
+            <span class="card-short-id hide">#${id}</span>
+            ${title} 
+        </a>
+        <div class="badges"></div>
+        <div class="list-card-members"></div>
+    </div>
+</script>
+<!--单条任务模板 end-->
+
+
+<script type="text/javascript">
+	$(function() {
+		//拖动控制
+		$(".ui-sortable").sortable({
+            connectWith: '.js-sortable',
+            //update: function(event, ui) {
+                //alert(ui.item.attr('id'));
+            //},
+            receive: function(event, ui) {
+                var id = ui.item.attr('id');
+                var status = ui.item.parent().attr('id'); 
+                $.ajax({
+                    type: 'POST',
+                    data: {'id':id, 'status':status},
+                    url: '/task/update_status',
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#'+id).effect("highlight", {}, 3000);
+                    }
+                });
+            }
+		}).disableSelection();
+		
+		//添加消息控制
+		$(".open-card-composer").live('click',function(){
+			$(this).prev().children(".card-composer").show();
+			$(this).prev().children(".card-composer").children(".list-card").children("textarea").focus();
+		});
+
+		$(".close-icon").live('click',function(){
+			$(this).parent().parent().hide();
+		});
+
+        function re_height(){
+			var w_height = $(window).height();
+			var b_height = w_height-(78+26);
+			$("#board").css("height",b_height+"px");
+		}
+		$(window).load(function(){
+			re_height();
+		});
+		$(window).resize(function(){
+			re_height();
+		});
+
+        $(window).scroll(function(){
+		    var ws_top = $(window).scrollTop();
+		    var ws_height = $(window).height();
+		    var b_height = ws_height-(78+26)+ws_top;
+		    $("#board").css("height",b_height+"px");
+	    })
+
+        //添加按钮点击控制
+        $(".js-add-card").live('click', function(){
+            var name = $(this).attr('name');
+            var form_id = name + "_form";
+            var list_id = name + '_list';
+            var title = $("#"+form_id+" :input[name=title]").val();
+            if(!title) return false;
+            $.ajax({
+                type: 'POST',
+                data: $("#"+form_id).serialize(),
+                url: "/task/create",   
+                dataType: 'json',
+                success: function(data) {
+                    if(!data.error) {
+                        $("#"+form_id).each(function(){ this.reset(); });
+                        $( "#task_template" ).tmpl( data ).prependTo("#"+list_id);
+                        //$("#list"+data.id).effect("highlight", {}, 3000);
+                    }
+                }
+            });
+        });
+
+        $('.fancybox').fancybox({
+            'width': '50%',
+            'height': '300',
+            'type': 'iframe',     
+        });
+	});
+</script>
+
+{% endblock %}
+
+{% block sidebar %}
+ <div class="board-widgets">
+        	<div class="master-board-widget-menu">
+            	<span class="app-icon small-icon dark-hover menu-icon js-show-all-widgets" ></span>
+            </div>
+            <!--添加模版-->
+            <!--
+            <div class="board-widget clearfix">
+            	<div class="board-widget-title">
+                    <h3>Members</h3>
+                    <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis" ></span>
+                </div>
+                <div class="board-widget-content">
+                    <div class="board-widget-members js-list-board-members assignable-members clearfix">
+                        <div class="member ui-draggable">
+                            <span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+                            <span class="status idle" title="This member is idle. They have Trello open but are not looking at it."></span>
+                            <span class="admin" title="This member is an admin of this board."></span>
+                        </div>
+                    </div>
+                    <a class="button-link js-open-manage-board-members" href="#">
+                        <span class="app-icon small-icon member-icon"></span>
+                        Add Members…
+                    </a>
+                </div>
+            </div>
+            -->
+            <!--添加模版 end-->
+                        
+            <!--面板块-->
+            <!--
+            <div class="board-widget clearfix">
+            	<div class="board-widget-title">
+                    <h3>Board</h3>
+                    <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis" ></span>
+                </div>
+                <div class="board-widget-content">
+                	<a class="button-link js-open-board-menu-sidebar" href="#">
+                        <span class="app-icon small-icon board-icon"></span>
+                        	Options
+                        <span class="app-icon small-icon menu-icon" style="position: absolute; top: 6px; right: 6px;"></span>
+                    </a>
+                    <a class="button-link js-add-list-popover">
+                        <span class="app-icon small-icon list-icon"></span>
+                        Add List
+                    </a>
+                    <a class="button-link js-filter-cards">
+                        <span class="app-icon small-icon card-icon"></span>
+                        Search and Filter Cards
+                        <span class="on">ON</span>
+                    </a>
+                </div>
+            </div>
+            -->
+            <!--面板块 end-->
+            
+            <!--任务列表-->
+            <div class="board-widget board-widget-actions bottom clearfix">
+            	<div class="board-widget-title">
+                    <h3 class="inline-block">分享给......</h3>
+                    <a class="quiet js-view-all-activity-header" href="#" style="margin-left: 3px;display:none;"  id="share_save_success">保存成功</a>
+                    <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis"></span>
+                </div>
+                <div class="board-widget-content">
+                    <div class="activity-gradient-t"></div>
+                    <div class="activity-gradient-b"></div>
+                    <div class="board-actions-list fancy-scrollbar" >
+                        <div class="js-sidebar-list-actions">
+                        <form method="POST" name="share_users_form" id="share_users_form">
+                            <p>
+                                <a class="button-link js-open-manage-board-members" href="javascript:;" id="share_users_save_button"> <span class="app-icon small-icon member-icon"></span> 保存</a>
+                            </p>
+
+                        	<!--循环体-->
+                            {% for row in company_rows %}
+                            <div class="phenom clearfix">
+                                <div class="member js-show-mem-menu">
+                                    <span class="member-initials" title="{{ row.realname }}">
+                                        <input type="checkbox" name="sharename" value="{{ row.id }}" {% if  row.id|string in board_row.to_user_id: %} checked=true {% endif %}/> 
+                                    </span>
+                                </div>
+                                <div class="phenom-desc">
+                                    <a class="inline-object js-show-mem-menu" href="#">{{ row.realname }}</a>
+                                </div>
+                                <!--
+                                <p class="phenom-meta quiet">
+                                    <span class="date" dt="2012-06-04T06:53:49.298Z" title="2012年6月4日 14:53:21">19 hours ago</span>
+                                </p>
+                                -->
+                            </div>
+                            {% endfor %}
+                            <!--循环体 end-->
+                        </form>
+                        
+                        </div>
+                        <!--
+                        <a class="show-more js-view-all-activity-list" href="#"> View all… </a>
+                        <a class="js-allow-notifications quiet" style="padding: 0pt 0pt 0pt 40px; font-weight: bold; display: none;" href="#"> Allow Notifications </a>
+                        -->
+                    </div>
+                </div>
+                
+            </div>
+            <!--任务列表 end-->
+        </div>
+
+        <script>
+            $("#share_users_save_button").click(function() {
+                $.ajax({
+                    type: 'POST',
+                    data: $("#share_users_form").serialize(),
+                    url: "/board/update_share?id="+{{ board_id }},   
+                    dataType: 'json',
+                    success: function(data) {
+                        if(!data.error) {
+                            $("#share_save_success").show(); 
+                        }
+                    }
+                });
+            });        
+        </script>
+        {% endblock %}

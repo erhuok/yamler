@@ -12,6 +12,7 @@ class Task(Model):
     user_id = Column(Integer, ForeignKey('users.id'))
     to_user_id = Column(String(45), default=0)
     status = Column(Integer, default = 0)
+    board_id = Column(Integer, default = 0)
     note = Column(String(200),default='')
     description = Column(String(500),default='')
     priority = Column(Integer, default=1)

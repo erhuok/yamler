@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style.css') }}"/>
+<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style.css') }}"/>
+<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/content_style.css') }}"/>
+<script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.all.min.js') }}"></script>
+<!-- Add fancyBox main JS and CSS files -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.css') }}" media="screen" />
+<!-- Add Button helper (this is optional) -->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/fancybox/helpers/jquery.fancybox-buttons.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/fancybox/helpers/jquery.fancybox-buttons.js') }}"></script>
+<script>
+
+</script>
+
+
+</head>
+
+<body class="page-index firefox firefox-12 windows extra-large-window full-content">
+<!--头部-->
+<div class="header">
+	<a class="header-btn head_logo" href="javascript:;">
+    	<span class="app-icon logo">Trello</span>
+    </a>
+    
+    <div id="header-search">
+        <form>
+            <label for="search-text">Global Search</label>
+            <input id="search-text" type="text" spellcheck="false" autocorrect="off" autocomplete="off">
+            <input id="search-submit" type="submit" value="Search">
+            <a class="header-btn header-search js-search-submit" href="#">
+            <span class="app-icon light search-icon"></span>
+            </a>
+        </form>
+    </div>
+    <div class="header-user">
+    	<a class="header-btn header-notifications js-open-header-notifications-menu" href="#">
+        	<span class="app-icon light notification-icon"></span>
+            <span class="header-btn-text">Notifications</span>
+            <span class="count js-unread-note-count"></span>
+        </a>
+        <a class="header-btn header-boards js-open-header-boards-menu" href="#">
+        	<span class="app-icon light board-icon"></span>
+			<span class="header-btn-text">Boards</span>
+        </a>
+        <a class="header-auth member js-open-header-member-menu" href="#">
+        	<span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+        </a>
+    </div>
+    <div>
+        <a class="header-btn header-about" title="Information" href="#">
+            <span class="app-icon light manual-icon"></span>
+            <span class="count js-unread-announcements" style="">1</span>
+        </a>
+    </div>
+</div>
+<!--头部 end-->
+
+<!--主体区-->
+<div id="content">
+	
+	<div class="board-wrapper">
+    	<!--主体头部-->
+        {% block content_top %}
+        {% endblock %}
+        <!--主体头部 end-->
+        
+        <!--右边导航区-->
+        {% block sidebar %}
+       
+        {% endblock %}
+        <!--右边导航区 end-->
+        
+        <!--模板展示区-->
+        <div id="board" class="clearfix disabled-list-guide">
+        	<div class="list-area-wrapper fancy-scrollbar" style="margin-top: 0pt; height: 500px;">
+            	<div class="list-area js-list-sortable no-edits ui-sortable" style="width: 1172px;">
+                {% block content %}
+                {% endblock %} 
+                </div>
+            </div>
+        </div>
+        <!--模板展示区 end-->
+    </div>
+</div>
+<!--主体区 end-->
+</body>
+</html>
+

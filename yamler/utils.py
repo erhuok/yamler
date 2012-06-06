@@ -2,6 +2,7 @@
 import re
 from flask import g, url_for, flash, abort, request, redirect, Markup, session
 from functools import wraps
+from yamler import app
 
 def request_wants_json():
     best = request.accept_mimetypes.best_match(['application/json', 'text/html'])
@@ -28,4 +29,6 @@ def required_admin(f):
             return f(*args, **kwargs)
     return requires_login(decorated_function)
 
-
+def allowed_images(filename):
+    return '' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS'] 

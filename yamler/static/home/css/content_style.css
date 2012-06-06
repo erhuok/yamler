@@ -1,0 +1,267 @@
+@charset "utf-8";
+/* CSS Document */
+
+body.extra-large-window.full-content #content, body.large-window.full-content #content{ margin: 0; width: 100%; }
+
+#content { position: relative;}
+#board-header { height: 30px; overflow: hidden; padding: 4px 8px; position: relative;}
+.app-icon.dark-hover { cursor: pointer;}
+.board-title { height: 30px; margin: 0 0 0 34px; position: relative;}
+.board-title h2, .board-title h4 { float: left; line-height: 26px; margin: 2px 8px 0 0;}
+.board-title h2 a { text-decoration: none; font-size:18px;}
+.quiet { color: #939393;}
+.board-title h4 { font-size: 15px;}
+.board-title h4:empty { display: none;}
+.board-title #permission-level { cursor: default; float: left; margin-top: 6px;}
+.board-title .desc-btn { border-radius: 3px 3px 3px 3px; cursor: default; float: left; height: 30px; width: 30px;}
+.board-title .desc-btn .app-icon { background-clip: content-box; background-origin: content-box; padding: 6px;}
+.list-icon { background-position: -90px -30px;}
+
+/*******************导航展示区***********************/
+.board-widgets { padding: 0 8px; position: absolute; right: 0; top: 38px; width: 231px;}
+.master-board-widget-menu {
+    display: none;
+    position: absolute;
+    right: 4px;
+    top: 0;
+}
+.board-widget { padding: 0 0 16px; position: relative;}
+.board-widget .board-widget-menu-btn {
+	display: none;
+    position: absolute;
+    right: 0;
+    top: 2px;}
+.board-widget-content {
+    position: relative;
+    z-index: 1;
+}
+.board-widget-members{ margin-bottom: 8px;}
+.member .status.idle { background-color: #EFD97A;}
+.member .status {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #E6E6E6;
+    border-color: #FFFFFF #B9B9B9 #B9B9B9 #FFFFFF;
+    border-style: solid;
+    border-width: 1px;
+    bottom: -1px;
+    height: 7px;
+    position: absolute;
+    right: -1px;
+    width: 7px;
+    z-index: 3;
+}
+.small-icon.member-icon { background-position: -18px -108px;}
+
+.small-icon.list-icon { background-position: -54px -108px;}
+.small-icon.card-icon { background-position: -72px -108px;}
+.small-icon.edit-icon { background-position: -504px -108px;}
+.small-icon.edit-icon.dark, .small-icon.edit-icon.dark-hover:hover{
+	background-position:-504px -90px;
+	}
+.button-link .on {
+    background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+    border-radius: 3px 3px 3px 3px;
+    color: #FFFFFF;
+    display: none;
+    font-size: 12px;
+    font-weight: bold;
+    height: 17px;
+    line-height: 17px;
+    margin: 0;
+    padding: 2px 4px;
+    position: absolute;
+    right: 5px;
+    text-align: center;
+    top: 5px;
+}
+.bottom { margin-bottom: 0; padding-bottom: 0;}
+.inline-block { display: inline-block;}
+.board-actions-list { overflow-x: hidden; overflow-y: auto; padding: 0 8px 0 0;}
+.phenom { border-bottom: 1px solid #DCDCDC; padding: 8px 0 8px 40px; position: relative;}
+.phenom:first-child { margin-top: -8px;}
+.phenom .member { left: 0; position: absolute; top: 10px;}
+.member .member-initials {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    height: 30px;
+    left: 0;
+    line-height: 30px;
+    overflow: hidden;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+}
+.phenom-desc { margin-bottom: 2px;}
+.inline-object { font-weight: bold; text-decoration: none;}
+.phenom-meta { display: inline; font-size: 13px; margin: 0;}
+.show-more {
+    border-radius: 3px 3px 3px 3px;
+    color: #939393;
+    display: block;
+    font-weight: bold;
+    margin: 8px 0;
+    padding: 16px 8px 16px 40px;
+    text-decoration: none;
+}
+.show-more:hover {
+    background: none repeat scroll 0 0 #DCDCDC;
+    text-decoration: underline;
+}
+.board-widget .show-more { padding: 12px 8px 12px 40px;}
+/*******************导航展示区 end***********************/
+
+
+/*******************模板展示区***********************/
+#board {
+    background: none repeat scroll 0 0 #666;
+    border-radius: 3px 3px 3px 3px;
+    margin: 0 251px 0 8px;
+    overflow: hidden;
+    padding: 8px;
+    position: relative;
+}
+.extra-large-window #board, .large-window #board { padding: 8px 4px;}
+.list {
+    background: none repeat scroll 0 0 #E3E3E3;
+    border-radius: 3px 3px 3px 3px;
+    float: left;
+    margin: 0 4px;
+	margin-bottom:10px;
+    padding: 2px;
+    position: relative;
+    width: 30%;
+	min-width:150px;
+}
+.extra-large-window .list, .large-window .list { border-top: 1px solid #FFFFFF;}
+.list-header { position: relative;}
+.list-header .app-icon.list-icon { left: 3px; position: absolute; top: 3px;}
+.list-title { margin: 0 26px 0 25px; overflow: hidden; text-overflow: ellipsis;}
+.list-title h2 { float: left; font-size: 15px; line-height: 18px; margin: 2px 6px 0 0; min-height: 19px; min-width: 30px;}
+.list-title .num-cards { color: #939393; display: none; float: left; margin: 3px 0 0;}
+.edit { display: none; position: relative;}
+.edit-heavy .field { font-size: 16px; font-weight: bold; line-height: 22px;}
+.list-title .edit textarea.field { height: 48px; padding: 4px; width: 100%;}
+.list-title .app-icon.menu-icon {
+    background-clip: content-box;
+    background-origin: content-box;
+    padding: 5px;
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    visibility: hidden;
+}
+.list-card-area { position: relative;}
+.list-gradient-top, .list-gradient-bottom { height: 4px; position: absolute; width: 100%; z-index: 2;}
+.list-gradient-top { left: 0; top: 0;}
+.list-gradient-bottom{ bottom: 0; left: 0;}
+.list-cards {
+    clear: both;
+    margin-bottom: 0;
+    min-height: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 4px 3px 1px;
+    z-index: 1;
+}
+.list-card {
+    -moz-animation-duration: 0.2s;
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    -moz-transition-duration: 0.2s, 0.1s, 0.2s;
+    -moz-transition-property: background, margin-bottom, opacity;
+    -moz-transition-timing-function: ease-out;
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: #B9B9B9 #B9B9B9 #939393;
+    border-radius: 3px 3px 3px 3px;
+    border-style: solid;
+    border-width: 1px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    min-height: 18px;
+    padding: 6px 8px 1px;
+    position: relative;
+    z-index: 0;
+}
+.list-card textarea {
+    background: none repeat scroll 0 0 transparent;
+    border: medium none;
+    box-shadow: none;
+    height: 54px;
+    margin: 0 0 4px;
+    padding: 0;
+}
+.list-card.active-card { border-color: #1F6993; box-shadow: 0 0 4px #1F6993;}
+.list-card .card-labels { margin: -6px 0 3px;}
+.list-card .card-labels:empty { margin: 0;}
+.list-card .card-operation {
+    background-clip: content-box;
+    background-origin: content-box;
+    padding: 5px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    visibility: hidden;
+}
+.list-card-title {
+    display: block;
+    margin: 0 0 5px;
+    overflow: hidden;
+    padding: 0 18px 0 0;
+    text-decoration: none;
+    text-overflow: ellipsis;
+}
+.list-card-title:hover{ text-decoration:none;}
+.badges { float: left; margin: 0; padding: 0 0 2px;}
+.badges:empty { display: none;}
+.list-card-members { float: right; margin: 2px -12px -5px 0;}
+.list-card-members:empty { display: none;}
+.small-icon.menu-icon.dark, .small-icon.menu-icon.dark-hover:hover{ background-position:-396px -90px;}
+.list-card:hover .card-operation{ visibility:visible;}
+.menu-icon.dark-hover:hover{ background-position:-660px 0;}
+.card-composer{ display:none;}
+.open-card-composer {
+    border-radius: 0 0 3px 3px;
+    color: #939393;
+    display: block;
+    margin: 2px -2px -2px;
+    padding: 7px 14px;
+    position: relative;
+    text-decoration: none;
+}
+a.open-card-composer, a.open-card-composer:visited{ color: #939393; }
+a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoration:underline;}
+
+.cc-controls input[type="submit"] {
+    float: left;
+    margin-top: 2px;
+    padding: 5px 18px;
+}
+.cc-controls .app-icon {
+    background-clip: content-box;
+    background-origin: content-box;
+    float: left;
+    margin-top: 2px;
+    padding: 0 2px;
+}
+.close-icon.dark-hover:hover{ background-position:-630px 0;}
+.cc-controls .cc-opt {
+    float: right;
+}
+.menu-icon.dark-hover:hover{ background-position:-660px 0;}
+/*******************模板展示区 end***********************/
+
+
+
+
+
+
+

@@ -1,0 +1,156 @@
+{% extends "layout_home.html" %}
+
+
+
+{% block content_top %}
+    <div class="window-header">
+        <span class="window-header-icon app-icon member-icon"></span>
+        <div class="member-title">
+            <h2>
+                {{ company_name }} 
+                <span class="quiet" style="margin-left: 3px">({{ realname }})</span>
+            </h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="window-module">
+    <div class="window-module-title">
+        <span class="app-icon window-module-title-icon board-icon"></span>
+        <h3> 我的工作清单 </h3>
+    </div>
+    <ul class="boards-list bold-list gutter js-list-boards">
+        {% for row in rows %}
+        <li id="list{{ row.id }}">
+        <a class="clearfix link-item highlight-icon js-open-board" href="/board/view/{{ row.id }}"> <span class="item-name">{{ row.title }}</span></a>
+            <a href="{{ url_for('board.update', id=row.id) }}" class="modify" title="{{ row.id }}"><span class="app-icon small-icon permission-icon private-icon " title="修改"></span></a>
+            <a href="javascript:;" name="{{ row.id }}" class="delete"><span class="app-icon small-icon pin-icon" title="删除"></span></a>
+            <!--
+            <a><span class="counts"></span></a>
+            <a><span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span></a>
+            -->
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="window-module">
+    <a class="button-link gutter js-add-board fancybox" href="#board_form" title="创建一个工作清单">
+        <span class="app-icon small-icon board-icon"></span> 创建一个工作清单
+    </a>
+</div>
+
+<!--start 创建一个工作清单 -->
+<div  style="width:400px;display: none;">
+    <form id="board_form">
+        <label for="title">请给工作清单写个名字吧</label>
+        <input type="text" name="title" id="title"/> 
+        <input type="button" id="board_form_button" value="保存"/>
+    </form>
+</div>
+<!--end 创建一个工作清单 -->
+
+
+<!--start 模板-->
+<script id="board_template" type="text/x-jquery-tmpl">
+    <li id="list${id}">
+        <a class="clearfix link-item highlight-icon js-open-board" href="javascript:;"> <span class="item-name">${title}</span></a>
+        <a href="/board/update?id=${id}" class="modify" title="${id}"><span class="app-icon small-icon permission-icon private-icon " title="修改"></span></a>
+        <a href="javascript:;" name="${id}" class="delete"><span class="app-icon small-icon pin-icon" title="删除"></span></a>
+    </li>
+</script>
+<!--end 模板-->
+
+
+<script>
+        $('.fancybox').fancybox();  
+        $('.modify').fancybox({
+            'width': '45%',
+            'height': '45%',
+            //'title': '修改工作清单',
+            //'autoScale'			: false,
+            //'transitionIn'		: 'none',
+            //'transitionOut'		: 'none',
+            'type': 'iframe',
+            'afterClose': function() {
+                var id = $(this).attr('title');
+                if(id) {
+                    $.getJSON('/board/get/'+id, function(res) { 
+                        if(!res.error) {
+                            var html = $( "#board_template" ).tmpl( res.data );
+                            $("#list"+id).replaceWith(html);
+                            $("#list"+id).effect("highlight", {}, 3000);
+                        } 
+                    });
+                }
+            }
+        });
+
+        $('.delete').live('click', function() {
+            if(confirm("你确定要删除这个清单"))
+            {
+                var id = $(this).attr('name');  
+                if(id) {
+                    $.post('/board/delete',{id: id},function(data) {
+                        if(!data.error) {
+                            $("#list"+id).remove();
+                        }
+                    });
+                }
+            }
+        });
+
+        //保存按钮
+        $('#board_form_button').click(function() {
+            if(!$("#title").val()) {
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                data: $("#board_form").serialize(),
+                url: "/board/create",   
+                dataType: 'json',
+                success: function(data) {
+                    if(!data.error) {
+                        $("form").each(function(){ this.reset(); });
+                        $.fancybox.close();
+                        $( "#board_template" ).tmpl( data ).prependTo( "li:first" );
+                    }
+                }
+            });
+        });
+</script>
+{% endblock %}
+
+
+{% block sidebar %}
+<div class="window-sidebar">
+    <a class="profile-member ed js-change-avatar-profile" href="/user/avatar">
+        <span class="profile-member-initials">上传图像</a></span>
+        <span class="change-av-text"> {{ realname }} </span>
+    </a>
+    <ul class="sidebar-nav">
+        <li>
+        <a class="js-member-boards active" href="javascript:;">Boards</a>
+        </li>
+        <li>
+        <a class="js-member-profile" href="javascript:;">Profile</a>
+        </li>
+    </ul>
+</div>
+
+<script>
+
+$('.js-change-avatar-profile').fancybox({
+            'width': '45%',
+            'height': '45%',
+            'title': '请上传个人图像',
+            //'autoScale'			: false,
+            //'transitionIn'		: 'none',
+            //'transitionOut'		: 'none',
+            'type': 'iframe',
+            'afterClose': function() { }
+        });
+</script>
+{% endblock %}

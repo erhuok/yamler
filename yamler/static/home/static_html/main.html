@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link rel="stylesheet" media="all" type="text/css" href="../css/Public_style.css"/>
+<link rel="stylesheet" media="all" type="text/css" href="../css/main_style.css"/>
+<script src="../js/jquery.js" language="javascript"></script>
+</head>
+
+<body>
+<!--头部-->
+<div class="header">
+	<a class="header-btn head_logo" href="javascript:;">
+    	<span class="app-icon logo">Trello</span>
+    </a>
+    
+    <div id="header-search">
+        <form>
+            <label for="search-text">Global Search</label>
+            <input id="search-text" type="text" spellcheck="false" autocorrect="off" autocomplete="off">
+            <input id="search-submit" type="submit" value="Search">
+            <a class="header-btn header-search js-search-submit" href="#">
+            <span class="app-icon light search-icon"></span>
+            </a>
+        </form>
+    </div>
+    <div class="header-user">
+    	<a class="header-btn header-notifications js-open-header-notifications-menu" href="#">
+        	<span class="app-icon light notification-icon"></span>
+            <span class="header-btn-text">Notifications</span>
+            
+        </a>
+        <a class="header-btn header-boards js-open-header-boards-menu" href="#">
+        	<span class="app-icon light board-icon"></span>
+			<span class="header-btn-text">Boards</span>
+        </a>
+        <a class="header-auth member js-open-header-member-menu" href="#">
+        	<span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+        </a>
+    </div>
+    <div>
+        <a class="header-btn header-about" title="Information" href="#">
+            <span class="app-icon light manual-icon"></span>
+            <span class="count js-unread-announcements" style="">1</span>
+        </a>
+    </div>
+</div>
+<!--头部 end-->
+
+<!--主体块-->
+<div class="content">
+	<div class="member-detail-modal">
+    	<!--主体头部-->
+    	<div class="window-header">
+        	<span class="window-header-icon app-icon member-icon"></span>
+            <div class="member-title">
+            	<h2>
+                    tanxiao
+                    <span class="quiet" style="margin-left: 3px">(tanxiao)</span>
+                </h2>
+            </div>
+        </div>
+        <!--主体头部 end-->
+        
+        <!--内容区左边块-->
+        <div class="window-main-col clearfix">
+        
+        	<div class="window-module">
+                <div class="window-module-title">
+                    <span class="app-icon window-module-title-icon board-icon"></span>
+                    <h3> Boards </h3>
+                </div>
+                <ul class="boards-list bold-list gutter js-list-boards">
+                	<li>
+                    	<a class="clearfix link-item highlight-icon js-open-board" href="javascript:;">
+                        	<span class="item-name">这是我的任务</span>
+                            <span class="app-icon small-icon permission-icon private-icon " title=""></span>
+                            <span class="app-icon small-icon pin-icon" title=""></span>
+                            <span class="counts"></span>
+                            <span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
+                        </a>
+                    </li>
+                    <li>
+                    	<a class="clearfix link-item highlight-icon js-open-board" href="javascript:;">
+                        	<span class="item-name">这是我的任务</span>
+                            <span class="app-icon small-icon permission-icon private-icon " title=""></span>
+                            <span class="app-icon small-icon pin-icon" title=""></span>
+                            <span class="counts"></span>
+                            <span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
+                        </a>
+                    </li>
+                </ul>
+                
+                
+            </div>
+            
+            <div class="window-module">
+            	<a class="button-link gutter js-add-board" href="#">
+                    <span class="app-icon small-icon board-icon"></span>
+                    Add Board
+                </a>
+            </div>
+        	
+        </div>
+        <!--内容区左边块 end-->
+        
+        
+        <!--内容区右边块-->
+        <div class="window-sidebar">
+        	<a class="profile-member ed js-change-avatar-profile" href="#">
+                <span class="profile-member-initials"> T </span>
+                <span class="change-av-text"> Change Avatar </span>
+            </a>
+            <ul class="sidebar-nav">
+            	<li>
+                	<a class="js-member-boards active" href="javascript:;">Boards</a>
+                </li>
+                <li>
+                	<a class="js-member-profile" href="javascript:;">Profile</a>
+                </li>
+            </ul>
+        </div>
+        <!--内容区右边块 end-->
+        
+        
+        
+    </div>
+    
+</div>
+<!--主体块 end-->
+</body>
+</html>

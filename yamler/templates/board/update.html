@@ -1,0 +1,15 @@
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<form id="board_form" action="{{ request.url }}" method="POST">
+    <label for="title">工作清单名称</label>
+    <input type="text" name="title" id="title" value="{{ row.title }}"/> 
+    <input type="submit" id="board_form_button" value="保存"/>
+</form>

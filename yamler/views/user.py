@@ -1,9 +1,14 @@
 # encoding:utf8
 
-from flask import Blueprint,request,render_template,session,flash,redirect,url_for,jsonify, g
-from yamler.models.users import User,RegistrationForm,LoginForm
+from flask import Blueprint,request,render_template,session,flash,redirect,url_for,jsonify, g, make_response 
+from yamler.models.users import User,RegistrationForm,LoginForm, users
 from yamler.database import db_session
-from yamler.utils import request_wants_json, required_login
+from yamler.utils import request_wants_json, required_login, allowed_images
+from datetime import date
+from yamler import app
+from werkzeug import secure_filename
+import os
+import Image
 
 mod = Blueprint('user',__name__,url_prefix='/user')
 
@@ -50,3 +55,38 @@ def register():
 @mod.route('/active', methods=['GET', 'POST'])
 def active():
     return render_template('user/active.html')
+
+@mod.route('/avatar', methods=['GET', 'POST'])
+@required_login
+def avatar():
+    if request.method == 'POST':
+        file = request.files['avatar']
+        if file and allowed_images(file.filename):
+            filename = secure_filename(file.filename)
+            today = date.today().strftime('%Y-%m-%d')
+            filename = today + '/' + str(g.user.id) + '__' + filename
+            if not os.path.isdir(app.config['UPLOAD_FOLDER'] + today):
+                os.makedirs(app.config['UPLOAD_FOLDER'] + today) 
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            if os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
+                g.db.execute(users.update().where(users.c.id==g.user.id).values(avatar=filename))
+                if g.user.avatar: 
+                    old_file = os.path.join(app.config['UPLOAD_FOLDER'], g.user.avatar)
+                    if os.path.isfile(old_file):
+                        os.unlink(old_file)
+                g.user.avatar = filename
+    return render_template('user/avatar.html',user=g.user)
+
+@mod.route('/get_avatar_url', methods=['GET'])
+def get_avatar_url():
+    key = request.args.get('key','') 
+    if key:
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], key)
+        if os.path.isfile(filepath):
+            im = Image.open(filepath)
+            response = make_response(im)
+            #response.headers['Content-Type'] = 'image/jpeg'
+            #response.headers['Content-Disposition'] = 'attachment; filename=myfile.jpg'
+            return response
+    #filename = 'upload/' + key
+    #return url_for("static", filename=filename)

@@ -18,6 +18,7 @@ from yamler.views import task
 from yamler.views import mobile 
 from yamler.views import site 
 from yamler.views import comment 
+from yamler.views import board 
 
 app.register_blueprint(home.mod)
 app.register_blueprint(user.mod)
@@ -27,6 +28,7 @@ app.register_blueprint(task.mod)
 app.register_blueprint(mobile.mod)
 app.register_blueprint(site.mod)
 app.register_blueprint(comment.mod)
+app.register_blueprint(board.mod)
 
 from yamler.models.users import User
 from yamler.models.companies import Company 
@@ -50,4 +52,3 @@ def remove_db_session(exception):
 def close_db(response):
     g.db.close()
     return response
-

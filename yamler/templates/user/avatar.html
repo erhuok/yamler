@@ -1,0 +1,8 @@
+<form method="POST" action="{{ request.url }}" enctype="multipart/form-data">
+    <input type="file" name="avatar" />
+    <input type="submit" value="上传"/>
+</form>
+
+{% if user.avatar %}
+<img src="{{ url_for('user.get_avatar_url',key=user.avatar) }}" />
+{% endif %}

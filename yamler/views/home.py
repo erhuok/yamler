@@ -1,5 +1,5 @@
 # encoding:utf8
-import datetime
+from datetime import datetime, date
 from flask import Blueprint,request,render_template,session, g, jsonify
 from yamler.models.users import User,RegistrationForm,LoginForm
 from yamler.database import db_session 
@@ -8,6 +8,7 @@ from yamler.utils import required_login
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
 from yamler.models.tasks import tasks, task_comments
+from yamler.models.boards import Board, boards
 from sqlalchemy.sql import select, text
 
 mod = Blueprint('home', __name__, url_prefix='/home')
@@ -15,7 +16,21 @@ mod = Blueprint('home', __name__, url_prefix='/home')
 @mod.route('/')
 @required_login
 def index():
-    return 'ok'
+    #自动创建第几周工作清单
+    week = int(date.today().strftime('%W')) 
+    year = int(date.today().strftime('%Y')) 
+    sql = text('SELECT id FROM boards WHERE type=:type AND user_id=:user_id AND week=:week AND year=:year AND type=:type')
+    res = g.db.execute(sql,user_id=g.user.id, week=week, year=year, type=1).fetchone()
+    #不存在本周工作清单，则创建一个
+    if res is None:
+        title = "第%d周工作清单" % week
+        g.db.execute(boards.insert().values(user_id=g.user.id, week=week, year=year, type=1, title=title, created_at=datetime.now())) 
+
+    #获取工作清单列表
+    sql = text("SELECT id, title FROM boards WHERE user_id=:user_id AND is_del=:is_del ORDER BY id DESC")
+    rows = g.db.execute(sql, user_id=g.user.id, is_del=0).fetchall()
+        
+    return render_template('home/index.html', rows=rows, realname=g.user.realname, company_name=g.company.name)
 
 @mod.route('/myfeed', methods=['GET', 'POST'])
 @required_login

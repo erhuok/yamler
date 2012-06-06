@@ -1,15 +1,16 @@
-{% extends "layout.html" %}
+{% extends "layout2.html" %}
 {% block pagetitle%}
 <h1 id="page-title">第一步:填写基本信息</h1>
 {% endblock %}
 
-{% block container %}
+{% block content %}
 <h3></h3>
 
 {% from "_formhelper.html" import render_field %}
-<form method=post action="{{ url_for('user.register') }}" class="form">
+<form method=post action="{{ request.url }}" class="form">
     {{ render_field(form.username) }}
     {{ render_field(form.realname) }}
+    {{ render_field(form.telephone) }}
     {{ render_field(form.password) }}
     {{ render_field(form.confirm) }}
     <p> <input type="submit" value="同意注册协议,提交" name="submit" class="button" /></p>

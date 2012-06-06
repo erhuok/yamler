@@ -1,0 +1,49 @@
+@charset "utf-8";
+/* CSS Document */
+
+.account-page { background-color: #E6E6E6;}
+.account-page #surface { margin: 0 auto; max-width: 540px; padding: 15px 10px 50px; position: relative;}
+.account-page .account-header { margin-bottom: 10px; text-align: center;}
+.account-page .account-header img { max-width: 200px; width: 80%;}
+.account-page .account-content {
+    background-color: #F0F0F0;
+    border: 1px solid #BFBFBF;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+.account-page .primary-col {
+    display: block;
+    float: left;
+    margin-right: 40px;
+    width: 250px;
+}
+.account-page .primary-col input[type="submit"] {
+    margin-bottom: 20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -10,6 +10,8 @@ class User(Model):
     username = Column(String(20), unique=True)
     password = Column(String(32))
     realname = Column(String(45))
+    telephone = Column(String(45))
+    avatar = Column(String(45))
     company_id = Column(Integer, default=0)
     is_active = Column(Integer, default=0)
     created_at = Column(DateTime,default=datetime.datetime.now())
@@ -40,6 +42,7 @@ users = Table('users', metadata, autoload=True)
 class RegistrationForm(Form):
     username = TextField('登录帐户', [validators.Length(min=4, max=25), validators.required()])
     realname = TextField('真实姓名', [validators.required()])
+    telephone = TextField('电话号码', [validators.required()])
     password = PasswordField('登录密码', [
         validators.Required(),
         validators.EqualTo('confirm', message='Passwords must match')

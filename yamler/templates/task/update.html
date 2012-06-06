@@ -2,15 +2,17 @@
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='css/ui/jquery.ui.all.css') }}"/>
 <form method="POST" action="">
     <p> <label for="name">名称</label> <input type="text" name="title" value="{{ row['title']  }}"/> </p>
+    <!--
     <p>
         <label for="email">分享给</label>
         <input type="hidden" name="to_user_id" id="to_user_id" value="{{ row['to_user_id'] }}"/>
         <ul id="share_users"></ul>
     </p>
-
+    -->
     <p>
-        <input type="radio" name="status" value="1" {% if row['status'] == 1 %} checked="true" {% endif %} />完成
-        <input type="radio" name="status" value="0" {% if row['status'] == 0 %} checked="true" {% endif %}/>未完成
+        <input type="radio" name="status" value="1" {% if row['status'] == 1 %} checked="true" {% endif %} />已经完成
+        <input type="radio" name="status" value="0" {% if row['status'] == 0 %} checked="true" {% endif %}/>待办事项
+        <input type="radio" name="status" value="2" {% if row['status'] == 2 %} checked="true" {% endif %}/>正在进行
     </p>
 
     <p>
