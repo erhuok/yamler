@@ -59,7 +59,7 @@ def share():
         task_data[row.user_id].append(dict(row))
 
     sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
-    user_rows = g.db.execute(text(sql), company_id=g.company.id).fetchall()
+    user_rows = g.db.execute(text(sql)).fetchall()
     user_data = {}
     for row in user_rows:
         user_data[row.id] = row.realname

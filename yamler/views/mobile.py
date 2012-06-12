@@ -246,10 +246,10 @@ def comment_create():
         res = g.db.execute(text("INSERT INTO task_comments (user_id, task_id, content, created_at) VALUES (:user_id, :task_id, :content, :created_at)"),user_id=request.form['user_id'], task_id=request.form['task_id'], content=request.form['content'], created_at=datetime.datetime.now())
         return jsonify(error=0, id=res.lastrowid) 
 
-@mod.route('/share', methods=['GET', 'POST'])
+@mod.route('/task/share', methods=['GET', 'POST'])
 def share():
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at FROM tasks WHERE is_del='0' AND :to_user_id IN (to_user_id)"
-    task_rows = g.db.execute(text(sql), to_user_id=g.user.id).fetchall()
+    sql = "SELECT id,user_id,to_user_id,title,status,comment_count FROM tasks WHERE is_del='0' AND :to_user_id IN (to_user_id)"
+    task_rows = g.db.execute(text(sql), to_user_id=request.form['user_id']).fetchall()
     task_data = {}
     user_ids = []
     for row in task_rows:
@@ -259,7 +259,7 @@ def share():
         task_data[row.user_id].append(dict(row))
 
     sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
-    user_rows = g.db.execute(text(sql), company_id=g.company.id).fetchall()
+    user_rows = g.db.execute(text(sql)).fetchall()
     user_data = {}
     for row in user_rows:
         user_data[row.id] = row.realname

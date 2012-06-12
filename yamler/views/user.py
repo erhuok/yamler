@@ -19,8 +19,9 @@ def index():
 
 @mod.route('/login',methods=['GET','POST'])
 def login():
+    url = request.args.get('next') if request.args.get('next') else 'home.account'
     if g.user:
-        return redirect(url_for('home.myfeed'))
+        return redirect(url_for(url))
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         user = User(form.username.data,form.password.data)
@@ -29,7 +30,7 @@ def login():
             session['user_id']=result.id
             #session['group_id'] = result.group_id
             #session['company_id'] = result.company_id
-            return redirect(url_for('home.myfeed'))
+            return redirect(url_for(url))
     return render_template('user/login.html',form=form)
 
 @mod.route('/register', methods=['GET', 'POST'])
