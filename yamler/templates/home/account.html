@@ -1,0 +1,426 @@
+{% extends "layout_account.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/taghandler/css/jquery.taghandler.css') }}" />
+<!--主体块-->
+<div class="content">
+	<div class="member-detail-modal">
+    	<!--主体头部-->
+    	<div class="window-header">
+        	<span class="window-header-icon app-icon member-icon"></span>
+            <div class="member-title">
+            	<h2>
+                    {{ g.company.name }}
+                    <span class="quiet" style="margin-left: 3px">({{ g.user.realname }})</span>
+                </h2>
+            </div>
+        </div>
+        <!--主体头部 end-->
+
+        <!--内容区左边块-->
+        <div class="window-main-col clearfix">
+        	<!--输入块-->
+            <form id="task_publish_form" name="task_publish_form" method="POST"/>
+            <div class="window-message">
+                <div class="message_block">
+                    <span></span>
+                    <textarea class="text_input" name="title" id="title"></textarea>
+                </div>
+                <input type="hidden" name="to_user_id" id="to_user_id"/>
+                <ul class="add_People" id="add_people">
+                    +分享给
+                </ul>
+                <div class="button_People clearfix">
+                    <input type="button" class="add_message primary confirm js-add-card" id="add_task_button" value="发 布" />
+                </div>
+            </div>
+            </form>
+            <!--输入块 end-->
+            
+        	<div class="window-module">
+                <div class="window-module-title">
+                    <span class="app-icon window-module-title-icon board-icon"></span>
+                    <h3> 我的工作列表&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('home.share') }}">查看分享给我的</a></h3>
+                </div>
+                <ul class="boards-list bold-list gutter js-list-boards" id="msg_list"> </ul>
+            </div>
+            
+            <div class="window-module">
+            	<a class="button-link gutter js-add-board" href="javascript:;" id="get_more_feed" name="{{ request.args.get('page',1) }}">
+                    <span class="app-icon small-icon board-icon"></span> 点击，查看更多
+                </a>
+            </div>
+        	
+        </div>
+        <!--内容区左边块 end-->
+        
+    </div>
+    
+</div>
+<!--主体块 end-->
+
+<!--弹出定位层-->
+<div class="pop-over clearfix fancy-scrollbar" id="pop_action">
+	<div class="pop-header clearfix">
+        <a class="back-btn js-back-view" href="#" style="display: none;">
+        	<span class="app-icon small-icon left-icon dark-hover"></span>
+        </a>
+        <span class="header-title">操作</span>
+        <a class="close-btn js-close-popover" href="#">
+        	<span class="app-icon small-icon close-icon dark-hover"></span>
+        </a>
+    </div>
+    <div class="pop-content clearfix">
+        <div>
+            <ul class="pop-over-list">
+                <li>
+                    <ul class="boards-pop-over-list"></ul>
+                </li>
+                <li>
+                    <a class="js-replay" href="javascript:;">回复</a>
+                </li>
+                <li>
+                    <a class="js-share" href="javascript:;">分享</a>
+                </li>
+                <hr>
+                <li>
+                    <a class="js-modify" href="javascript:;">修改</a>
+                </li>
+                <li>
+                    <a class="js-delete" href="javascript:;">删除</a>
+                </li>
+                <li>
+                    <a class="js-status-complete" href="javascript:;">改为完成</a>
+                </li>
+                <li>
+                    <a class="js-status-undone" href="javascript:;">改为未完成</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div><!--弹出定位层-->
+
+<!--回复的模板-->
+    <script id="comment_template_list" type="text/x-jquery-tmpl">
+        <div class="padd_7 rebody">
+            <h2>
+                <a href="">${realname}</a>
+                -<span>${created_at}</span>
+            </h2>
+            <p>${content}</p>
+        </div>
+    </script>
+<!--回复的模板 end-->
+    
+<!--回复的html start-->
+    <div id="comment" style="display:none;">
+        <div id="comment_list"> </div>
+        <form id="comment_form" name="comment_form">
+            <input type="text" name="comment_content" id="comment_content" /> 
+            <input type="button" value="回复" id="comment_save_button"/>
+        </form>
+    </div>
+<!--回复的html end-->
+
+<!--修改Form start-->
+<form method="POST" name="update_form" id="update_form" style="display:none;">
+    <div id="update_form_field"></div>
+    <input type="button" value="保存" id="update_save_button"/>
+</form>
+<!--修改Form end-->
+
+<!--start update_form_field_template-->
+<script id="update_form_field_template" type="text/x-jquery-tmpl" style="display:none;">
+    <textarea name="title">${title}</textarea>
+</script>
+<!--end update_form_field_template-->
+
+<script id="msgTemplate" type="text/x-jquery-tmpl">
+<li id="list${id}" >
+    <a class="clearfix link-item highlight-icon js-open-board" href="javascript:;" name="${id}" status="${status}">
+        {% raw %}
+        {{if status}}
+        <del><span class="item-name" id="title${id}"> ${title} </span></del>
+        {{else}}
+        <span class="item-name" id="title${id}"> ${title} </span>
+        {{/if}} 
+        {% endraw %}
+        <!--
+        <span class="app-icon small-icon permission-icon private-icon " title="">回复${comment_count}</span>
+        <span class="app-icon small-icon pin-icon" title=""></span>
+        -->
+        {% raw %} 
+        <span class="counts">
+        {{if share_users }} ${share_users} {{/if}}
+        {{if comment_count }} ${comment_count}回复&nbsp;&nbsp; {{/if}}
+        </span>
+        {% endraw %}
+        <span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
+    </a>
+</li>
+</script>
+
+<script src="{{ url_for('static', filename='js/libs/taghandler/js/jquery.taghandler.min.js') }}"></script>
+
+<script>
+    function split( val ) { 
+        return val.split( /,\s*/ );
+    }
+
+    function extractLast( term ) { 
+        return split( term ).pop();
+    }
+    
+    //var params = "{{ request.url.split('?')[-1] }}"
+    var url = '/home/getMyFeed';
+    getMyFeed(url)
+
+    $("#get_more_feed").click(function() {
+        var page = parseInt($(this).attr('name'))+1; 
+        var url = '/home/getMyFeed?page='+page;
+        getMyFeed(url)
+        $(this).attr('name', page);
+    });
+
+    function getMyFeed(url) {
+        $.getJSON(url, function(res){
+            $( "#msgTemplate" ).tmpl( res.data ).appendTo( "#msg_list" );
+        });  
+    }
+
+    $.getJSON('/company/get', function(res) {
+        $("#add_people").tagHandler({
+            availableTags: res.data,
+            autocomplete: true,
+            onAdd: function(name) {
+                var in_array = $.grep(res.data, function(a) { if(a.value==name) return true; else return false;});
+                if(in_array=='') return false;
+            },
+            afterAdd: function(name){
+                var id = '';
+                $.each(res.data, function() {
+                    if(this.value == name) 
+                    id = this.id
+                });
+                if(id) {
+                    var to_user_id = $("#to_user_id").val()  
+                    to_user_id = to_user_id.split( /,\s*/ );
+                    to_user_id.push(id);
+                    $("#to_user_id").val(to_user_id.join(",")) 
+                }
+            },
+            afterDelete: function(name) {
+                var id = '';
+                $.each( res.data, function() {
+                    if(this.value == name) 
+                    id = this.id
+                });
+                if(id) {
+                    var to_user_id = $("#to_user_id").val()  
+                    to_user_id = to_user_id.split( /,\s*/ );
+                    to_user_id = $.grep(to_user_id, function(a) { return a != id; });
+                    $("#to_user_id").val(to_user_id.join(",")) 
+                }
+            }
+        });  
+    });
+
+    //add_task_button提交任务按钮
+    $("#add_task_button").live('click',function() {
+        var title = $("#title").val();
+        if(!title) return false;
+        $.ajax({
+            type: 'POST',
+            data: $("#task_publish_form").serialize(),
+            url: "/home/publish",   
+            dataType: 'json',
+            success: function(data) {
+                $( "#msgTemplate" ).tmpl( data ).prependTo( "#msg_list" );
+                $("form").each(function(){ this.reset(); });
+            }
+        });
+        return false;
+    });
+
+    $(".people_listBlock ul li:even").addClass("alt");
+    /*
+    $(".add_People").toggle(function(){
+        $(".people_listBlock").show();
+        }, function(){
+        $(".people_listBlock").hide();
+    });
+    */	
+    $(".pop-over .pop-header .close-icon").click(function(){
+        $(".pop-over").hide();
+    });
+
+    $(".js-open-board").live('click',function(){
+        var win_width = $(window).width();
+        var mar_width = (win_width-690)/2;
+        var pos_left = mar_width+670;
+        var s_top = $(this).offset();
+        if(win_width <= (670+270+mar_width)){
+            $(".pop-over").css({top:s_top.top+"px", right:mar_width+"px"}).show();
+            } else {
+            $(".pop-over").css({top:s_top.top+"px", left:pos_left+"px"}).show();
+        }
+
+        var id = $(this).attr('name');
+        $("#pop_action").attr('name',id);
+
+        //根据状态来决定操作列表
+        var status = $(this).attr('status');
+        if(status=='0') {
+            $('.js-status-complete').show();
+            $('.js-status-undone').hide();
+            } else {
+            $('.js-status-complete').hide();
+            $('.js-status-undone').show();
+        }
+
+    });
+
+    $('.js-replay').click(function() {
+        var id = $("#pop_action").attr('name');
+        $("#comment_list").empty();
+        $.getJSON('/comment/get/'+id, function(res) {
+            $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list" );
+            $.fancybox({
+                //type: 'html',
+                content: $("#comment"),
+                width: '60%',
+                height: '40%',
+                //minWidth: '180px',
+                //autoSize: true,
+                afterClose: function() {
+                    $.getJSON('/task/get/'+id,function(res) {
+                        var html = $( "#msgTemplate" ).tmpl(res.row);
+                        $("#list"+id).replaceWith(html);
+                        $("#list"+id).effect("highlight", {}, 3000);
+                        $(".pop-over").hide();
+                    });
+                    //$("#list"+id).effect("highlight", {}, 3000);
+                    $("#comment_save_button").unbind('click');
+                }
+            });
+        }); 
+        $("#comment_save_button").click(function() {
+            var task_id = $("#pop_action").attr('name');
+            var comment_content = $("#comment_content").val();
+            if(comment_content) {
+                var form = $('#comment_form')
+                $.ajax({
+                    type: "POST",
+                    data: form.serialize(),
+                    url: "/comment/create/"+task_id,
+                    dataType: "json",
+                    success: function(data) {
+                        $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list" );
+                        form.each(function(){ this.reset(); });
+                        $(".pop-over").hide();
+                    }
+                }); 
+            }
+        });
+    });
+
+    $(".js-share").click(function() {
+        var id = $("#pop_action").attr('name');
+        $.fancybox({
+            type: 'iframe',
+            href: '/task/update_share/'+id,
+            afterClose: function() {
+                $.getJSON('/task/get/'+id,function(res) {
+                    var html = $( "#msgTemplate" ).tmpl(res.row);
+                    $("#list"+id).replaceWith(html);
+                    $("#list"+id).effect("highlight", {}, 3000);
+                    $(".pop-over").hide();
+                });
+            }
+        });
+    });
+
+    $(".js-modify").click(function() {
+        var id = $("#pop_action").attr('name');
+        $("#update_form_field").empty();
+        $.getJSON('/task/get/'+id, function(res) {
+            $( "#update_form_field_template" ).tmpl( res.row ).appendTo( "#update_form_field" );
+            $.fancybox({
+                content: $("#update_form"),
+                width: '60%',
+                height: '40%',
+                afterClose: function() {
+                    //$("#list"+id).effect("highlight", {}, 3000);
+                    $("#update_save_button").unbind('click');
+                }
+            });
+
+            $("#update_save_button").click(function() {
+                var task_id = $("#pop_action").attr('name');
+                var form = $('#update_form')
+                $.ajax({
+                    type: "POST",
+                    data: form.serialize(),
+                    url: "/task/update/"+task_id,
+                    dataType: "json",
+                    success: function(data) {
+                        $(".pop-over").hide();
+                        $.fancybox.close();
+                        $("#title"+task_id).text(data.title)
+                        $("#list"+task_id).effect("highlight", {}, 3000);
+                    }
+                }); 
+            });
+        });
+    });
+
+    $(".js-delete").click(function() {
+        if(confirm('确定要删除这条记录'))  
+        {
+            var id = $("#pop_action").attr('name');
+            if(id) {
+                $.getJSON('/task/delete/'+id, function(res) {
+                    $("#list"+res.id).remove();
+                    $(".pop-over").hide();
+                });
+            }
+        }
+    });
+
+    $(".js-status-complete").click(function() {
+        var task_id = $("#pop_action").attr('name');
+        if(task_id) {
+            $.ajax({
+                type: "POST",
+                data: {'status': '1'},
+                url: "/task/update/"+task_id,
+                dataType: "json",
+                success: function(data) {
+                    if(data.error) return false;
+                    $("#title"+task_id).wrap("<del/>")
+                        $("#list"+task_id).effect("highlight", {}, 3000);
+                        $("#list"+task_id+" a").attr('status', 1);
+                        $(".pop-over").hide();
+                    }
+                }); 
+            }
+        });
+        $(".js-status-undone").click(function() {
+            var task_id = $("#pop_action").attr('name');
+            if(task_id) {
+                $.ajax({
+                    type: "POST",
+                    data: {'status': '0'},
+                    url: "/task/update/"+task_id,
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.error) return false;
+                        $('#title'+task_id).unwrap(); 
+                        $("#list"+task_id).effect("highlight", {}, 3000);
+                        $("#list"+task_id+" a").attr('status', 0);
+                        $(".pop-over").hide();
+                    }
+                }); 
+            }
+        });
+    </script>
+    {% endblock %}

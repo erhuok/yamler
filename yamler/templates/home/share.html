@@ -1,0 +1,192 @@
+{% extends "layout_board.html" %}
+{% block content %}
+{% for key in task_data recursive %}
+<!--第二块-->
+<div class="list active-list" id="list{{ key }}">
+    <div class="list-header clearfix">
+        <span class="app-icon small-icon list-icon"></span>
+        <div class="list-title non-empty clearfix editable" attr="name">
+            <h2 class="hide-on-edit current "> {{ user_data[key] }}</h2>
+            <p class="num-cards"></p>
+            <div class="edit edit-heavy clearfix">
+                <textarea class="field single-line" type="text"></textarea>
+            </div>
+            <a class="app-icon small-icon dark-hover menu-icon js-open-list-menu" href="#"></a>
+        </div>
+    </div>
+    <div class="list-card-area">
+        <div class="list-gradient-top"></div>
+        <div class="list-gradient-bottom"></div>
+        <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" >
+            {% for data in task_data[key] %}
+            <div class="list-card clearfix ui-droppable" id="list{{ data.id }}">
+                <div class="card-labels clearfix"></div>
+                <span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>
+                <a class="list-card-title clear" href="javascript:;">
+                    <span class="card-short-id hide">#{{ data.id }} </span>
+                    {% if data.status %}
+                        <span class="complete">{{ data.title }}</span>
+                    {% else %}
+                        {{ data.title }}
+                    {% endif %}
+                </a>
+                <div class="badges"></div>
+                <div class="list-card-members"></div>
+            </div>
+            {% endfor %}
+        </div>
+        <!--添加消息块-->
+        <!--
+        <div class="card-composer">
+            <div class="list-card js-composer" style="padding-bottom: 0px;">
+                <div class="card-labels clearfix"></div>
+                <textarea class="js-card-title"></textarea>
+                <div class="list-card-members"></div>
+            </div>
+            <div class="cc-controls clearfix">
+                <input class="primary confirm js-add-card" type="submit" value="Add">
+                <a class="app-icon close-icon dark-hover cancel js-cancel" href="#"></a>
+                <a class="cc-opt app-icon dark-hover menu-icon js-cc-menu" href="#"></a>
+            </div>
+        </div>
+        -->
+        <!--添加消息块 end-->
+
+    </div>
+    <!-- <a class="open-card-composer js-open-card-composer" href="#">Add a card...</a>-->
+</div>
+<!--第二块 end-->
+{% endfor %}
+
+<!--回复的模板-->
+    <script id="comment_template_list" type="text/x-jquery-tmpl">
+        <div class="padd_7 rebody">
+            <h2>
+                <a href="">${realname}</a>
+                -<span>${created_at}</span>
+            </h2>
+            <p>${content}</p>
+        </div>
+    </script>
+<!--回复的模板 end-->
+    
+<!--回复的html start-->
+    <div id="comment" style="display:none;">
+        <div id="comment_list"> </div>
+        <form id="comment_form" name="comment_form">
+            <input type="text" name="comment_content" id="comment_content" /> 
+            <input type="button" value="回复" id="comment_save_button"/>
+        </form>
+    </div>
+<!--回复的html end-->
+
+<script>
+    $('.js-replay').click(function() {
+        var id = $(this).attr('name');
+        $("#comment_list").empty();
+        $.getJSON('/comment/get/'+id, function(res) {
+            $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list" );
+            $.fancybox({
+                //type: 'html',
+                content: $("#comment"),
+                width: '60%',
+                height: '40%',
+                //minWidth: '180px',
+                //autoSize: true,
+                afterClose: function() {
+                    /*
+                    $.getJSON('/task/get/'+id,function(res) {
+                        var html = $( "#msgTemplate" ).tmpl(res.row);
+                        $("#list"+id).replaceWith(html);
+                        $("#list"+id).effect("highlight", {}, 3000);
+                    });
+                    */
+                    $("#list"+id).effect("highlight", {}, 3000);
+                    $("#comment_save_button").unbind('click');
+                }
+            });
+        }); 
+        
+        $("#comment_save_button").click(function() {
+            var task_id = id;
+            var comment_content = $("#comment_content").val();
+            if(comment_content) {
+                var form = $('#comment_form')
+                $.ajax({
+                    type: "POST",
+                    data: form.serialize(),
+                    url: "/comment/create/"+task_id,
+                    dataType: "json",
+                    success: function(data) {
+                        $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list" );
+                        form.each(function(){ this.reset(); });
+                    }
+                }); 
+            }
+        });
+    });
+
+
+
+</script>
+
+
+{% endblock %}
+
+{% block sidebar %}
+<div class="master-board-widget-menu">
+    <span class="app-icon small-icon dark-hover menu-icon js-show-all-widgets" ></span>
+</div>
+<!--人员列表-->
+<div class="board-widget board-widget-actions bottom clearfix">
+    <div class="board-widget-title">
+        <h3 class="inline-block">分享的用户</h3>
+        <!--
+        <a class="quiet js-view-all-activity-header" href="#" style="margin-left: 3px;display:none;"  id="share_save_success">保存成功</a>
+        <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis"></span>
+        -->
+    </div>
+    <div class="board-widget-content">
+        <div class="activity-gradient-t"></div>
+        <div class="activity-gradient-b"></div>
+        <div class="board-actions-list fancy-scrollbar" >
+            <div class="js-sidebar-list-actions">
+                <form method="POST" name="share_users_form" id="share_users_form">
+                    <p>
+                    <!--
+                    <a class="button-link js-open-manage-board-members" href="javascript:;" id="share_users_save_button"> <span class="app-icon small-icon member-icon"></span> 保存</a>
+                    -->
+                    </p>
+                    <!--循环体-->
+                    {% for key in user_data %}
+                    <div class="phenom clearfix">
+                        <div class="member js-show-mem-menu">
+                            <span class="member-initials" title="{{ user_data[key] }}"> </span>
+                        </div>
+                        <div class="phenom-desc">
+                            <a class="inline-object js-show-mem-menu" href="#list{{ key }}">{{ user_data[key] }}</a>
+                        </div>
+                        <!--
+                        <p class="phenom-meta quiet">
+                        <span class="date" dt="2012-06-04T06:53:49.298Z" title="2012年6月4日 14:53:21">19 hours ago</span>
+                        </p>
+                        -->
+                    </div>
+                    {% endfor %}
+                    <!--循环体 end-->
+                </form>
+
+            </div>
+            <!--
+            <a class="show-more js-view-all-activity-list" href="#"> View all… </a>
+            <a class="js-allow-notifications quiet" style="padding: 0pt 0pt 0pt 40px; font-weight: bold; display: none;" href="#"> Allow Notifications </a>
+            -->
+        </div>
+    </div>
+
+</div>
+<!--人员列表 end-->
+
+{% endblock %}
+
+

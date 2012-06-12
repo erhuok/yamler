@@ -20,6 +20,7 @@ def create():
         return jsonify(error=0, title=request.form['title'], realname=g.user.realname, id=res.inserted_primary_key)
     return jsonify(error=1, msg="没有内容")
 
+'''
 @mod.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
     if request.method == 'POST':
@@ -29,47 +30,49 @@ def update(id):
     row = dict(row)
     return render_template('task/update.html', row=row) 
     #return render_template('task/update.html', row=row, data_users=json.dumps(data_users), share_users_default=json.dumps(row['share_users'])) 
+'''
 
-
-@mod.route('/update_status', methods=['POST'])
-def update_status():
-    if request.form.has_key('id') and request.form.has_key('status'):
-        id = int(request.form['id'].strip('list')) 
-        if request.form['status'] == 'todo_list':
-            status = 0
-        elif request.form['status'] == 'doing_list':
-            status = 2
-        elif request.form['status'] == 'done_list':
-            status = 1
-        if id and status is not None:
-            g.db.execute(text("UPDATE tasks SET status=:status WHERE id=:id"), id=id, status=status)
-            return jsonify(error=0)
+@mod.route('/update/<int:id>', methods=['POST'])
+def update(id):
+    if request.form.has_key('title'):
+        g.db.execute(text("UPDATE tasks SET title=:title WHERE id=:id"), id=id, title=request.form['title'])
+        return jsonify(error=0, title=request.form['title'], id=id)
+    if request.form.has_key('status'):
+        g.db.execute(text("UPDATE tasks SET status=:status WHERE id=:id"), id=id, status=request.form['status'])
+        return jsonify(error=0)
     return jsonify(error=1)
 
-@mod.route('/share/<int:id>')
-def share():
-    return render_template('task/share')
+@mod.route('/update_share/<int:id>', methods=['POST', 'GET'])
+def share(id):
+    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE id=:id"), id=id).first()
+    if request.method == 'POST' and row and request.form['to_user_id']:
+        res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
+        return jsonify(error=0) 
+    share_users = dict()
+    if row.to_user_id:
+        sql = "SELECT id, realname FROM users WHERE ID IN ({0})".format(','.join(row.to_user_id.split(',')))
+        user_rows = g.db.execute(text(sql)).fetchall()
+        share_users = dict(user_rows)
+
+    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id"), company_id=g.company.id).fetchall()
+    data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
+    return render_template('task/update_share.html', 
+                           row=row, 
+                           share_users_default=json.dumps(share_users.values()),
+                           data_users = json.dumps(data_users),
+                          )
 
 
 @mod.route('/get/<int:id>')
 def get(id):
-    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status,comment_count FROM tasks WHERE id=:id"), id=id).first()
     row = dict(row)
     row['share_users'] = ''
     if row and row.has_key('to_user_id') and row['to_user_id']:
-        if row['to_user_id']:
-            sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ("
-            to_ids = ''
-            for s in row['to_user_id'].split(','):
-                if s:
-                    to_ids += s.strip()+','
-                    to_ids = to_ids.rstrip(',')
-                    if to_ids != '0':
-                        sql += to_ids
-                        sql += ")" 
-                        result = g.db.execute(text(sql)).first()
-                        row['share_users'] = result['share_users']
-                        return jsonify(row=row)
+        sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(row['to_user_id'].lstrip(',').split(','))) 
+        result = g.db.execute(text(sql)).first()
+        row['share_users'] = result['share_users']
+    return jsonify(row=row)
 
 @mod.route('/delete/<int:id>')
 def delete(id):

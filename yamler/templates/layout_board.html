@@ -6,6 +6,7 @@
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/content_style.css') }}"/>
+<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='css/ui/jquery.ui.all.css') }}"/>
 <script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.all.min.js') }}"></script>
@@ -16,7 +17,66 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/fancybox/helpers/jquery.fancybox-buttons.css') }}" />
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/fancybox/helpers/jquery.fancybox-buttons.js') }}"></script>
 <script>
-
+	$(function() {
+		//拖动控制
+		$(".ui-sortable").sortable({
+			connectWith: '.js-sortable',
+			placeholder: 'js-member-droppable'
+		});
+		
+		$(".ui-sortable").disableSelection();
+		
+		//添加消息控制
+		$(".open-card-composer").live('click',function(){
+			$(this).prev().children(".card-composer").show();
+			$(this).prev().children(".card-composer").children(".list-card").children("textarea").focus();
+		});
+		
+		$(".close-icon").live('click',function(){
+			$(this).parent().parent().hide();
+		});
+		
+		$(".list-card").live('mouseover', function(){
+			$(this).addClass("active-card");
+		})
+		$(".list-card").live('mouseout',function(){
+			$(this).removeClass("active-card");
+		})
+		
+		function re_height(){
+			var w_height = $(window).height();
+			var b_height = w_height-(78+26);
+			var w_width = $(window).width();
+			var con_width = w_width-265;
+			var list_count = $(".list").length;
+			var list_countWidth = 320*list_count;
+			
+			$("#board").css({height:b_height+"px",width:con_width+"px"});
+			$(".list-area-wrapper").css({height:"100%",width:con_width+"px"});
+			if(list_countWidth > con_width){
+				$(".list-area-wrapper").css("overflow-x","scroll");
+			}else{
+				$(".list-area-wrapper").css("overflow","hidden");	
+			}
+			$(".list-area").css("width",list_countWidth+"px");
+		}
+		
+		$(window).load(function(){
+			re_height();
+		});
+		$(window).resize(function(){
+			re_height();
+		});
+		
+	});
+	
+	
+	$(window).scroll(function(){
+		var ws_top = $(window).scrollTop();
+		var ws_height = $(window).height();
+		var b_height = ws_height-(78+26)+ws_top;
+		$("#board").css("height",b_height+"px");
+	})
 </script>
 
 
@@ -24,12 +84,13 @@
 
 <body class="page-index firefox firefox-12 windows extra-large-window full-content">
 <!--头部-->
-<div class="header">
-	<a class="header-btn head_logo" href="javascript:;">
-    	<span class="app-icon logo">Trello</span>
+<div id="header">
+    <a class="header-btn head_logo" href="{{ url_for('home.account') }}">
+    	<span class="app-icon logo">Justdo</span>
     </a>
     
     <div id="header-search">
+        <!--
         <form>
             <label for="search-text">Global Search</label>
             <input id="search-text" type="text" spellcheck="false" autocorrect="off" autocomplete="off">
@@ -38,27 +99,29 @@
             <span class="app-icon light search-icon"></span>
             </a>
         </form>
+        -->
     </div>
     <div class="header-user">
-    	<a class="header-btn header-notifications js-open-header-notifications-menu" href="#">
+        <a class="header-btn header-notifications js-open-header-notifications-menu" href="{{ url_for('home.account') }}">
         	<span class="app-icon light notification-icon"></span>
-            <span class="header-btn-text">Notifications</span>
-            <span class="count js-unread-note-count"></span>
+            <span class="header-btn-text">我的工作列表</span>
         </a>
-        <a class="header-btn header-boards js-open-header-boards-menu" href="#">
+        <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('home.share') }}">
         	<span class="app-icon light board-icon"></span>
-			<span class="header-btn-text">Boards</span>
+			<span class="header-btn-text">分享给我的</span>
         </a>
         <a class="header-auth member js-open-header-member-menu" href="#">
         	<span class="member-initials" title="tanxiao (tanxiao)"> T</span>
         </a>
     </div>
+    <!--
     <div>
         <a class="header-btn header-about" title="Information" href="#">
             <span class="app-icon light manual-icon"></span>
             <span class="count js-unread-announcements" style="">1</span>
         </a>
     </div>
+    -->
 </div>
 <!--头部 end-->
 
@@ -67,29 +130,160 @@
 	
 	<div class="board-wrapper">
     	<!--主体头部-->
-        {% block content_top %}
-        {% endblock %}
+    	<div id="board-header" class="clearfix">
+        	<a class="app-icon dark-hover board-icon js-open-board-menu-icon"></a>
+            <div class="board-title">
+                <h2>
+                	<a class="js-board-title js-open-board-menu-title" href="#">我的第一个任务</a>
+                </h2>
+                <h4 class="quiet org-name"></h4>
+                <div id="permission-level">
+                	<span class="app-icon small-icon public-status private-icon" title=""></span>
+                </div>
+                <div class="desc-btn js-open-desc">
+                	<span class="app-icon small-icon edit-icon dark-hover"></span>
+                </div>
+            </div>
+        </div>
         <!--主体头部 end-->
         
         <!--右边导航区-->
+        <div class="board-widgets">
         {% block sidebar %}
-       
-        {% endblock %}
+        	<div class="master-board-widget-menu">
+            	<span class="app-icon small-icon dark-hover menu-icon js-show-all-widgets" ></span>
+            </div>
+            <!--添加模版-->
+            <div class="board-widget clearfix">
+            	<div class="board-widget-title">
+                    <h3>Members</h3>
+                    <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis" ></span>
+                </div>
+                <div class="board-widget-content">
+                    <div class="board-widget-members js-list-board-members assignable-members clearfix">
+                        <div class="member ui-draggable">
+                            <span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+                            <span class="status idle" title="This member is idle. They have Trello open but are not looking at it."></span>
+                            <span class="admin" title="This member is an admin of this board."></span>
+                        </div>
+                    </div>
+                    <a class="button-link js-open-manage-board-members" href="#">
+                        <span class="app-icon small-icon member-icon"></span>
+                        Add Members…
+                    </a>
+                </div>
+            </div>
+            <!--添加模版 end-->
+            
+            <!--面板块-->
+            <div class="board-widget clearfix">
+            	<div class="board-widget-title">
+                    <h3>Board</h3>
+                    <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis" ></span>
+                </div>
+                <div class="board-widget-content">
+                	<a class="button-link js-open-board-menu-sidebar" href="#">
+                        <span class="app-icon small-icon board-icon"></span>
+                        	Options
+                        <span class="app-icon small-icon menu-icon" style="position: absolute; top: 6px; right: 6px;"></span>
+                    </a>
+                    <a class="button-link js-add-list-popover">
+                        <span class="app-icon small-icon list-icon"></span>
+                        Add List
+                    </a>
+                    <a class="button-link js-filter-cards">
+                        <span class="app-icon small-icon card-icon"></span>
+                        Search and Filter Cards
+                        <span class="on">ON</span>
+                    </a>
+                </div>
+            </div>
+            <!--面板块 end-->
+            
+            <!--任务列表-->
+            <div class="board-widget board-widget-actions bottom clearfix">
+            	<div class="board-widget-title">
+                    <h3 class="inline-block">Activity</h3>
+                    <a class="quiet js-view-all-activity-header" href="#" style="margin-left: 3px;"> View all… </a>
+                    <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis"></span>
+                </div>
+                <div class="board-widget-content">
+                    <div class="activity-gradient-t"></div>
+                    <div class="activity-gradient-b"></div>
+                    <div class="board-actions-list fancy-scrollbar" >
+                        <div class="js-sidebar-list-actions">
+                        
+                        	<!--循环体-->
+                            <div class="phenom clearfix">
+                                <div class="member js-show-mem-menu">
+                                    <span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+                                </div>
+                                <div class="phenom-desc">
+                                    <a class="inline-object js-show-mem-menu" href="#">tanxiao</a>
+                                    added List to this board.
+                                </div>
+                                <p class="phenom-meta quiet">
+                                    <span class="date" dt="2012-06-04T06:53:49.298Z" title="2012年6月4日 14:53:21">19 hours ago</span>
+                                </p>
+                            </div>
+                            <div class="phenom clearfix">
+                                <div class="member js-show-mem-menu">
+                                    <span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+                                </div>
+                                <div class="phenom-desc">
+                                    <a class="inline-object js-show-mem-menu" href="#">tanxiao</a>
+                                    added
+                                    <a class="inline-object action-card" href="/card/-/4fcc5a9a65a2c09603988b58/3">搜短租周边设计完成</a>
+                                    to Done.
+                                </div>
+                                <p class="phenom-meta quiet">
+                                    <span class="date" dt="2012-06-04T06:53:23.796Z" title="2012年6月4日 14:52:56">19 hours ago</span>
+                                </p>
+                            </div>
+                            <div class="phenom clearfix">
+                                <div class="member js-show-mem-menu">
+                                    <span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+                                </div>
+                                <div class="phenom-desc">
+                                    <a class="inline-object js-show-mem-menu" href="#">tanxiao</a>
+                                    added
+                                    <a class="inline-object action-card" href="/card/trllo/4fcc5a9a65a2c09603988b58/2">研究Trllo网站效果</a>
+                                    to To Do and moved from To Do to Doing.
+                                </div>
+                                <p class="phenom-meta quiet">
+                                    <span class="date" dt="2012-06-04T06:51:43.904Z" title="2012年6月4日 14:51:16">19 hours ago</span>
+                                </p>
+                            </div>
+                            <!--循环体 end-->
+                        
+                        </div>
+                        <a class="show-more js-view-all-activity-list" href="#"> View all… </a>
+                        <a class="js-allow-notifications quiet" style="padding: 0pt 0pt 0pt 40px; font-weight: bold; display: none;" href="#"> Allow Notifications </a>
+                    </div>
+                </div>
+                
+            </div>
+            <!--任务列表 end-->
+            
+            {% endblock %} 
+            
+        </div>
         <!--右边导航区 end-->
         
         <!--模板展示区-->
         <div id="board" class="clearfix disabled-list-guide">
-        	<div class="list-area-wrapper fancy-scrollbar" style="margin-top: 0pt; height: 500px;">
-            	<div class="list-area js-list-sortable no-edits ui-sortable" style="width: 1172px;">
-                {% block content %}
-                {% endblock %} 
+        	<div class="list-area-wrapper fancy-scrollbar" style="margin-top: 0pt;">
+            	<div class="list-area js-list-sortable no-edits ui-sortable" >
+                    {% block content %} {% endblock %} 
                 </div>
             </div>
         </div>
         <!--模板展示区 end-->
+        
     </div>
 </div>
 <!--主体区 end-->
+
+
 </body>
 </html>
-

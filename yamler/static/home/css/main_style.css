@@ -24,6 +24,15 @@ h2 {
     line-height: 22px;
     margin-bottom: 9px;
 }
+hr {
+    background: none repeat scroll 0 0 #DCDCDC;
+    border: medium none;
+    color: #DCDCDC;
+    height: 1px;
+    margin: 15px 0;
+    padding: 0;
+    width: 100%;
+}
 p {
     margin-bottom: 8px;
 }
@@ -108,7 +117,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     background-position: -630px -30px;
 }
 /**********************头部样式*****************************/
-.header{
+#header{
 	/*background: -moz-linear-gradient(center top , #23658B 0%, #1C506E 100%) repeat scroll 0 0 transparent;*/
 	background: -moz-linear-gradient(center top , #e45319 0%, #c84415 100%) repeat scroll 0 0 transparent;
     height: 30px;
@@ -116,8 +125,8 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     padding: 5px 8px;
     position: relative;
 	}
-.header a, .header a:visited{ color:#fff;}
-.header a:hover{ text-decoration:none;}
+#header a, #header a:visited{ color:#fff;}
+#header a:hover{ text-decoration:none;}
 .header-btn {
     border-radius: 3px 3px 3px 3px;
     color: #E3E3E3;
@@ -237,6 +246,39 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .window-header { margin: 4px 40px; padding: 12px 12px 0; position: relative;}
 .member-icon { background-position: -30px -30px;}
 .window-header .app-icon.window-header-icon { left: -28px; position: absolute; top: 8px;}
+
+
+/*输入块*/
+.window-message{
+	margin: 0 0 6px 40px;
+	}
+.window-message .message_block{ position:relative;}
+.message_block span{  
+	background: url("../images/index_img/Icon_msg_text01.png") no-repeat scroll 0 0 transparent;
+    display: block;
+    height: 7px;
+    left: 20px;
+    position: absolute;
+    top: -6px;
+    width: 12px;
+    z-index: 2; 
+	}
+.message_block textarea, .add_People, .people_listBlock{ border:1px solid #cecece; background-color:#fff; 
+	overflow:hidden; border-radius: 3px 3px 3px 3px; padding:6px;}
+.message_block textarea{ height:50px;}
+.add_People{ margin-top:8px; min-height:15px; /* display:none;*/ padding:10px 6px; border-bottom-left-radius:0; border-bottom-right-radius:0; cursor:pointer;}
+.button_People{ /*display:none;*/ margin-top:8px;}
+.button_People .add_message{ display:inline-block; float:right; margin-top: 2px; padding: 5px 18px;}
+.people_listBlock{ border-top:0; border-top-left-radius:0; border-top-right-radius:0; background-color:#f8f8f8; padding:0;  display:none;}
+.people_listBlock ul{}
+.people_listBlock ul li{ /*float:left; width:31%;*/ padding:1px; border-bottom:1px solid #ccc; background-color:#fff; /*margin-left:5px;*/}
+.people_listBlock ul li.alt{ background-color:#fafafa;}
+.people_listBlock ul li.last{ border:0;}
+.people_listBlock ul li a{ display:block; padding:5px 12px; border-radius:3px;}
+.people_listBlock ul li a:hover{ text-decoration:none;}
+/*输入块 end*/
+
+
 .window-main-col {
     float: left;
     margin: 0;
@@ -244,7 +286,8 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     overflow-x: hidden;
     overflow-y: auto;
     padding: 6px 12px 12px;
-    width: 472px;
+    /*width: 472px;*/
+	width:100%;
 }
 .window-module { clear: both; margin-bottom: 16px; position: relative;}
 
@@ -280,7 +323,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     overflow: hidden;
     visibility: hidden;
 }
-.bold-list li a:hover{ color:#fff; background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;}
+.bold-list li a:hover, .people_listBlock ul li a:hover{ 
+	color:#fff; 
+	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
+	}
 .bold-list.boards-list li a.link-item { padding-right: 83px;}
 .bold-list li .link-item { padding: 5px 10px;}
 .bold-list li a { border-radius: 3px 3px 3px 3px; display: block; padding-right: 80px; position: relative; text-decoration: none;}
@@ -419,6 +465,80 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 
 
 
+/**************弹窗样式***************/
+.pop-over {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #B9B9B9;
+    border-radius: 3px 3px 3px 3px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 8px;
+    position: absolute;
+    right: -9999px;
+    top: -9999px;
+    width: 270px;
+    z-index: 20;
+}
+
+.pop-over .pop-header {
+    border-bottom: 1px solid #DCDCDC;
+    height: 26px;
+    margin-bottom: 6px;
+    position: relative;
+    text-align: center;
+}
+.pop-over .header .back-btn {
+    display: none;
+    left: 0;
+    padding: 2px;
+    position: absolute;
+    top: 0;
+}
+.app-icon.dark-hover {
+    cursor: pointer;
+}
+.small-icon.left-icon {
+    background-position: -486px -108px;
+}
+.pop-over .pop-header .header-title {
+    color: #939393;
+    display: block;
+    font-weight: bold;
+    line-height: 21px;
+    overflow: hidden;
+    padding: 0 24px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 220px;
+}
+.pop-over .pop-header .close-btn {
+    padding: 2px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.small-icon.close-icon {
+    background-position: -378px -108px;
+}
+.pop-content{
+	width:100%;}
+
+.pop-over-list li > a {
+    cursor: pointer;
+    display: block;
+    font-weight: bold;
+    margin: 0 -9px;
+    padding: 6px 10px;
+    position: relative;
+    text-decoration: none;
+}
+.pop-over hr {
+    margin: 6px 0;
+}
+
+/**************弹窗样式 end***************/
 
 
 

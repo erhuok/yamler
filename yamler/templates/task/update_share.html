@@ -1,0 +1,67 @@
+<form method="POST" action="/task/update_share/{{ row.id }}" id="update_share_form">
+   <label for="">分享给</label>
+   <input type="hidden" name="to_user_id" id="to_user_id" value="{{ row.to_user_id }}"/>
+   <ul id="share_users"></ul>
+   
+   <input type="button" id="save_button" value="保存"/> <span id="success" style="display:none;">修改成功</span>
+</form> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/taghandler/css/jquery.taghandler.css') }}" />
+    <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='css/ui/jquery.ui.all.css') }}"/>
+    <script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.core.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.widget.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.position.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.autocomplete.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/taghandler/js/jquery.taghandler.min.js') }}"></script>
+    <script>
+        $("#save_button").click(function() {
+            $.ajax({
+                type: 'POST',
+                data: $("#update_share_form").serialize(),
+                url: "/task/update_share/{{ row.id|safe }}",   
+                dataType: 'json',
+                success: function(data) {
+                    $("#success").show();
+                    //$("#success").effect("highlight", {}, 3000);
+                    //$( "#msgTemplate" ).tmpl( data ).prependTo( "#msg_list" );
+                    //$("form").each(function(){ this.reset(); });
+                }
+            }); 
+        });
+        $("#share_users").tagHandler({
+            assignedTags: {{ share_users_default|safe }},
+            availableTags: {{ data_users|safe }},
+            autocomplete: true,
+            onAdd: function(name) {
+                var in_array = $.grep({{ data_users|safe }}, function(a) { if(a.value==name) return true; else return false;});
+                if(in_array=='') return false;
+            },
+            afterAdd: function(name){
+                var id = '';
+                $.each({{ data_users|safe }}, function() {
+                    if(this.value == name) 
+                        id = this.id
+                });
+                if(id) {
+                    var to_user_id = $("#to_user_id").val()  
+                    to_user_id = to_user_id.split( /,\s*/ );
+                    to_user_id.push(id);
+                    $("#to_user_id").val(to_user_id.join(",")) 
+                }
+            },
+            afterDelete: function(name) {
+                var id = '';
+                $.each({{ data_users|safe }}, function() {
+                    if(this.value == name) 
+                        id = this.id
+                });
+                if(id) {
+                    var to_user_id = $("#to_user_id").val()  
+                    to_user_id = to_user_id.split( /,\s*/ );
+                    to_user_id = $.grep(to_user_id, function(a) { return a != id; });
+                    $("#to_user_id").val(to_user_id.join(",")) 
+                }
+            }
+        });  
+
+    </script>
