@@ -148,13 +148,15 @@
         <span class="app-icon small-icon permission-icon private-icon " title="">回复${comment_count}</span>
         <span class="app-icon small-icon pin-icon" title=""></span>
         -->
+		<span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
+		<div class="clear"></div>
         {% raw %} 
         <span class="counts">
         {{if share_users }} ${share_users} {{/if}}
         {{if comment_count }} ${comment_count}回复&nbsp;&nbsp; {{/if}}
         </span>
         {% endraw %}
-        <span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
+        <div class="clear"></div>
     </a>
 </li>
 </script>
@@ -180,6 +182,7 @@
         getMyFeed(url)
         $(this).attr('name', page);
     });
+	
 
     function getMyFeed(url) {
         $.getJSON(url, function(res){
@@ -252,13 +255,17 @@
     $(".pop-over .pop-header .close-icon").click(function(){
         $(".pop-over").hide();
     });
+	$(".boards-list li a").live('click',function(){
+		$(this).addClass("current");
+		$(".boards-list li a").not($(this)).removeClass("current");
+	})
 
     $(".js-open-board").live('click',function(){
         var win_width = $(window).width();
         var mar_width = (win_width-690)/2;
         var pos_left = mar_width+670;
         var s_top = $(this).offset();
-        if(win_width <= (670+270+mar_width)){
+        if(win_width <= (670+120+mar_width)){
             $(".pop-over").css({top:s_top.top+"px", right:mar_width+"px"}).show();
             } else {
             $(".pop-over").css({top:s_top.top+"px", left:pos_left+"px"}).show();
@@ -287,8 +294,9 @@
             $.fancybox({
                 //type: 'html',
                 content: $("#comment"),
-                width: '60%',
-                height: '40%',
+				autoSize: false,
+                width: '250px',
+                height: 'auto',
                 //minWidth: '180px',
                 //autoSize: true,
                 afterClose: function() {
@@ -326,6 +334,9 @@
     $(".js-share").click(function() {
         var id = $("#pop_action").attr('name');
         $.fancybox({
+			autoSize: false,
+			width: '400px',
+			height: 'auto',
             type: 'iframe',
             href: '/task/update_share/'+id,
             afterClose: function() {

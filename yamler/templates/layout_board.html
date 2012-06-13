@@ -19,12 +19,12 @@
 <script>
 	$(function() {
 		//拖动控制
-		$(".ui-sortable").sortable({
+		/*$(".ui-sortable").sortable({
 			connectWith: '.js-sortable',
 			placeholder: 'js-member-droppable'
 		});
 		
-		$(".ui-sortable").disableSelection();
+		$(".ui-sortable").disableSelection();*/
 		
 		//添加消息控制
 		$(".open-card-composer").live('click',function(){
@@ -43,8 +43,9 @@
 			$(this).removeClass("active-card");
 		})
 		
+		
 		function re_height(){
-			var w_height = $(window).height();
+			var w_height = $(document).height();
 			var b_height = w_height-(78+26);
 			var w_width = $(window).width();
 			var con_width = w_width-265;

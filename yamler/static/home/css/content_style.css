@@ -14,7 +14,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 .board-title h4:empty { display: none;}
 .board-title #permission-level { cursor: default; float: left; margin-top: 6px;}
 .board-title .desc-btn { border-radius: 3px 3px 3px 3px; cursor: default; float: left; height: 30px; width: 30px;}
-.board-title .desc-btn .app-icon { background-clip: content-box; background-origin: content-box; padding: 6px;}
+.board-title .desc-btn .app-icon { background-clip: content-box; background-origin: content-box; padding: 6px; *+width:10px; *+height:10px; *+margin-top:6px;}
 .list-icon { background-position: -90px -30px;}
 
 /*******************导航展示区***********************/
@@ -81,9 +81,9 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 .bottom { margin-bottom: 0; padding-bottom: 0;}
 .inline-block { display: inline-block;}
 .board-actions-list { overflow-x: hidden; overflow-y: auto; padding: 0 8px 0 0;}
-.phenom { border-bottom: 1px solid #DCDCDC; padding: 8px 0 8px 40px; position: relative;}
+.phenom { border-bottom: 1px solid #DCDCDC; padding: 8px 0 8px 10px; position: relative;}
 .phenom:first-child { margin-top: -8px;}
-.phenom .member { left: 0; position: absolute; top: 10px;}
+.phenom .member { /*left: 0; position: absolute; top: 10px; */ margin-right:5px;}
 .member .member-initials {
     display: block;
     font-size: 12px;
@@ -188,10 +188,12 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     cursor: pointer;
     margin-bottom: 4px;
     min-height: 18px;
+	height:18px\9;
     padding: 6px 8px 1px;
     position: relative;
     z-index: 0;
 }
+.list-card.js-composer{ height:auto;}
 .js-member-droppable{
 	border-radius: 3px 3px 3px 3px;
 	border:1px solid #ccc;
@@ -218,6 +220,8 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     background-origin: content-box;
     padding: 5px;
     position: absolute;
+	*+width:10px;
+	*+height:10px;
     right: 0;
     top: 0;
     visibility: hidden;
@@ -236,6 +240,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 .list-card-members { float: right; margin: 2px -12px -5px 0;}
 .list-card-members:empty { display: none;}
 .small-icon.menu-icon.dark, .small-icon.menu-icon.dark-hover:hover{ background-position:-396px -90px;}
+
 .list-card:hover .card-operation{ visibility:visible;}
 .menu-icon.dark-hover:hover{ background-position:-660px 0;}
 .card-composer{ display:none;}
@@ -254,6 +259,9 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
 .cc-controls input[type="submit"] {
     float: left;
     margin-top: 2px;
+	line-height:20px;
+	height:30px;
+	display:block;
     padding: 5px 18px;
 }
 .cc-controls .app-icon {

@@ -89,8 +89,9 @@
             $.fancybox({
                 //type: 'html',
                 content: $("#comment"),
-                width: '60%',
-                height: '40%',
+				autoSize: false,
+                width: '250px',
+                height: 'auto',
                 //minWidth: '180px',
                 //autoSize: true,
                 afterClose: function() {
@@ -171,6 +172,7 @@
                         <span class="date" dt="2012-06-04T06:53:49.298Z" title="2012年6月4日 14:53:21">19 hours ago</span>
                         </p>
                         -->
+                        <div class="clear"></div>
                     </div>
                     {% endfor %}
                     <!--循环体 end-->
