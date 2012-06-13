@@ -52,17 +52,18 @@ def share():
     #for key, row in enumerate(task_rows):
     task_data = {}
     user_ids = []
-    for row in task_rows:
-        if not task_data.has_key(row.user_id): 
-            user_ids.append(str(row.user_id)) 
-            task_data[row.user_id] = [] 
-        task_data[row.user_id].append(dict(row))
-
-    sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
-    user_rows = g.db.execute(text(sql)).fetchall()
     user_data = {}
-    for row in user_rows:
-        user_data[row.id] = row.realname
+    if task_rows:
+        for row in task_rows:
+            if not task_data.has_key(row.user_id): 
+                user_ids.append(str(row.user_id)) 
+                task_data[row.user_id] = [] 
+            task_data[row.user_id].append(dict(row))
+        if task_rows and ','.join(user_ids):
+            sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
+            user_rows = g.db.execute(text(sql)).fetchall()
+            for row in user_rows:
+                user_data[row.id] = row.realname
 
     return render_template('home/share.html', task_data=task_data, user_data=user_data)
 
