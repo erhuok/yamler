@@ -47,7 +47,7 @@ def myfeed():
 @mod.route('/share', methods=['GET', 'POST'])
 @required_login
 def share():
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at FROM tasks WHERE is_del='0' AND :to_user_id IN (to_user_id)"
+    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)"
     task_rows = g.db.execute(text(sql), to_user_id=g.user.id).fetchall()
     #for key, row in enumerate(task_rows):
     task_data = {}
