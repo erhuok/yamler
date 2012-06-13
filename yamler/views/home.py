@@ -80,7 +80,7 @@ def publish():
                                             tasks.c.created_at: datetime.now(), 
                                             tasks.c.to_user_id: request.form['to_user_id'].lstrip(',')
                                            })) 
-        return jsonify(title=request.form['title'], ismine=True, realname=g.user.realname, id=res.inserted_primary_key)
+        return jsonify(title=request.form['title'], ismine=True, realname=g.user.realname, id=res.inserted_primary_key, share_users=request.form['share_users'].lstrip(','))
 
 @mod.route('/getMyFeed')
 def getMyFeed():
@@ -99,7 +99,7 @@ def getMyFeed():
         rows = g.db.execute(s, user_id=g.user.id, to_user_id=g.user.id, skip=skip, limit=limit).fetchall()
     '''
 
-    user_sql = text("SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ( :id )")
+    #user_sql = text("SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ( :id )")
     data = []
     #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN :id "
     for row in rows:
@@ -110,24 +110,12 @@ def getMyFeed():
         new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%M') if row['created_at'] else ''
         new_row['title'] = row['title'] 
         new_row['status'] = row['status'] 
+        new_row['realname'] = g.user.realname
+        new_row['share_users'] = ''
         if row['to_user_id']:
-            sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ("
-            to_ids = ''
-            for s in row['to_user_id'].split(','):
-                if s:
-                    to_ids += s.strip()+','
-            to_ids = to_ids.rstrip(',')
-            if to_ids != '0':
-                sql += to_ids
-                sql += ")" 
-                result = g.db.execute(text(sql)).first()
-                new_row['share_users'] = result['share_users'] 
-        if row['user_id'] == g.user.id:
-            new_row['realname'] = g.user.realname
-            new_row['ismine'] = True 
-        else:
-            result = g.db.execute(text("SELECT realname FROM users WHERE id=:id"),id=row['user_id']).first()
-            new_row['realname'] = result['realname'] 
-            new_row['other'] = True 
+            user_ids = row['to_user_id'].lstrip(',').split(',')
+            user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+            result = g.db.execute(text(user_sql)).first()
+            new_row['share_users'] = result['share_users'] 
         data.append(new_row)
     return jsonify(data=data)

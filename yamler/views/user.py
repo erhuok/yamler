@@ -9,6 +9,8 @@ from yamler import app
 from werkzeug import secure_filename
 import os
 import Image
+import base64
+from sqlalchemy.sql import select, text
 
 mod = Blueprint('user',__name__,url_prefix='/user')
 
@@ -37,25 +39,48 @@ def login():
 def register():
     form = RegistrationForm(request.form)
     if request.method=='POST' and form.validate():
+        company_id = ''
+        if request.args.has_key('key'):
+            key = request.args.get('key')
+            id = base64.decodestring(key)
+            if id:
+                row = g.db.execute(text("SELECT id FROM companies WHERE id=:id"), id=id).fetchone()
+                if row: company_id = id
         user=User(form.username.data, 
                   form.password.data, 
                   is_active=1,
                   realname = request.form['realname'] if request.form.has_key('realname')   else '',
-                  company_id = request.args.get('company_id','0') 
+                  company_id = company_id,
+                  telephone = request.form['telephone'],
                  )
         result = User.query.filter_by(username=user.username).first()
         if result:
             return redirect(url_for('user.register'))
         db_session.add(user)
         db_session.commit()
-        session['user_id']=user.id 
+        session['user_id'] = user.id 
         flash('Thanks for registering')
-        return redirect(url_for('home.myfeed'))
+
+        if request.args.get('key'):
+            return redirect(url_for('home.account'))
+
+        return redirect(url_for('company.create'))
     return render_template('user/register.html', form=form)
 
 @mod.route('/active', methods=['GET', 'POST'])
 def active():
     return render_template('user/active.html')
+
+@mod.route('/logout')
+def logout():
+    if 'user_id' in session:
+        del session['user_id']
+    return redirect(request.referrer or url_for(''))
+    
+@mod.route('/invite')
+def invite():
+    url = request.host + '/i/' + base64.encodestring(str(g.company.id))  
+    return render_template('user/invite.html', url=url)
 
 @mod.route('/avatar', methods=['GET', 'POST'])
 @required_login

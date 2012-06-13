@@ -25,7 +25,7 @@ def create():
         db_session.commit()
         if company.id:
             g.db.execute(users.update().values({users.c.company_id: company.id}).where(users.c.id==g.user.id))
-            return redirect(url_for('home.index'))
+            return redirect(url_for('home.account'))
     return render_template('company/create.html',form=form)
 
 

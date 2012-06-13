@@ -48,10 +48,10 @@ class CompanyForm(Form):
         ('9','200-500人'),
         ('10','500人以上'),
     ]
-    contact_name = TextField('联系人',validators=[validators.Length(max=100)])
-    name = TextField('企业名称',validators=[validators.Length(max=100)])
+    contact_name = TextField('联系人',validators=[validators.Length(max=100), validators.required()])
+    name = TextField('企业名称',validators=[validators.Length(max=100), validators.required()])
     scale = SelectField('公司规模',choices=SCALE_VALUES)
     telephone = TextField('联系电话',validators=[validators.Length(max=45)])
-    address = TextField('地址',validators=[validators.Length(max=150)])
+    address = TextField('地址',validators=[validators.Length(max=150), validators.required()])
     postcode = TextField('邮编',validators=[validators.Length(max=45)])
     website = TextField('网址',validators=[validators.Length(max=100)])
