@@ -26,6 +26,7 @@
                     <textarea class="text_input" name="title" id="title"></textarea>
                 </div>
                 <input type="hidden" name="to_user_id" id="to_user_id"/>
+                <input type="hidden" name="share_users" id="share_users"/>
                 <ul class="add_People" id="add_people">
                     +分享给
                 </ul>
@@ -208,7 +209,12 @@
                     var to_user_id = $("#to_user_id").val()  
                     to_user_id = to_user_id.split( /,\s*/ );
                     to_user_id.push(id);
-                    $("#to_user_id").val(to_user_id.join(",")) 
+                    $("#to_user_id").val(to_user_id.join(","));
+
+                    var share_users = $("#share_users").val();
+                    share_users = share_users.split( /,\s*/ );
+                    share_users.push(name);
+                    $("#share_users").val(share_users.join(","));
                 }
             },
             afterDelete: function(name) {
@@ -222,7 +228,11 @@
                     to_user_id = to_user_id.split( /,\s*/ );
                     to_user_id = $.grep(to_user_id, function(a) { return a != id; });
                     $("#to_user_id").val(to_user_id.join(",")) 
-                }
+                    
+                    var share_users = $("#share_users").val();
+                    share_users = share_users.split( /,\s*/ );
+                    share_users = $.grep(share_users, function(a) { return a != name; });
+                    $("#share_users").val(share_users.join(","));                }
             }
         });  
     });

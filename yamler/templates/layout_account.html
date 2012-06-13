@@ -6,12 +6,13 @@
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='css/ui/jquery.ui.all.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.css') }}" media="screen" />
 <script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.all.min.js') }}"></script>
 <!-- Add fancyBox main JS and CSS files -->
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.css') }}" media="screen" />
+<script type="text/javascript" src="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.pack.js') }}"></script>
 
 <!-- Add Button helper (this is optional) -->
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/fancybox/helpers/jquery.fancybox-buttons.css') }}" />
@@ -54,8 +55,14 @@ $(function(){
         	<span class="app-icon light board-icon"></span>
 			<span class="header-btn-text">分享给我的</span>
         </a>
-        <a class="header-auth member js-open-header-member-menu" href="#">
-        	<span class="member-initials" title="tanxiao (tanxiao)"> T</span>
+        
+        <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('user.invite') }}">
+        	<span class="app-icon light board-icon"></span>
+			<span class="header-btn-text">邀请加入</span>
+        </a>
+
+        <a class="header-auth member js-open-header-member-menu" href="{{ url_for('user.logout') }}">
+        	<span class="member-initials" title="tanxiao (tanxiao)">退出</span>
         </a>
     </div>
     <!--
