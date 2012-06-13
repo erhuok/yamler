@@ -6,7 +6,9 @@ body, input, select, textarea {
     font: 14px/18px "Helvetica Neue",Arial,Helvetica,sans-serif;
 }
 body{ background: none repeat scroll 0 0 #F0F0F0;
-    overflow-y: auto;
+	overflow-y: auto;
+	*+overflow:hidden;
+	_overflow:auto;
     position: relative;
     z-index: 0;
 	}
@@ -44,7 +46,8 @@ textarea, input {
     border-radius: 3px 3px 3px 3px;
     display: block;
     margin-bottom: 12px;
-    min-height: 30px;
+    /*min-height: 30px;*/
+	height:17px\9;
     padding: 6px;
 }
 textarea {
@@ -71,6 +74,7 @@ input[type="submit"], input[type="button"], button, .button {
 :focus{outline:0 none;}
 input.primary[type="submit"], input.primary[type="button"], button.primary, .button.primary {
     background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	background-color:#24A828\9;
     color: #FFFFFF;
 	}
 input[type="text"]:hover, input[type="password"]:hover, input[type="email"]:hover, textarea:hover{
@@ -119,6 +123,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 /**********************头部样式*****************************/
 #header{
 	/*background: -moz-linear-gradient(center top , #23658B 0%, #1C506E 100%) repeat scroll 0 0 transparent;*/
+	background-color:#c84415;
 	background: -moz-linear-gradient(center top , #e45319 0%, #c84415 100%) repeat scroll 0 0 transparent;
     height: 30px;
     overflow: hidden;
@@ -172,8 +177,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     font-size: 13px;
     height: 29px;
     line-height: 19px;
+	line-height: 17px\9;
     margin: 0;
-    min-height: 29px;
+    /*min-height: 29px;*/
+	height:17px\9;
     width: 200px;
 }
 #header-search input[type="text"]:hover{ background-color:#d9e2e8;}
@@ -192,11 +199,13 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .header-btn.header-notifications, .header-btn.header-boards, .header-btn.header-search, .header-btn.header-login, .header-btn.header-signup {
     /*background: -moz-linear-gradient(center top , #2B7CAB 0%, #28739F 100%) repeat scroll 0 0 transparent;*/
 	background: -moz-linear-gradient(center top , #ed6b20 0%, #fc9429 100%) repeat scroll 0 0 transparent;
+	background-color:#ed6b20\9;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 1px 1px rgba(0, 0, 0, 0.35);
 }
 .header-btn:hover{
 	/*background: -moz-linear-gradient(center top , #3291c8 0%, #2f88bc 100%) repeat scroll 0 0 transparent;*/
 	background: -moz-linear-gradient(center top , #f79127 0%, #fa9f40 100%) repeat scroll 0 0 transparent;
+	background-color:#fa9f40\9;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 1px 1px rgba(0, 0, 0, 0.25);
 	color:#eee;
 }
@@ -260,6 +269,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     left: 20px;
     position: absolute;
     top: -6px;
+	*+top:-5px;
     width: 12px;
     z-index: 2; 
 	}
@@ -268,7 +278,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .message_block textarea{ height:50px;}
 .add_People{ margin-top:8px; min-height:15px; /* display:none;*/ padding:10px 6px; border-bottom-left-radius:0; border-bottom-right-radius:0; cursor:pointer;}
 .button_People{ /*display:none;*/ margin-top:8px;}
-.button_People .add_message{ display:inline-block; float:right; margin-top: 2px; padding: 5px 18px;}
+.button_People .add_message{ display:inline-block; float:right; margin-top: 2px; padding: 5px 18px; height:30px\9; line-height:20px\9;}
 .people_listBlock{ border-top:0; border-top-left-radius:0; border-top-right-radius:0; background-color:#f8f8f8; padding:0;  display:none;}
 .people_listBlock ul{}
 .people_listBlock ul li{ /*float:left; width:31%;*/ padding:1px; border-bottom:1px solid #ccc; background-color:#fff; /*margin-left:5px;*/}
@@ -323,25 +333,30 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     overflow: hidden;
     visibility: hidden;
 }
-.bold-list li a:hover, .people_listBlock ul li a:hover{ 
+.bold-list li a:hover, .bold-list li a.current:hover, .people_listBlock ul li a:hover{ 
 	color:#fff; 
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
+	background-color:#fc9429\9;
 	}
 .bold-list.boards-list li a.link-item { padding-right: 83px;}
 .bold-list li .link-item { padding: 5px 10px;}
 .bold-list li a { border-radius: 3px 3px 3px 3px; display: block; padding-right: 80px; position: relative; text-decoration: none;}
 .bold-list li .item-name { display: inline; font-weight: normal; margin-bottom: 0; padding-right: 8px; font-size:14px;}
+.bold-list li a.current{ background-color:#fff;}
 
-.small-icon { display: inline-block; float: none; height: 18px; margin-right: 0; width: 18px;}
+
+.small-icon {  float: left; height: 18px; margin-right: 0; width: 18px; display:block;}
 .small-icon.private-icon { background-position: -522px -90px;}
 .small-icon.pin-icon { background-position: -360px -108px;}
 .small-icon.menu-icon { background-position: -396px -108px;}
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
-.bold-list li a .counts { display: block; position: absolute; right: 30px; top: 5px;}
+.bold-list li a .counts { display: block;/* position: absolute; right: 30px; top: 5px;*/ float:right; margin-right:-80px; *+margin-right:40px;}
 .bold-list li a .board-list-menu { background-clip: content-box;
     background-origin: content-box;
     margin: 0; padding: 5px; position: absolute;
     right: 0; top: 0; visibility: hidden;
+	*+margin-top:3px;
+	*+width: 13px; *+height:13px;
 }
 .bold-list li a:hover .board-list-menu{ visibility:visible;}
 .button-link {
@@ -351,6 +366,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
     background: -moz-linear-gradient(center top , #FFFFFF 0%, #F3F3F3 100%) repeat scroll 0 0 transparent;
+	background-color:#f3f3f3;
     border-color: #CECECE #CECECE #A0A0A0;
     border-radius: 3px 3px 3px 3px;
     border-style: solid;
@@ -360,16 +376,19 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     font-weight: bold;
     margin-top: 6px;
     max-width: 220px;
+	*+height:auto;
     overflow: hidden;
     padding: 6px;
     position: relative;
     text-decoration: none;
     text-overflow: ellipsis;
+	*+height:20px;
     white-space: nowrap;
 }
 .button-link:hover{
 	/*background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;*/
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
+	background-color:#fc9429\9;
 	border-color:#ed6b20;
 	text-decoration:none;
 	color:#fff;
@@ -478,7 +497,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     position: absolute;
     right: -9999px;
     top: -9999px;
-    width: 270px;
+    width: 120px;
     z-index: 20;
 }
 
@@ -508,10 +527,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     font-weight: bold;
     line-height: 21px;
     overflow: hidden;
-    padding: 0 24px;
+    padding: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 220px;
+    width: 100%;
 }
 .pop-over .pop-header .close-btn {
     padding: 2px;
