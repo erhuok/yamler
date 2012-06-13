@@ -324,7 +324,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 }
 .menu-icon { background-position: -660px -30px;}
 .gutter { margin-left: 40px;}
-.bold-list li { border-bottom: 1px solid #DCDCDC; padding: 2px 0; position: relative;}
+
 .bold-list li:after {
     clear: both;
     content: ".";
@@ -333,6 +333,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     overflow: hidden;
     visibility: hidden;
 }
+.bold-list li { border-bottom: 1px solid #DCDCDC; padding: 2px 0; /*position: relative;*/ *+width:650px;}
 .bold-list li a:hover, .bold-list li a.current:hover, .people_listBlock ul li a:hover{ 
 	color:#fff; 
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
@@ -350,7 +351,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .small-icon.pin-icon { background-position: -360px -108px;}
 .small-icon.menu-icon { background-position: -396px -108px;}
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
-.bold-list li a .counts { display: block;/* position: absolute; right: 30px; top: 5px;*/ float:right; margin-right:-80px; *+margin-right:40px;}
+.bold-list li a .counts { display: block;/* position: absolute; right: 30px; top: 5px;*/ float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
 .bold-list li a .board-list-menu { background-clip: content-box;
     background-origin: content-box;
     margin: 0; padding: 5px; position: absolute;
@@ -556,6 +557,14 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .pop-over hr {
     margin: 6px 0;
 }
+
+.fancybox-outer, .fancybox-inner form, #comment, .fancybox-inner, #comment_list{ overflow:hidden; height:auto;}
+#comment_save_button, #update_share_form #save_button{ height:30px; line-height:20px; 
+	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	background-color:#24A828\9;
+	color:#fff;
+	}
+#update_share_form .tagHandler{ margin-bottom:260px;}
 
 /**************弹窗样式 end***************/
 

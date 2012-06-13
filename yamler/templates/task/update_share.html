@@ -1,3 +1,5 @@
+
+
 <form method="POST" action="/task/update_share/{{ row.id }}" id="update_share_form">
    <label for="">分享给</label>
    <input type="hidden" name="to_user_id" id="to_user_id" value="{{ row.to_user_id }}"/>
@@ -7,6 +9,10 @@
 </form> 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/taghandler/css/jquery.taghandler.css') }}" />
     <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='css/ui/jquery.ui.all.css') }}"/>
+    <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style.css') }}"/>
+    <style>
+    body{ background-color:#fff;}
+    </style>
     <script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.core.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.widget.min.js') }}"></script>
@@ -14,6 +20,7 @@
     <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.autocomplete.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/libs/taghandler/js/jquery.taghandler.min.js') }}"></script>
     <script>
+		
         $("#save_button").click(function() {
             $.ajax({
                 type: 'POST',
