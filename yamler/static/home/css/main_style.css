@@ -6,7 +6,7 @@ body, input, select, textarea {
     font: 14px/18px "Helvetica Neue",Arial,Helvetica,sans-serif;
 }
 body{ background: none repeat scroll 0 0 #F0F0F0;
-	overflow-y: auto;
+	overflow: auto;
 	*+overflow:hidden;
 	_overflow:auto;
     position: relative;
@@ -61,6 +61,7 @@ input[type="text"], input[type="password"], input[type="email"] {
     width: 250px;
 }
 input[type="submit"], input[type="button"], button, .button {
+	background-color:#CFCFCF;
     background: -moz-linear-gradient(center top , #CFCFCF 0%, #C2C2C2 100%) repeat scroll 0 0 transparent;
     border: medium none;
     cursor: pointer;
@@ -74,8 +75,9 @@ input[type="submit"], input[type="button"], button, .button {
 }
 :focus{outline:0 none;}
 input.primary[type="submit"], input.primary[type="button"], button.primary, .button.primary {
+	background-color:#24A828;
     background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
-	background-color:#24A828\9;
+	
     color: #FFFFFF;
 	height:30px; line-height:20px; 
 	}
@@ -165,7 +167,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .header-btn span.count:empty { display: none;}
 .header-btn.header-logo { margin-right: 8px; padding-left: 4px;}
 .header-btn.header-logo { margin-right: 8px; padding-left: 4px;}
-.app-icon.logo { background-position: -594px -90px; width: 82px;}
+.app-icon.logo { background:url("../images/index_img/logo_img.png") no-repeat left center;  width: 115px;}
 
 /*搜索区*/
 #header-search { float: left; margin: 1px 8px 0 0; position: relative; z-index: 1;}
@@ -200,14 +202,14 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 
 .header-btn.header-notifications, .header-btn.header-boards, .header-btn.header-search, .header-btn.header-login, .header-btn.header-signup {
     /*background: -moz-linear-gradient(center top , #2B7CAB 0%, #28739F 100%) repeat scroll 0 0 transparent;*/
+	background-color:#ed6b20;
 	background: -moz-linear-gradient(center top , #ed6b20 0%, #fc9429 100%) repeat scroll 0 0 transparent;
-	background-color:#ed6b20\9;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 1px 1px rgba(0, 0, 0, 0.35);
 }
 .header-btn:hover{
 	/*background: -moz-linear-gradient(center top , #3291c8 0%, #2f88bc 100%) repeat scroll 0 0 transparent;*/
+	background-color:#fa9f40;
 	background: -moz-linear-gradient(center top , #f79127 0%, #fa9f40 100%) repeat scroll 0 0 transparent;
-	background-color:#fa9f40\9;
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 1px 1px rgba(0, 0, 0, 0.25);
 	color:#eee;
 }
@@ -278,7 +280,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .message_block textarea, .add_People, .people_listBlock{ border:1px solid #cecece; background-color:#fff; 
 	overflow:hidden; border-radius: 3px 3px 3px 3px; padding:6px;}
 
-.message_block textarea{ height:50px;}
+.message_block textarea{ height:50px; width:635px\9;}
 .add_People{ margin-top:8px; min-height:15px; /* display:none;*/ padding:10px 6px; border-bottom-left-radius:0; border-bottom-right-radius:0; cursor:pointer;}
 .button_People{ /*display:none;*/ margin-top:8px;}
 .button_People .add_message{ display:inline-block; float:right; margin-top: 2px; padding: 5px 18px; height:30px\9; line-height:20px\9;}
@@ -339,14 +341,17 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .bold-list li { border-bottom: 1px solid #DCDCDC; padding: 2px 0; /*position: relative;*/ *+width:650px;}
 .bold-list li a:hover, .bold-list li a.current:hover, .people_listBlock ul li a:hover{ 
 	color:#fff; 
+	background-color:#fc9429;
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
-	background-color:#fc9429\9;
 	}
 .bold-list.boards-list li a.link-item { padding-right: 83px;}
 .bold-list li .link-item { padding: 5px 10px;}
 .bold-list li a { border-radius: 3px 3px 3px 3px; display: block; padding-right: 80px; position: relative; text-decoration: none;}
 .bold-list li .item-name { display: inline; font-weight: normal; margin-bottom: 0; padding-right: 8px; font-size:14px;}
+.bold-list li a.hover{ color:#fff; background-color:#fc9429;
+	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;}
 .bold-list li a.current{ background-color:#fff;}
+
 
 
 .small-icon {  float: left; height: 18px; margin-right: 0; width: 18px; display:block;}
@@ -364,13 +369,8 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 }
 .bold-list li a:hover .board-list-menu{ visibility:visible;}
 .button-link {
-    -moz-border-bottom-colors: none;
-    -moz-border-image: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background: -moz-linear-gradient(center top , #FFFFFF 0%, #F3F3F3 100%) repeat scroll 0 0 transparent;
 	background-color:#f3f3f3;
+    background: -moz-linear-gradient(center top , #FFFFFF 0%, #F3F3F3 100%) repeat scroll 0 0 transparent;
     border-color: #CECECE #CECECE #A0A0A0;
     border-radius: 3px 3px 3px 3px;
     border-style: solid;
@@ -391,8 +391,8 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 }
 .button-link:hover{
 	/*background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;*/
+	background-color:#fc9429;
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
-	background-color:#fc9429\9;
 	border-color:#ed6b20;
 	text-decoration:none;
 	color:#fff;
@@ -476,10 +476,11 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 }
 .sidebar-nav a:hover, .sidebar-nav a.active { color: #FFFFFF;}
 .sidebar-nav a:hover{
+	background-color:#ed6b20;
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
 	}
 .sidebar-nav a.active { 
-	/*background: -moz-linear-gradient(center top , #2478A8 0%, #1B5A7E 100%) repeat scroll 0 0 transparent;*/
+	backgrounc-color:#e14b17;
 	background: -moz-linear-gradient(center top ,#f98123 0%, #e14b17 100%) repeat scroll 0 0 transparent;
 	}
 .small-icon.board-icon { background-position: -36px -108px;}
@@ -562,11 +563,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 }
 
 .fancybox-outer, .fancybox-inner form, #comment, .fancybox-inner, #comment_list{ overflow:hidden; height:auto;}
-#comment_save_button, #update_save_button, #update_share_form #save_button{ height:30px; line-height:20px; 
-	
-	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+#comment_save_button, #update_save_button, #update_share_form #save_button{ 
+	height:30px; line-height:20px; 
 	background-color:#24A828;
-	background-color:#24A828\9;
+	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
 	color:#fff;
 	}
 #update_share_form .tagHandler{ margin-bottom:260px;}

@@ -19,12 +19,10 @@
 <script>
 	$(function() {
 		//拖动控制
-		/*$(".ui-sortable").sortable({
-			connectWith: '.js-sortable',
-			placeholder: 'js-member-droppable'
-		});
+		$(".js-list-sortable").sortable();
+		$(".js-list-sortable").disableSelection();
 		
-		$(".ui-sortable").disableSelection();*/
+		
 		
 		//添加消息控制
 		$(".open-card-composer").live('click',function(){
@@ -51,6 +49,7 @@
 			var con_width = w_width-265;
 			var list_count = $(".list").length;
 			var list_countWidth = 320*list_count;
+			//var listblock_height = $(".list")
 			
 			$("#board").css({height:b_height+"px",width:con_width+"px"});
 			$(".list-area-wrapper").css({height:"100%",width:con_width+"px"});
@@ -60,6 +59,15 @@
 				$(".list-area-wrapper").css("overflow","hidden");	
 			}
 			$(".list-area").css("width",list_countWidth+"px");
+			
+			$(".list").each(function(){
+				var listblock_height = $(this).height();
+				if(listblock_height > b_height){
+					$(this).css("overflow","hidden");
+					$(this).find(".list-cards").css({"overflow":"scroll",height:b_height+"px"});
+				}
+			})
+			
 		}
 		
 		$(window).load(function(){
@@ -75,8 +83,10 @@
 	$(window).scroll(function(){
 		var ws_top = $(window).scrollTop();
 		var ws_height = $(window).height();
+		var w_width = $(window).width();
+		var con_width = w_width-265;
 		var b_height = ws_height-(78+26)+ws_top;
-		$("#board").css("height",b_height+"px");
+		$("#board").css({height:b_height+"px", width:con_width+"px"});
 	})
 </script>
 
@@ -111,12 +121,6 @@
         	<span class="app-icon light board-icon"></span>
 			<span class="header-btn-text">我部门的工作日志</span>
         </a>
-        
-        <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('user.invite') }}">
-        	<span class="app-icon light board-icon"></span>
-			<span class="header-btn-text">邀请加入</span>
-        </a>
-
         <a class="header-auth member js-open-header-member-menu" href="{{ url_for('user.logout') }}">
         	<span class="member-initials" title="tanxiao (tanxiao)">退出</span>
         </a>

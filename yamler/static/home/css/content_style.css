@@ -38,11 +38,6 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 .board-widget-members{ margin-bottom: 8px;}
 .member .status.idle { background-color: #EFD97A;}
 .member .status {
-    -moz-border-bottom-colors: none;
-    -moz-border-image: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
     background-color: #E6E6E6;
     border-color: #FFFFFF #B9B9B9 #B9B9B9 #FFFFFF;
     border-style: solid;
@@ -63,6 +58,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 	background-position:-504px -90px;
 	}
 .button-link .on {
+	background-color:#1B7E1E;
     background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
     border-radius: 3px 3px 3px 3px;
     color: #FFFFFF;
@@ -171,15 +167,6 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     z-index: 1;
 }
 .list-card {
-    -moz-animation-duration: 0.2s;
-    -moz-border-bottom-colors: none;
-    -moz-border-image: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    -moz-transition-duration: 0.2s, 0.1s, 0.2s;
-    -moz-transition-property: background, margin-bottom, opacity;
-    -moz-transition-timing-function: ease-out;
     background: none repeat scroll 0 0 #FFFFFF;
     border-color: #B9B9B9 #B9B9B9 #939393;
     border-radius: 3px 3px 3px 3px;
@@ -220,6 +207,8 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     background-origin: content-box;
     padding: 5px;
     position: absolute;
+	width:15px\9;
+	height:15px\9;
 	*+width:10px;
 	*+height:10px;
     right: 0;
