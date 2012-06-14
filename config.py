@@ -10,5 +10,7 @@ DATABASE_URI = 'mysql+mysqldb://root:data@localhost:3306/yamler_development?char
 DATABASE_CONNECT_OPTIONS = {'pool_recycle':7200}
 
 #ADMINS = frozenset(['http://admin.yamler.com/']
+UPLOAD_FOLDER =_basedir + '/yamler/static/uploads/'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 del os

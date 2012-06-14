@@ -1,0 +1,12 @@
+*.pyc
+*.swp
+*.pyo
+*.whoosh
+*.db
+env
+dist
+*.egg-info
+.swo
+.DS_Store
+.swp
+tag
