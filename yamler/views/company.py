@@ -4,7 +4,7 @@ from flask import Blueprint,request,render_template,session,flash,redirect,url_f
 from yamler.database import db_session 
 from yamler.models.companies import Company,CompanyForm 
 from yamler.models.users import users 
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, text
 
 mod = Blueprint('company',__name__,url_prefix='/company')
 
@@ -31,7 +31,7 @@ def create():
 
 @mod.route('/get')
 def get():
-    rows = g.db.execute(select([users.c.id, users.c.realname],users.c.company_id==g.company.id)).fetchall()
+    rows = g.db.execute(text("SELECT id, realname FROM users WHERE company_id=:company_id AND id!=:id "), company_id=g.company.id, id=g.user.id).fetchall()
     data = []
     name = []
     for row in rows:
