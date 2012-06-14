@@ -265,10 +265,16 @@
     $(".pop-over .pop-header .close-icon").click(function(){
         $(".pop-over").hide();
     });
+	$(".boards-list li a").live('mouseover',function(){
+		$(this).addClass("hover");
+	});
+	$(".boards-list li a").live('mouseout',function(){
+		$(this).removeClass("hover");
+	});
 	$(".boards-list li a").live('click',function(){
 		$(this).addClass("current");
 		$(".boards-list li a").not($(this)).removeClass("current");
-	})
+	});
 	
 
     $(".js-open-board").live('click',function(){
