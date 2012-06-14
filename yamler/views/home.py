@@ -61,18 +61,19 @@ def share():
             if not task_data.has_key(row.user_id): 
                 user_ids.append(str(row.user_id)) 
                 task_data[row.user_id] = [] 
+                for my_row in task_my_rows:
+                    if str(row.user_id)  in my_row.to_user_id:
+                        new_row = dict(my_row)
+                        new_row['ismine'] = True
+                        task_data[row.user_id].append(my_row)
+                        del my_row
             task_data[row.user_id].append(dict(row))
-            for my_row in task_my_rows:
-                if str(row.user_id)  in my_row.to_user_id:
-                    new_row = dict(my_row)
-                    new_row['ismine'] = True
-                    task_data[row.user_id].append(my_row)
+          
         if task_rows and ','.join(user_ids):
             sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
             user_rows = g.db.execute(text(sql)).fetchall()
             for row in user_rows:
                 user_data[row.id] = row.realname
-
     return render_template('home/share.html', task_data=task_data, user_data=user_data)
 
 @mod.route('/mytask', methods=['GET', 'POST'])
