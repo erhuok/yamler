@@ -29,6 +29,10 @@
                     {% else %}
                         {{ data.title }}
                     {% endif %}
+
+                    {% if data.comment_count %}
+                        <span>{{ data.comment_count }}回复</span>
+                    {% endif %}
                 </a>
                 <div class="badges"></div>
                 <div class="list-card-members"></div>
