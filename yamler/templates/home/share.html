@@ -19,7 +19,7 @@
         <div class="list-gradient-bottom"></div>
         <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" >
             {% for data in task_data[key] %}
-            <div class="list-card clearfix ui-droppable" id="list{{ data.id }}">
+            <div class="list-card clearfix ui-droppable {% if data.status %} complete {% else %} undone  {% endif %}" id="list{{ data.id }}">
                 <div class="card-labels clearfix"></div>
                 <span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>
                 <a class="list-card-title clear" href="javascript:;">
