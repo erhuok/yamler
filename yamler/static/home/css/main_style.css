@@ -70,12 +70,14 @@ input[type="submit"], input[type="button"], button, .button {
     margin: 8px 4px 0 0;
     padding: 7px 20px;
     text-align: center;
+	height:30px; line-height:20px; 
 }
 :focus{outline:0 none;}
 input.primary[type="submit"], input.primary[type="button"], button.primary, .button.primary {
     background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
 	background-color:#24A828\9;
     color: #FFFFFF;
+	height:30px; line-height:20px; 
 	}
 input[type="text"]:hover, input[type="password"]:hover, input[type="email"]:hover, textarea:hover{
 	border-color:#777;
@@ -275,6 +277,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 	}
 .message_block textarea, .add_People, .people_listBlock{ border:1px solid #cecece; background-color:#fff; 
 	overflow:hidden; border-radius: 3px 3px 3px 3px; padding:6px;}
+
 .message_block textarea{ height:50px;}
 .add_People{ margin-top:8px; min-height:15px; /* display:none;*/ padding:10px 6px; border-bottom-left-radius:0; border-bottom-right-radius:0; cursor:pointer;}
 .button_People{ /*display:none;*/ margin-top:8px;}
@@ -559,8 +562,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 }
 
 .fancybox-outer, .fancybox-inner form, #comment, .fancybox-inner, #comment_list{ overflow:hidden; height:auto;}
-#comment_save_button, #update_share_form #save_button{ height:30px; line-height:20px; 
+#comment_save_button, #update_save_button, #update_share_form #save_button{ height:30px; line-height:20px; 
+	
 	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	background-color:#24A828;
 	background-color:#24A828\9;
 	color:#fff;
 	}
