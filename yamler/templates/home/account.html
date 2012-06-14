@@ -23,7 +23,7 @@
             <div class="window-message">
                 <div class="message_block">
                     <span></span>
-                    <textarea class="text_input" name="title" id="title"></textarea>
+                    <textarea class="text_input" onfocus="if (value =='请写点什么'){value =''}" onblur="if (value ==''){value='请写点什么'}" name="title" id="title"></textarea>
                 </div>
                 <input type="hidden" name="to_user_id" id="to_user_id"/>
                 <input type="hidden" name="share_users" id="share_users"/>
@@ -269,6 +269,7 @@
 		$(this).addClass("current");
 		$(".boards-list li a").not($(this)).removeClass("current");
 	})
+	
 
     $(".js-open-board").live('click',function(){
         var win_width = $(window).width();
@@ -305,8 +306,9 @@
                 //type: 'html',
                 content: $("#comment"),
 				autoSize: false,
-                width: '250px',
+                width: '25%',
                 height: 'auto',
+				
                 //minWidth: '180px',
                 //autoSize: true,
                 afterClose: function() {
@@ -345,8 +347,8 @@
         var id = $("#pop_action").attr('name');
         $.fancybox({
 			autoSize: false,
-			width: '400px',
-			height: 'auto',
+			width: '40%',
+			height: '60%',
             type: 'iframe',
             href: '/task/update_share/'+id,
             afterClose: function() {
@@ -367,8 +369,10 @@
             $( "#update_form_field_template" ).tmpl( res.row ).appendTo( "#update_form_field" );
             $.fancybox({
                 content: $("#update_form"),
-                width: '60%',
-                height: '40%',
+				autoSize: false,
+                width: '30%',
+                height: '550px',
+				//type: 'iframe',
                 afterClose: function() {
                     //$("#list"+id).effect("highlight", {}, 3000);
                     $("#update_save_button").unbind('click');
