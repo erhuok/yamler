@@ -9,8 +9,8 @@
         	<span class="window-header-icon app-icon member-icon"></span>
             <div class="member-title">
             	<h2>
-                    {{ g.company.name }}
-                    <span class="quiet" style="margin-left: 3px">({{ g.user.realname }})</span>
+                    我的工作日志
+                    <!--<span class="quiet" style="margin-left: 3px">({{ g.user.realname }})</span>-->
                 </h2>
             </div>
         </div>
@@ -23,7 +23,7 @@
             <div class="window-message">
                 <div class="message_block">
                     <span></span>
-                    <textarea class="text_input" onfocus="if (value =='请写点什么'){value =''}" onblur="if (value ==''){value='请写点什么'}" name="title" id="title"></textarea>
+                    <textarea class="text_input" onfocus="if (value =='请写点什么吧'){value =''}" onblur="if (value ==''){value='请写点什么吧'}" name="title" id="title"></textarea>
                 </div>
                 <input type="hidden" name="to_user_id" id="to_user_id"/>
                 <input type="hidden" name="share_users" id="share_users"/>
