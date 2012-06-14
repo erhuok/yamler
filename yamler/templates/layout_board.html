@@ -83,8 +83,10 @@
 	$(window).scroll(function(){
 		var ws_top = $(window).scrollTop();
 		var ws_height = $(window).height();
+		var w_width = $(window).width();
+		var con_width = w_width-265;
 		var b_height = ws_height-(78+26)+ws_top;
-		$("#board").css("height",b_height+"px");
+		$("#board").css({height:b_height+"px", width:con_width+"px"});
 	})
 </script>
 
