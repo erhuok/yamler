@@ -248,7 +248,7 @@ def comment_create():
 
 @mod.route('/task/share', methods=['GET', 'POST'])
 def share():
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count FROM tasks WHERE is_del='0' AND :to_user_id IN (to_user_id)"
+    sql = "SELECT id,user_id,to_user_id,title,status,comment_count FROM tasks WHERE is_del='0' AND :to_user_id IN (to_user_id) ORDER BY status ASC, id DESC"
     task_rows = g.db.execute(text(sql), to_user_id=request.form['user_id']).fetchall()
     task_data = {}
     user_ids = []

@@ -48,7 +48,7 @@ class RegistrationForm(Form):
         if row: 
             raise ValidationError('邮箱已经存在,请换一个')
 
-    username = TextField('电子邮箱', [validators.Length(min=4, max=25),validators.required(message="必填"), validators.email(message='请输入正确的邮箱地址'), check_email_exists])
+    username = TextField('电子邮箱', [validators.Length(min=4, max=45),validators.required(message="必填"), validators.email(message='请输入正确的邮箱地址'), check_email_exists])
     realname = TextField('真实姓名', [validators.required(message="必填")])
     telephone = TextField('电话号码', [validators.required(message="必填")])
     password = PasswordField('登录密码', [
