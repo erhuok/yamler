@@ -50,8 +50,8 @@ def share():
     sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  ORDER BY status ASC, id DESC"
     task_rows = g.db.execute(text(sql), to_user_id=g.user.id).fetchall()
 
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at FROM tasks WHERE is_del='0' AND  user_id=:user_id AND to_user_id <> '' ORDER BY status ASC, id DESC"
-    task_my_rows = g.db.execute(text(sql), user_id=g.user.id).fetchall()
+    #sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at FROM tasks WHERE is_del='0' AND  user_id=:user_id AND to_user_id <> '' ORDER BY status ASC, id DESC"
+    #task_my_rows = g.db.execute(text(sql), user_id=g.user.id).fetchall()
     #for key, row in enumerate(task_rows):
     task_data = {}
     user_ids = []
@@ -61,12 +61,12 @@ def share():
             if not task_data.has_key(row.user_id): 
                 user_ids.append(str(row.user_id)) 
                 task_data[row.user_id] = [] 
-                for my_row in task_my_rows:
-                    if str(row.user_id)  in my_row.to_user_id:
-                        new_row = dict(my_row)
-                        new_row['ismine'] = True
-                        task_data[row.user_id].append(my_row)
-                        del my_row
+                #for my_row in task_my_rows:
+                    #if str(row.user_id)  in my_row.to_user_id:
+                        #new_row = dict(my_row)
+                        #new_row['ismine'] = True
+                        #task_data[row.user_id].append(my_row)
+                        #del my_row
             task_data[row.user_id].append(dict(row))
           
         if task_rows and ','.join(user_ids):
