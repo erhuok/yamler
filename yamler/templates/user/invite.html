@@ -1,0 +1,42 @@
+{% extends "layout_account.html" %}
+
+{% block content %}
+<div class="content">
+	<div class="member-detail-modal">
+    	<!--主体头部-->
+    	<div class="window-header">
+        	<span class="window-header-icon app-icon member-icon"></span>
+            <div class="member-title">
+            	<h2>
+                    {{ g.company.name }}
+                    <span class="quiet" style="margin-left: 3px">({{ g.user.realname }})</span>
+                </h2>
+            </div>
+        </div>
+        <!--主体头部 end-->
+
+        <!--内容区左边块-->
+        <div class="window-main-col clearfix">
+        	<!--输入块-->
+            <form id="task_publish_form" name="task_publish_form" method="POST"/>
+            <div class="window-message">
+                <div class="message_block">
+                    <p>请复制下面的链接发送给邀请的同事</p>
+                    <span></span>
+                    <textarea class="text_input" name="title" id="title"> {{ url }}
+                    </textarea>
+                </div>
+                <!--
+                <div class="button_People clearfix"> <input type="button" class="add_message primary confirm js-add-card" id="add_task_button" value="发 布" /> </div>
+                -->
+            </div>
+            </form>
+            <!--输入块 end-->
+        </div>
+        <!--内容区左边块 end-->
+        
+    </div>
+    
+</div>
+<!--主体块 end-->
+{% endblock %}
