@@ -60,6 +60,7 @@ def task_create():
                     note = request.form['note'] if request.form.has_key('note') else '', 
                     priority = request.form['priority'] if request.form.has_key('priority') else 1, 
                     end_time = request.form['end_time'] if request.form.has_key('end_time') else '',
+                    created_at = request.form['created_at'] if request.form.has_key('created_at') else '',
                     ) 
         db_session.add(task)
         db_session.commit()

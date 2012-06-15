@@ -20,13 +20,14 @@ class Task(Model):
     created_at = Column(DateTime, default=datetime.datetime.now()) 
     updated_at = Column(DateTime,default=datetime.datetime.now()) 
 
-    def __init__(self, title, user_id, note=None, priority=None, end_time=None, to_user_id=None):
+    def __init__(self, title, user_id, note=None, priority=None, end_time=None, to_user_id=None, created_at=None):
         self.title = title
         self.note = note
         self.user_id = user_id
         self.to_user_id = to_user_id
         self.priority = priority
         self.end_time = end_time
+        self.created_at = created_at
 
 
     def __repr__(self):
