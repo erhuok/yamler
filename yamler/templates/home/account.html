@@ -27,9 +27,19 @@
                 </div>
                 <input type="hidden" name="to_user_id" id="to_user_id"/>
                 <input type="hidden" name="share_users" id="share_users"/>
+                <input type="hidden" name="submit_user_id" id="submit_user_id"/>
+                <input type="hidden" name="submit_users" id="submit_users"/>
+                <!--安排给-->
+                安排给
+                <ul class="add_People" id="submit_people"> </ul>
+                <!--安排给-->
+                
+                <!--递交给-->
+                递交给
                 <ul class="add_People" id="add_people">
                     +分享给
                 </ul>
+                <!--递交给-->
                 <div class="button_People clearfix">
                     <input type="button" class="add_message primary confirm js-add-card" id="add_task_button" value="递 交" />
                 </div>
@@ -192,6 +202,49 @@
     }
 
     $.getJSON('/company/get', function(res) {
+        $("#submit_people").tagHandler({
+            availableTags: res.data,
+            autocomplete: true,
+            onAdd: function(name) {
+                var in_array = $.grep(res.data, function(a) { if(a.value==name) return true; else return false;});
+                if(in_array=='') return false;
+            },
+            afterAdd: function(name){
+                var id = '';
+                $.each(res.data, function() {
+                    if(this.value == name) 
+                    id = this.id
+                });
+                if(id) {
+                    var submit_user_id = $("#submit_user_id").val()  
+                    submit_user_id = submit_user_id.split( /,\s*/ );
+                    submit_user_id.push(id);
+                    $("#submit_user_id").val(submit_user_id.join(","));
+
+                    var submit_users = $("#submit_users").val();
+                    submit_users = submit_users.split( /,\s*/ );
+                    submit_users.push(name);
+                    $("#submit_users").val(submit_users.join(","));
+                }
+            },
+            afterDelete: function(name) {
+                var id = '';
+                $.each( res.data, function() {
+                    if(this.value == name) 
+                    id = this.id
+                });
+                if(id) {
+                    var submit_user_id = $("#submit_user_id").val()  
+                    submit_user_id = submit_user_id.split( /,\s*/ );
+                    submit_user_id = $.grep(submit_user_id, function(a) { return a != id; });
+                    $("#submit_user_id").val(submit_user_id.join(",")) 
+                    
+                    var submit_users = $("#submit_users").val();
+                    submit_users = submit_users.split( /,\s*/ );
+                    submit_users = $.grep(submit_users, function(a) { return a != name; });
+                    $("#submit_users").val(submit_users.join(","));                }
+            }
+        }); 
         $("#add_people").tagHandler({
             availableTags: res.data,
             autocomplete: true,
