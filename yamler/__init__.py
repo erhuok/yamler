@@ -8,6 +8,8 @@ from flask import Flask,session,g,render_template
 
 app = Flask(__name__)
 app.config.from_object('config')
+import datetime 
+import time
 from yamler.database import db_session, engine
 
 from yamler.views import home
@@ -52,3 +54,9 @@ def remove_db_session(exception):
 def close_db(response):
     g.db.close()
     return response
+
+@app.template_filter('datetimeformat')
+def datetimeformat(value, format='%m月%d日 %H:%m'):
+    if isinstance(value, datetime.date):
+        return value.strftime(format)
+    return value

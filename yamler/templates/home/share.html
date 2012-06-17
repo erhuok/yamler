@@ -3,15 +3,11 @@
 {% for key in task_data recursive %}
 <!--第二块-->
 <div class="list active-list" id="list{{ key }}">
-    <div class="list-header clearfix">
-        <span class="app-icon small-icon list-icon"></span>
+    <div class="list-header">
+        
         <div class="list-title non-empty clearfix editable" attr="name">
+        	<!--<span class="app-icon small-icon list-icon"></span>-->
             <h2 class="hide-on-edit current "> {{ user_data[key] }}</h2>
-            <p class="num-cards"></p>
-            <div class="edit edit-heavy clearfix">
-                <textarea class="field single-line" type="text"></textarea>
-            </div>
-            <a class="app-icon small-icon dark-hover menu-icon js-open-list-menu" href="#"></a>
         </div>
     </div>
     <div class="list-card-area">
@@ -19,23 +15,47 @@
         <div class="list-gradient-bottom"></div>
         <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" >
             {% for data in task_data[key] %}
-            <div class="list-card clearfix ui-droppable {% if data.status %} complete {% else %} undone  {% endif %}" id="list{{ data.id }}">
-                <div class="card-labels clearfix"></div>
-                <span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>
-                <a class="list-card-title clear" href="javascript:;">
+            <div class="list-card clearfix ui-droppable" id="list{{ data.id }}">
+                
+                <a class="list-card-title" href="javascript:;">
                     <span class="card-short-id hide">#{{ data.id }} </span>
                     {% if data.status %}
                         <span class="complete">{{ data.title }}</span>
                     {% else %}
                         {{ data.title }}
                     {% endif %}
-
-                    {% if data.comment_count %}
-                        <span>{{ data.comment_count }}回复</span>
-                    {% endif %}
+                    
+                    <ul class="LCT_Prompt">
+                    	<li>2012年6月15日 上午</li>
+                        <li>消息(20)</li>
+                    </ul>
+                    <div class="clear"></div>
                 </a>
                 <div class="badges"></div>
                 <div class="list-card-members"></div>
+                <span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>
+                <div class="clear"></div>
+                
+                <ul class="list_card_operate">
+                    <li class="LC_reply">回复</li>
+                    <li class="LC_status">状态</li>
+                </ul>
+                
+                <div class="clear"></div>
+                <ul class="list_card_replies">
+                	<li>
+                    	<div>谭少华：新改了列表功能</div>
+                        <p>6月15日 14:18</p>
+                    </li>
+                    <li>
+                    	<div>谭少华：新改了列表功能</div>
+                        <p>6月15日 14:18</p>
+                    </li>
+                </ul>
+                <div class="message_box clear">
+                	<textarea name="" cols="" rows="" onblur="if (value ==''){value='请写点什么'}" onfocus="if (value =='请写点什么'){value =''}"></textarea>
+                    <input type="button" value="回复" />
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -145,7 +165,7 @@
 <!--人员列表-->
 <div class="board-widget board-widget-actions bottom clearfix">
     <div class="board-widget-title">
-        <h3 class="inline-block">我的同事列表</h3>
+        <h3 class="inline-block">分享的用户</h3>
         <!--
         <a class="quiet js-view-all-activity-header" href="#" style="margin-left: 3px;display:none;"  id="share_save_success">保存成功</a>
         <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis"></span>

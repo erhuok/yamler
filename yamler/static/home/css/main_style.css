@@ -360,6 +360,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .small-icon.menu-icon { background-position: -396px -108px;}
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
 .bold-list li a .counts { display: block;/* position: absolute; right: 30px; top: 5px;*/ float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
+.SharePeople{ margin-top:10px; color:#ccc; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px;}
+.SharePeople li{ float:left; padding:3px 8px; border:0;}
+
+
 .bold-list li a .board-list-menu { background-clip: content-box;
     background-origin: content-box;
     margin: 0; padding: 5px; position: absolute;
