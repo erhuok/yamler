@@ -1,8 +1,9 @@
 #encoding:utf8
 import re
-from flask import g, url_for, flash, abort, request, redirect, Markup, session
+from flask import g, url_for, flash, abort, request, redirect, Markup, session 
 from functools import wraps
 from yamler import app
+import datetime
 
 def request_wants_json():
     best = request.accept_mimetypes.best_match(['application/json', 'text/html'])
@@ -31,4 +32,17 @@ def required_admin(f):
 
 def allowed_images(filename):
     return '' in filename and \
-           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS'] 
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+def convert_time(type):
+    type = int(type)
+    if type == 1:
+        start_time = datetime.date.today()
+    elif type == 2:
+        start_time = datetime.datetime.now() - datetime.timedelta(days=1)
+    elif type == 3:
+        start_time = datetime.datetime.now() - datetime.timedelta(weeks=1)
+    elif type == 4:
+        start_time = datetime.datetime.now() - datetime.timedelta(days=30)
+    if start_time:
+        return start_time.strftime("%Y-%m-%d") 

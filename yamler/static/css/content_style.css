@@ -266,6 +266,7 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
     float: right;
 }
 .menu-icon.dark-hover:hover{ background-position:-660px 0;}
+.ui-state-highlight{ background-color:#333; border-radius:3px;}
 /*******************模板展示区 end***********************/
 
 

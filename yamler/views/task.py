@@ -62,17 +62,50 @@ def share(id):
                            data_users = json.dumps(data_users),
                           )
 
+@mod.route('/update_submit/<int:id>', methods=['POST', 'GET'])
+def submit(id):
+    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
+    if request.method == 'POST' and row and request.form['submit_user_id']:
+        res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
+        print request.form['submit_user_id'], id
+        return jsonify(error=0) 
+    share_users = dict()
+    if row.submit_user_id:
+        sql = "SELECT id, realname FROM users WHERE ID IN ({0})".format(','.join(row.submit_user_id.split(',')))
+        user_rows = g.db.execute(text(sql)).fetchall()
+        share_users = dict(user_rows)
+
+    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id"), company_id=g.company.id).fetchall()
+    data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
+    return render_template('task/update_submit.html', 
+                           row=row, 
+                           share_users_default=json.dumps(share_users.values()),
+                           data_users = json.dumps(data_users),
+                          )
+
 
 @mod.route('/get/<int:id>')
 def get(id):
-    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status,comment_count FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status,comment_count,submit_user_id,created_at FROM tasks WHERE id=:id"), id=id).first()
     row = dict(row)
-    row['share_users'] = ''
+    row['share_users'] = None
+    row['submit_users'] = None
+    row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') 
+
     if row and row.has_key('to_user_id') and row['to_user_id']:
-        sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(row['to_user_id'].lstrip(',').split(','))) 
-        result = g.db.execute(text(sql)).first()
-        row['share_users'] = result['share_users']
+        user_ids = row['to_user_id'].lstrip(',').split(',')
+        user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+        result = g.db.execute(text(user_sql)).fetchall()
+        row['share_users'] = [dict(zip(res.keys(), res)) for res in result]  
+     
+    if row and row.has_key('submit_user_id') and row['submit_user_id'] :
+        user_ids = row['submit_user_id'].lstrip(',').split(',')
+        user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+        result = g.db.execute(text(user_sql)).fetchall()
+        row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]   
+
     return jsonify(row=row)
+
 
 @mod.route('/delete/<int:id>')
 def delete(id):

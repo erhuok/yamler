@@ -9,8 +9,8 @@
         	<span class="window-header-icon app-icon member-icon"></span>
             <div class="member-title">
             	<h2>
-                    我的工作日志列表
-                    <!--<span class="quiet" style="margin-left: 3px">({{ g.user.realname }})</span>-->
+                    {{ g.company.name }}
+                    <span class="quiet" style="margin-left: 3px">({{ g.user.realname }})</span>
                 </h2>
             </div>
         </div>
@@ -23,13 +23,14 @@
             <div class="window-message">
                 <div class="message_block">
                     <span></span>
-                    <textarea class="text_input" onfocus="if (value =='请写点什么'){value =''}" onblur="if (value ==''){value='请写点什么'}" name="title" id="title"></textarea>
+                    <textarea class="text_input"  name="title" id="title">写点你将要做点什么吧</textarea>
                 </div>
                 <input type="hidden" name="to_user_id" id="to_user_id"/>
                 <input type="hidden" name="share_users" id="share_users"/>
                 <input type="hidden" name="submit_user_id" id="submit_user_id"/>
                 <input type="hidden" name="submit_users" id="submit_users"/>
                 <!--安排给-->
+                <div id="to_people" style="display:none;">
                 安排给
                 <ul class="add_People" id="submit_people"> </ul>
                 <!--安排给-->
@@ -39,9 +40,10 @@
                 <ul class="add_People" id="add_people">
                     +分享给
                 </ul>
+                </div>
                 <!--递交给-->
                 <div class="button_People clearfix">
-                    <input type="button" class="add_message primary confirm js-add-card" id="add_task_button" value="递 交" />
+                    <input type="button" class="add_message primary confirm js-add-card" id="add_task_button" value="发 布" />
                 </div>
             </div>
             </form>
@@ -50,7 +52,29 @@
         	<div class="window-module">
                 <div class="window-module-title">
                     <span class="app-icon window-module-title-icon board-icon"></span>
-                    <h3> 我的工作列表&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('home.share') }}">查看我部门的工作日志</a></h3>
+                    <h3> 
+                        <a href="{{ url_for('home.account') }}">我的全部工作列表</a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="{{ url_for('home.account', t=1) }}">只看我自己的</a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="{{ url_for('home.account', t=2) }}">安排给我的</a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a><small>完成情况</small></a>
+                        <select name="status" id="task_status">
+                            <option value="all">全部</option> 
+                            <option value="complete">完成</option> 
+                            <option value="undone">未完成</option> 
+                        </select>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a><small>时间</small></a>
+                        <select name="created_at" id="task_created_at">
+                            <option value="0">全部</option> 
+                            <option value="1">今天起</option> 
+                            <option value="2">昨天起</option> 
+                            <option value="3">本周起</option> 
+                            <option value="4">30天前起</option> 
+                        </select>
+                    </h3>
                 </div>
                 <ul class="boards-list bold-list gutter js-list-boards" id="msg_list"> </ul>
             </div>
@@ -91,6 +115,9 @@
                 </li>
                 <li>
                     <a class="js-share" href="javascript:;">递交</a>
+                </li>
+                <li>
+                    <a class="js-submit" href="javascript:;">安排</a>
                 </li>
                 <hr>
                 <li>
@@ -163,15 +190,40 @@
 		<div class="clear"></div>
         {% raw %} 
         <span class="counts">
-        {{if share_users }} ${share_users} {{/if}}
-        {{if comment_count }} ${comment_count}回复&nbsp;&nbsp; {{/if}}
+            {{if comment_count }} <span class="Share_Reply">${comment_count}条回复&nbsp;&nbsp;</span> {{/if}}
+            <span>${created_at}</span>
         </span>
         {% endraw %}
-        <div class="clear"></div>
+		<div class="clear"></div>
     </a>
+    
+    {% raw %}
+    {{if share_users}} 
+    <ul class="SharePeople">
+        <li>${realname}递交给</li>
+        {{tmpl(share_users) "#share_users_template"}}
+    </ul>
+    {{/if}}
+    {% endraw %}
+
+    {% raw %}
+    {{if submit_users}} 
+    <ul class="SharePeople">
+        <li>${realname}安排给</li>
+        {{tmpl(submit_users) "#submit_users_template"}}
+    </ul>
+    {{/if}}
+    {% endraw %}
 </li>
 </script>
 
+<script id="share_users_template" type="text/x-jquery-tmpl">
+    <li>${realname}</li>
+</script>
+
+<script id="submit_users_template" type="text/x-jquery-tmpl">
+    <li>${realname}</li>
+</script>
 <script src="{{ url_for('static', filename='js/libs/taghandler/js/jquery.taghandler.min.js') }}"></script>
 
 <script>
@@ -183,20 +235,100 @@
         return split( term ).pop();
     }
     
+    function getQueryString(name)
+    {
+        // 如果链接没有参数，或者链接中不存在我们要获取的参数，直接返回空
+        if(location.href.indexOf("?")==-1 || location.href.indexOf(name+'=')==-1)
+        {
+            return '';
+        }
+     
+        // 获取链接中参数部分
+        var queryString = location.href.substring(location.href.indexOf("?")+1);
+
+        // 分离参数对 ?key=value&key2=value2
+        var parameters = queryString.split("&");
+
+        var pos, paraName, paraValue;
+        for(var i=0; i<parameters.length; i++)
+        {
+            // 获取等号位置
+            pos = parameters[i].indexOf('=');
+            if(pos == -1) { continue; }
+     
+            // 获取name 和 value
+            paraName = parameters[i].substring(0, pos);
+            paraValue = parameters[i].substring(pos + 1);
+     
+            // 如果查询的name等于当前name，就返回当前值，同时，将链接中的+号还原成空格
+            if(paraName == name)
+            {
+                return unescape(paraValue.replace(/\+/g, " "));
+            }
+        }
+        return '';
+    }
     //var params = "{{ request.url.split('?')[-1] }}"
-    var url = '/home/getMyFeed';
+    var url = '/home/getMyFeed?'
+    if(t = getQueryString('t'))
+       url += 't=' + t;  
+
     getMyFeed(url)
-
+    
+    //查看更多
     $("#get_more_feed").click(function() {
-        var page = parseInt($(this).attr('name'))+1; 
-        var url = '/home/getMyFeed?page='+page;
-        getMyFeed(url)
-        $(this).attr('name', page);
+        //var page = parseInt($(this).attr('name'))+1; 
+        //var status = $("#task_status").attr('value');
+        //url2 = url+'&page='+page+'&status='+status;
+        url2 = $(this).attr('name');
+        getMyFeed(url2);
+        //$(this).attr('name', page);
     });
-	
+    
+    function getQueryUrl(key,value) {
+        var url = $("#get_more_feed").attr('name');
+         // 获取链接中参数部分
+        var queryString = url.substring(url.indexOf("?")+1);
+        // 分离参数对 ?key=value&key2=value2
+        var parameters = queryString.split("&");
+        var pos, paraName, paraValue, newQuery=Array();
+        for(var i=0; i<parameters.length; i++) {
+            // 获取等号位置
+            pos = parameters[i].indexOf('=');
+            if(pos == -1) { continue; }
+     
+            // 获取name 和 value
+            paraName = parameters[i].substring(0, pos);
+            paraValue = parameters[i].substring(pos + 1);
+            if(paraName=='page') paraValue=1;
+            if(paraName != key) {
+                var newParam = paraName + '=' + paraValue;
+                newQuery.push(newParam);
+            }
+        }
+        newQuery.push(key+'='+value);
+        return '/home/getMyFeed?'+newQuery.join('&');
+    }
+    //状态
+    $("#task_status").change(function() {
+        var status = $(this).children('option:selected').val();
+        //url2 = url + '&status='+status;
+        //$(this).attr('value', status);
+        var url = getQueryUrl('status', status);
+        $("#msg_list").empty();
+        getMyFeed(url);
+    });
 
+    //时间查找
+    $("#task_created_at").change(function() {
+        var created_at = $(this).children('option:selected').val();
+        var url = getQueryUrl('created_at', created_at);
+        $("#msg_list").empty();
+        getMyFeed(url);
+    });
     function getMyFeed(url) {
         $.getJSON(url, function(res){
+            $("#get_more_feed").attr('name', res.next_page);
             $( "#msgTemplate" ).tmpl( res.data ).appendTo( "#msg_list" );
         });  
     }
@@ -420,6 +552,25 @@
             }
         });
     });
+    
+    $(".js-submit").click(function() {
+        var id = $("#pop_action").attr('name');
+        $.fancybox({
+			autoSize: false,
+			width: '40%',
+			height: '60%',
+            type: 'iframe',
+            href: '/task/update_submit/'+id,
+            afterClose: function() {
+                $.getJSON('/task/get/'+id,function(res) {
+                    var html = $( "#msgTemplate" ).tmpl(res.row);
+                    $("#list"+id).replaceWith(html);
+                    $("#list"+id).effect("highlight", {}, 3000);
+                    $(".pop-over").hide();
+                });
+            }
+        });
+    });
 
     $(".js-modify").click(function() {
         var id = $("#pop_action").attr('name');
@@ -506,5 +657,24 @@
                 }); 
             }
         });
+
+        //文本输入框控制
+        $("#title").focus(function() {
+            //onfocus="if (value =='请写点什么'){value =''}" onblur="if (value ==''){value='请写点什么'}"   
+            if(this.value=='写点你将要做点什么吧') 
+            {
+                this.value = ''; 
+            }
+            $('#to_people').show();
+        }).blur(function() {
+            if(this.value=='') 
+            {
+                this.value = '写点你将要做点什么吧';  
+                $('#to_people').hide();
+            }
+
+        });
+
+      
     </script>
     {% endblock %}
