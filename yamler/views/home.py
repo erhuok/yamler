@@ -90,8 +90,8 @@ def publish():
         res = g.db.execute(tasks.insert().values({tasks.c.title: request.form['title'], 
                                                   tasks.c.user_id: g.user.id,
                                                   tasks.c.created_at: created_at, 
-                                                  tasks.c.to_user_id: request.form['to_user_id'].lstrip(','), 
-                                                  tasks.c.submit_user_id: request.form['submit_user_id'].lstrip(',') 
+                                                  tasks.c.to_user_id: request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 
+                                                  tasks.c.submit_user_id: request.form['submit_user_id'].lstrip(',') if request.form['submit_user_id'] else '',
                                                  })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
