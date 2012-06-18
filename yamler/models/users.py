@@ -41,6 +41,7 @@ class User(Model):
         return result
 
 class UserRemind(Model):
+    __tablename__ = 'users_remind'
     id = Column(Integer, primary_key=True)
     submit_count = Column(Integer, default=0)
     share_count = Column(Integer, default=0)
