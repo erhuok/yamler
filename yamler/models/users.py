@@ -44,8 +44,13 @@ class UserRemind(Model):
     id = Column(Integer, primary_key=True)
     submit_count = Column(Integer, default=0)
     share_count = Column(Integer, default=0)
+    
+    def __init__(self, submit_count=None, share_count=None):
+        self.submit_count = submit_count
+        self.share_count = share_count
 
 users = Table('users', metadata, autoload=True)
+users_remind = Table('users_remind', metadata, autoload=True)
 
 class RegistrationForm(Form):
     def check_email_exists(form, field):
