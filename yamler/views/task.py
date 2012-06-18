@@ -45,7 +45,7 @@ def update(id):
 @mod.route('/update_share/<int:id>', methods=['POST', 'GET'])
 def share(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE id=:id"), id=id).first()
-    if request.method == 'POST' and row and request.form['to_user_id']:
+    if request.method == 'POST' and row:
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
         return jsonify(error=0) 
     share_users = dict()
@@ -65,7 +65,7 @@ def share(id):
 @mod.route('/update_submit/<int:id>', methods=['POST', 'GET'])
 def submit(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
-    if request.method == 'POST' and row and request.form['submit_user_id']:
+    if request.method == 'POST' and row:
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
         print request.form['submit_user_id'], id
         return jsonify(error=0) 
