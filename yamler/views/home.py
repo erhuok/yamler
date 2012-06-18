@@ -11,6 +11,7 @@ from yamler.models.tasks import tasks, task_comments
 from yamler.models.boards import Board, boards
 from sqlalchemy.sql import select, text
 from yamler.utils import convert_time 
+import time
 
 mod = Blueprint('home', __name__, url_prefix='/home')
 
@@ -104,7 +105,7 @@ def publish():
                        created_at = created_at.strftime('%m月%d日 %H:%m'),
                       )
 
-@mod.route('/getMyFeed')
+@mod.route('/publish', methods=['GET', 'POST'])
 def getMyFeed():
     t = int(request.args.get('t',0))
     default_status = {'complete':1 , 'undone':0 , 'all':2} 
@@ -113,7 +114,6 @@ def getMyFeed():
 
     created_at = request.args.get('created_at', '')
     start_time = convert_time(created_at) if created_at else '' 
-    print start_time
     page = int(request.args.get('page',1))
     limit = 20
     skip = (page-1) * limit
@@ -161,8 +161,10 @@ def getMyFeed():
         new_row['status'] = row['status'] 
         new_row['share_users'] = None
         new_row['submit_users'] = None
-        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') if row['created_at'] else '' 
+        #手机端的时间
+        new_row['mobile_time'] = time.mktime(row.created_at.timetuple())
 
+        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') if row['created_at'] else '' 
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))

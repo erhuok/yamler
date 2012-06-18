@@ -40,6 +40,11 @@ class User(Model):
                      )
         return result
 
+class UserRemind(Model):
+    id = Column(Integer, primary_key=True)
+    submit_count = Column(Integer, default=0)
+    share_count = Column(Integer, default=0)
+
 users = Table('users', metadata, autoload=True)
 
 class RegistrationForm(Form):
