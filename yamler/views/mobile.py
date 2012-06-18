@@ -7,7 +7,9 @@ from yamler.models.companies import Company, companies
 from yamler.models.user_relations import UserRelation 
 from sqlalchemy.sql import between
 from sqlalchemy import or_, and_, select, text
+from yamler.utils import convert_time
 import datetime
+import time
 
 mod = Blueprint('mobile',__name__,url_prefix='/mobile')
 
@@ -67,65 +69,96 @@ def task_create():
         return jsonify(error=0, code='success', message='添加成功')
     return jsonify(error=1, code='failed', message='输入数据不合法')
 
-#@mod.route('/task/get',methods=['POST'])
-#def task_get():
-#    if request.form['user_id'] and request.form['status']:
-#        rows = db_session.query(Task, User).filter(User.id==Task.to_user_id).filter(and_(Task.user_id==request.form['user_id'], Task.status==request.form['status'])).all()
-#        data = [ dict(user.to_json().items() + task.to_json().items())  for task, user in rows]
-#        rows2 = db_session.query(Task, User).filter(User.id==Task.user_id).filter(and_(Task.to_user_id==request.form['user_id'], Task.status==request.form['status'])).all()
-#        data_to = [ dict(user.to_json().items() + task.to_json().items())  for task, user in rows2]
-#        rows3 = db_session.query(Task).filter(and_(Task.user_id==request.form['user_id'], Task.to_user_id==0, Task.status==request.form['status'])).all()
-#        data_me = [ row.to_json() for row in rows3]
-#        return jsonify(error = 0, data=data, data_to=data_to, data_me=data_me)
-
-#    return jsonify(error = 1, data = {}) 
 
 @mod.route('/task/get',methods=['POST'])
 def task_get():
+    if not request.form.has_key('user_id'):
+        return jsonify(errro=1)
+
     user_id = request.form['user_id']
     t = int(request.form['t']) if request.form.has_key('t') else 0
-    if t == 1:
-        rows = g.db.execute(text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id=:user_id ORDER BY created_at DESC"),user_id=user_id).fetchall();
-    elif t == 2:
-        if request.form.has_key('start_time') and request.form.has_key('end_time'):
-            sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) AND created_at between :start_time and :end_time ORDER BY created_at DESC"
-            rows = g.db.execute(text(sql),to_user_id=user_id, start_time=request.form['start_time'], end_time=request.form['end_time']).fetchall();
-        else:
-            sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC"
-            rows = g.db.execute(text(sql),to_user_id=user_id).fetchall();
-    else:
-        s = text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id = :user_id UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE to_user_id IN (:to_user_id) ORDER BY created_at DESC") 
-        rows = g.db.execute(s, user_id=user_id, to_user_id=user_id).fetchall()
-    user_sql = text("SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ( :id )")
+    default_status = {'complete':1 , 'undone':0 , 'all':2} 
+    status = request.args.get('status','all')
+    status_value = int(default_status[status]) 
+
+    created_at = request.form['created_at'] if request.form.has_key('created_at') else ''
+    start_time = convert_time(created_at) if created_at else '' 
+    page = request.form['page'] if request.form.has_key('page') else 1 
+
+    limit = 20
+    skip = (page-1) * limit
+    next_page = 't='+str(t)+'&status='+str(status)+'&page='+str(page+1)+'&created_at='+str(created_at) 
+    #只看我自己的
+    if 1 == int(t):
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        if status_value != 2:
+            sql += ' AND status = :status' 
+        if start_time:
+            sql += ' AND created_at > :created_at'
+        sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
+        rows = g.db.execute(text(sql),user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
+    elif 2 == int(t): 
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
+        if status_value != 2:
+            sql += ' AND status = :status' 
+        if start_time:
+            sql += ' AND created_at > :created_at'
+        sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
+        rows = g.db.execute(text(sql), submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
+    else: 
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        if status_value != 2:
+            sql += ' AND status = :status ' 
+        
+        if start_time:
+            sql += ' AND created_at > :created_at'
+        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
+        if status_value != 2:
+            sql += ' AND status = :status ' 
+        if start_time:
+            sql += ' AND created_at > :created_at'
+        sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
+        print sql 
+        rows = g.db.execute(text(sql),user_id=user_id, submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
+
     data = []
-    #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN :id "
     for row in rows:
         new_row = {}
         new_row['id'] = row['id']
+        new_row['comment_count'] = row['comment_count']
         new_row['user_id'] = row['user_id'] 
-        new_row['created_at'] = row['created_at'].strftime('%Y-%m-%d %T') if row['created_at'] else ''
         new_row['title'] = row['title'] 
         new_row['status'] = row['status'] 
+        new_row['share_users'] = None
+        new_row['submit_users'] = None
+        #手机端的时间
+        new_row['mobile_time'] = time.mktime(row.created_at.timetuple())
+
+        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') if row['created_at'] else '' 
         if row['to_user_id']:
-            sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ("
-            to_ids = ''
-            for s in row['to_user_id'].split(','):
-                if s:
-                    to_ids += s.strip()+','
-            to_ids = to_ids.rstrip(',')
-            if to_ids != '0':
-                sql += to_ids
-                sql += ")" 
-                result = g.db.execute(text(sql)).first()
-                new_row['share_users'] = result['share_users'] 
+            user_ids = row['to_user_id'].lstrip(',').split(',')
+            #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+            user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+            result = g.db.execute(text(user_sql)).fetchall()
+            new_row['share_users'] = [dict(zip(res.keys(), res)) for res in result]  
+
+        if row['submit_user_id']:
+            user_ids = row.submit_user_id.lstrip(',').split(',')
+            user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+            result = g.db.execute(text(user_sql)).fetchall()
+            new_row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]  
+
+        #我自己的
         if row['user_id'] == user_id:
-            new_row['ismine'] = True 
+            new_row['realname'] = '我' 
+            new_row['ismine'] = True
+        #安排给我的
         else:
-            new_row['other'] = True 
-        result = g.db.execute(text("SELECT realname FROM users WHERE id=:id"),id=row['user_id']).first()
-        new_row['realname'] = result['realname'] 
+            new_row['ismine'] = False 
+            new_row['realname'] = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first().realname
+
         data.append(new_row)
-    return jsonify(data=data)
+    return jsonify(data=data, next_page=next_page)
 
 @mod.route('/task/update', methods=['POST'])
 def task_update():

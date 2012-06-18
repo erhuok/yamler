@@ -96,6 +96,7 @@ def publish():
                                                  })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
+
         return jsonify(title=request.form['title'], 
                        ismine=True, 
                        realname=g.user.realname, 
