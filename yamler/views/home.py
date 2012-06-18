@@ -105,7 +105,7 @@ def publish():
                        created_at = created_at.strftime('%m月%d日 %H:%m'),
                       )
 
-@mod.route('/publish', methods=['GET', 'POST'])
+@mod.route('/getMyFeed', methods=['GET', 'POST'])
 def getMyFeed():
     t = int(request.args.get('t',0))
     default_status = {'complete':1 , 'undone':0 , 'all':2} 
