@@ -182,9 +182,11 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     min-height: 18px;
 	_height:18px;
     padding: 6px 8px 1px;
-    /*position: relative;*/
     z-index: 0;
 }
+.list-card.updone{
+	border:1px solid #090;
+	}
 .list-card.js-composer{ height:auto;}
 .js-member-droppable{
 	border-radius: 3px 3px 3px 3px;
@@ -227,7 +229,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 }
 .list-card-title {
     display: block;
-    margin: 0 0 5px;
+    margin: 0 0 3px;
     overflow: hidden;
     padding: 0;
 	float:left;
@@ -316,33 +318,41 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
 
 .list_card_operate{ display:none;}
 .list_card_operate li{ 
-	background-color:#e6e6e6;
+	background-color:none;
 	border-radius: 2px 2px 2px 2px;
-    border: 1px solid #d0d0d0;
+    border: 0;
     color: #555555;
     cursor: default;
     font-size: 12px;
-    height: 16px;
+    height: 20px;
     line-height: 16px;
     margin: 0 0 4px 4px;
-    padding: 3px 6px;
-	border-radius:3px;
+    padding: 0;
     text-decoration: none;
 	}
-.list_card_operate li.LC_reply,.list_card_operate li.LC_status{
+/*.list_card_operate li.LC_reply{
 	float:right;
 	background-color:#aaa;
     color: #FFFFFF;
 	cursor:pointer;
 	}
-.list_card_operate li.LC_status.hover,.list_card_operate li.LC_reply.hover{
+
+.list_card_operate li.LC_reply.hover{
 	background-color:#aaa;
 	}
-.list_card_operate li.LC_status.current,.list_card_operate li.LC_reply.current{
+.list_card_operate li.LC_reply.current{
 	background-color:#24A828;
 	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	}*/
+.list_card_operate li.LC_status{
+	float:right;
+	background-image:url("../images/index_img/complete_img02.png");
+	background-repeat:no-repeat;
+	width:36px; height:20px;
 	}
-
+.list_card_operate li.LC_status.current{
+	background-position:0 -20px;
+	}
 .message_box{ display:none;}
 .message_box textarea{ border:1px solid #ccc;}
 .message_box input{ margin:4px 4px 4px 0; padding:3px 8px; display:inline-block; float:right; font-size:12px;

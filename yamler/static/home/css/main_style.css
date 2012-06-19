@@ -350,6 +350,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .bold-list li .item-name { display: inline; font-weight: normal; margin-bottom: 0; padding-right: 8px; font-size:14px;}
 .bold-list li a.hover{ color:#fff; background-color:#fc9429;
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;}
+.bold-list li a.hover .counts{ color:#fff;}
 .bold-list li a.current{ background-color:#fff;}
 
 
@@ -359,8 +360,9 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .small-icon.pin-icon { background-position: -360px -108px;}
 .small-icon.menu-icon { background-position: -396px -108px;}
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
-.bold-list li a .counts { display: block;/* position: absolute; right: 30px; top: 5px;*/ float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
-.SharePeople{ margin-top:10px; color:#ccc; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px;}
+.bold-list li a .counts { display: block; color:#777; float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
+
+.SharePeople{ margin-top:10px; color:#9c9c9c; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px;}
 .SharePeople li{ float:left; padding:3px 8px; border:0;}
 
 
@@ -580,7 +582,7 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 /***************任务导航状态****************/
 .Task_nav{ display: inline-block; padding:3px 5px; margin-right:10px; border-radius:3px;}
 .Task_nav:hover{ text-decoration:none;}
-.Task_nav.hover{ background-color:#e3e3e3;}
+.Task_nav.hover{ background-color:#c8c8c8;}
 .Task_nav.current{ background-color:#fff;}
 
 /***************任务导航状态 end****************/
