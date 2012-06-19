@@ -15,9 +15,9 @@
         <div class="list-gradient-bottom"></div>
         <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" >
             {% for data in task_data[key] %}
-            <div class="list-card clearfix ui-droppable" id="list{{ data.id }}">
+            <div class="list-card clearfix ui-droppable {% if status %} complete {% else %} undone {% endif %}" id="list{{ data.id }}">
                 
-                <a class="list-card-title" href="javascript:;">
+                <a class="list-card-title" href="javascript:;" name="{{data.id}}">
                     <span class="card-short-id hide">#{{ data.id }} </span>
                     {% if data.status %}
                         <span class="complete">{{ data.title }}</span>
@@ -26,35 +26,39 @@
                     {% endif %}
                     
                     <ul class="LCT_Prompt">
-                    	<li>2012年6月15日 上午</li>
-                        <li>消息(20)</li>
+                        <li>{{ data.created_at|datetimeformat }}</li>
+                        {% if data.comment_count %}
+                            <li>回复({{ data.comment_count }})</li>
+                        {% endif %}
+                        
                     </ul>
                     <div class="clear"></div>
                 </a>
                 <div class="badges"></div>
                 <div class="list-card-members"></div>
-                <span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>
+                <!--<span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>-->
                 <div class="clear"></div>
                 
-                <ul class="list_card_operate">
-                    <li class="LC_reply">回复</li>
-                    <li class="LC_status">状态</li>
-                </ul>
-                
-                <div class="clear"></div>
-                <ul class="list_card_replies">
-                	<li>
-                    	<div>谭少华：新改了列表功能</div>
-                        <p>6月15日 14:18</p>
-                    </li>
-                    <li>
-                    	<div>谭少华：新改了列表功能</div>
-                        <p>6月15日 14:18</p>
-                    </li>
-                </ul>
-                <div class="message_box clear">
-                	<textarea name="" cols="" rows="" onblur="if (value ==''){value='请写点什么'}" onfocus="if (value =='请写点什么'){value =''}"></textarea>
-                    <input type="button" value="回复" />
+                <div id="operation{{data.id}}" name="{{data.id}}" style="display:none;">
+                    <!--
+                    <ul class="list_card_operate" style="display:block;">
+                        <li class="LC_status">未完成</li>
+                    </ul>
+                    -->
+                    
+                    <div class="clear"></div>
+
+                    <ul class="list_card_replies" id="comment_list_{{data.id}}" style="display:block;">
+                    </ul>
+
+                    <div class="message_box" style="display:block;">
+                        <form id="comment_form_{{data.id}}" name="comment_form">
+                            <textarea name="comment_content" id="comment_content_{{data.id}}" cols="" rows="" ></textarea>
+                            <input type="button" value="回复" class="Submit" id="submit_{{data.id}}"/>
+                            <input type="button" value="取消" class="cancel" id="cancel_{{data.id}}"/>
+                        </form>
+                        <div class="clear"></div>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -84,13 +88,10 @@
 
 <!--回复的模板-->
     <script id="comment_template_list" type="text/x-jquery-tmpl">
-        <div class="padd_7 rebody">
-            <h2>
-                <a href="">${realname}</a>
-                -<span>${created_at}</span>
-            </h2>
-            <p>${content}</p>
-        </div>
+    <li>
+        <div>${realname}：${content}</div>
+        <p>${created_at}</p>
+    </li>
     </script>
 <!--回复的模板 end-->
     
@@ -105,6 +106,47 @@
 <!--回复的html end-->
 
 <script>
+
+    
+    $(".list-card-title").toggle(function(){
+        var id = $(this).attr('name');
+        if(id) {
+            var operation = $("#operation"+id);
+            $.getJSON('/comment/get/'+id, function(res) {
+                $("#comment_list_"+id).empty();
+                $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list_"+id );
+            });
+            operation.show();
+            $("#comment_content_"+id).focus();
+            $("#submit_"+id).click(function() {
+                var task_id = id;
+                var comment_content = $("#comment_content_"+task_id).val();
+                if(comment_content) {
+                    var form = $('#comment_form_'+task_id)
+                    $.ajax({
+                        type: "POST",
+                        data: form.serialize(),
+                        url: "/comment/create/"+task_id,
+                        dataType: "json",
+                        success: function(data) {
+                            $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list_"+task_id );
+                            form.each(function(){ this.reset(); });
+                        }
+                    }); 
+                }
+            });
+            $("#cancel_"+id).click(function() {
+                operation.hide();
+            });
+        }
+
+    },function(){
+        var id = $(this).attr('name');
+        var operation = $("#operation"+id);
+        operation.hide();
+    });
+
+
     $('.js-replay').click(function() {
         var id = $(this).attr('name');
         $("#comment_list").empty();
@@ -113,7 +155,7 @@
             $.fancybox({
                 //type: 'html',
                 content: $("#comment"),
-				autoSize: false,
+                autoSize: false,
                 width: '250px',
                 height: 'auto',
                 //minWidth: '180px',
@@ -131,7 +173,7 @@
                 }
             });
         }); 
-        
+
         $("#comment_save_button").click(function() {
             var task_id = id;
             var comment_content = $("#comment_content").val();

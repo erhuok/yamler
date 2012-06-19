@@ -66,7 +66,7 @@ def task_create():
                     ) 
         db_session.add(task)
         db_session.commit()
-        return jsonify(error=0, code='success', message='添加成功')
+        return jsonify(error=0, code='success', message='添加成功', id=task.id)
     return jsonify(error=1, code='failed', message='输入数据不合法')
 
 

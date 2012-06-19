@@ -45,7 +45,7 @@ textarea, input[type="text"]{
 .hide { display: none;}
 .float_left{ float:left;}
 .float_right{ float:right;}
-.clear{ clear:both; /*height:0; overflow:hidden;*/}
+.clear{ clear:both; height:0; overflow:hidden;}
 .bg_div{ margin:0 auto; width:1000px;}/* 背景*/
 .bg_div_998{ width:998px;}
 .bg_Public{ background-color:#fff; border:1px solid #C3C3C3;}

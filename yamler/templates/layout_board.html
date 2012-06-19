@@ -41,28 +41,93 @@
 			$(this).removeClass("active-card");
 		})
 		
-		//控制状态显示
-		$(".list-card-title").toggle(function(){
+		/*$(".list-card-title").live('click',function(){
+			$(this).parent().addClass("active-card-current");
+			$(".list-card").not($(this).parent()).removeClass("active-card-current")
+		})*/
+		
+		$(".list-card").live('click',function(){
+			$(this).addClass("active-card-current");
+			$(".list-card").not($(this)).removeClass("active-card-current")
+		})
+
+			    //控制状态显示
+        /*
+	    $(".list-card-title").toggle(function(){
 			$(this).parent().find(".list_card_operate").show();
+			if($(this).parent().find(".list_card_operate li.LC_reply").html()=="收起回复"){
+				$(this).parent().find(".list_card_replies").show();
+				$(this).parent().find(".message_box").show();
+				$(this).parent().parent().find(".message_box textarea").focus();
+			}
+			$(this).parent().addClass("active-card-current");
+			$(".list-card").not($(this).parent()).removeClass("active-card-current")
+			re_height();
 		},function(){
 			$(this).parent().find(".list_card_operate").hide();
-			
+			$(this).parent().find(".list_card_replies").hide();
+			$(this).parent().find(".message_box").hide();
+			$(this).parent().addClass("active-card-current");
+			$(".list-card").not($(this).parent()).removeClass("active-card-current");
+			re_height();
+			clear_height01(this);
 		});
-		
-		$("ul.list_card_operate li.LC_reply").click(function(){
+        */
+	    /*	
+		$("ul.list_card_operate li.LC_reply").toggle(function(){
 			$(this).parent().parent().find(".message_box").show();
 			$(this).parent().parent().find(".list_card_replies").show();
-		})
-		$(".message_box input:button").click(function(){
-			$(this).parent().hide();
+			$(this).addClass("current");
+			$(this).parent().parent().find(".message_box textarea").focus();
+			$(this).html("收起回复");
+			re_height();
+		},function(){
+			$(this).parent().parent().find(".message_box").hide();
 			$(this).parent().parent().find(".list_card_replies").hide();
+			$(this).removeClass("current");
+			$(this).html("查看回复");
+			re_height();
+			clear_height02(this);
 		});
+        */
 		
+        /*
+		$(".message_box input.Submit").click(function(){
+			$(this).parent().hide();
+			//$(this).parent().parent().find(".list_card_replies").hide();
+			re_height();
+			clear_height02(this);
+		});
+	    */	
 		
+	    /*	
+		$("ul.list_card_operate li.LC_status").toggle(function(){
+			$(this).addClass("current");
+			$(this).html("完成");
+		},function(){
+			$(this).removeClass("current");
+			$(this).html("未完成");
+		});	
+        */
+		
+		function clear_height01(e){
+			var out_height = $("#board").height();
+			var inner_height = $(e).parent().parent(".list-cards").height();
+			if( out_height > (inner_height+40)){
+				$(e).parent().parent(".list-cards").css({overflow:"auto",height:"auto"});
+			}
+		}
+		function clear_height02(e){
+			var out_height = $("#board").height();
+			var inner_height = $(e).parent().parent().parent(".list-cards").height();
+			if( out_height > (inner_height+40)){
+				$(e).parent().parent().parent(".list-cards").css({overflow:"auto",height:"auto"});
+			}
+		}
 		
 		
 		function re_height(){
-			var w_height = $(document).height();
+			var w_height = $(window).height();
 			var b_height = w_height-(78+26);
 			var w_width = $(window).width();
 			var con_width = w_width-265;
@@ -75,16 +140,16 @@
 			if(list_countWidth > con_width){
 				$(".list-area-wrapper").css("overflow-x","scroll");
 			}else{
-				$(".list-area-wrapper").css("overflow","hidden");	
+				$(".list-area-wrapper").css("overflow","hidden");
 			}
 			$(".list-area").css("width",list_countWidth+"px");
 			
 			$(".list").each(function(){
 				var listblock_height = $(this).height();
-				var listb_height = b_height-50;
-				if(listblock_height > (b_height-30)){
+				var listb_height = b_height-60;
+				if(listblock_height > (b_height-40)){
 					$(this).css("overflow","hidden");
-					$(this).find(".list-cards").css({"overflow":"scroll",height:listb_height+"px"});
+					$(this).find(".list-cards").css({overflow:"scroll",height:listb_height+"px"});
 				}
 			})
 			
@@ -145,11 +210,11 @@
     <div class="header-user">
         <a class="header-btn header-notifications js-open-header-notifications-menu" href="{{ url_for('home.account') }}">
         	<span class="app-icon light notification-icon"></span>
-            <span class="header-btn-text">我的工作列表</span>
+            <span class="header-btn-text">我的工作日志列表</span>
         </a>
         <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('home.share') }}">
         	<span class="app-icon light board-icon"></span>
-			<span class="header-btn-text">我部门的日志</span>
+			<span class="header-btn-text">递交给我的工作日志</span>
         </a>
         <a class="header-auth member js-open-header-member-menu" href="{{ url_for('user.logout') }}">
         	<span class="member-initials" title="tanxiao (tanxiao)">退出</span>
@@ -175,7 +240,7 @@
         	<a class="app-icon dark-hover board-icon js-open-board-menu-icon"></a>
             <div class="board-title">
                 <h2>
-                	<a class="js-board-title js-open-board-menu-title" href="#">我部门的日志</a>
+                	<a class="js-board-title js-open-board-menu-title" href="#">递交给我的工作日志</a>
                 </h2>
                 <h4 class="quiet org-name"></h4>
                 <div id="permission-level">
