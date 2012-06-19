@@ -40,7 +40,7 @@
                 <div class="clear"></div>
                 
                 <ul class="list_card_operate" style="display:block;">
-                    <li class="LC_status" title="未完成"></li>
+                    <li id="status{{ data.id }}" name="{{ data.id }}" status="{{ data.status }}" {% if data.status %} class="LC_status"  title="完成" {% else %} class="LC_status current" title="未完成"  {% endif %}></li>
                 </ul>
                 <div class="clear"></div>
                 <div id="operation{{data.id}}" name="{{data.id}}" style="display:none;">
@@ -145,56 +145,69 @@
         var operation = $("#operation"+id);
         operation.hide();
     });
-
-
-    $('.js-replay').click(function() {
+    /*
+	$("ul.list_card_operate li.LC_status").toggle(function(){
+		$(this).addClass("current");
+		$(this).attr("title","完成");
+        var status = $(this).attr('status');
         var id = $(this).attr('name');
-        $("#comment_list").empty();
-        $.getJSON('/comment/get/'+id, function(res) {
-            $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list" );
-            $.fancybox({
-                //type: 'html',
-                content: $("#comment"),
-                autoSize: false,
-                width: '250px',
-                height: 'auto',
-                //minWidth: '180px',
-                //autoSize: true,
-                afterClose: function() {
-                    /*
-                    $.getJSON('/task/get/'+id,function(res) {
-                        var html = $( "#msgTemplate" ).tmpl(res.row);
-                        $("#list"+id).replaceWith(html);
-                        $("#list"+id).effect("highlight", {}, 3000);
-                    });
-                    */
-                    $("#list"+id).effect("highlight", {}, 3000);
-                    $("#comment_save_button").unbind('click');
-                }
-            });
-        }); 
-
-        $("#comment_save_button").click(function() {
-            var task_id = id;
-            var comment_content = $("#comment_content").val();
-            if(comment_content) {
-                var form = $('#comment_form')
-                $.ajax({
-                    type: "POST",
-                    data: form.serialize(),
-                    url: "/comment/create/"+task_id,
-                    dataType: "json",
-                    success: function(data) {
-                        $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list" );
-                        form.each(function(){ this.reset(); });
-                    }
-                }); 
-            }
-        });
+        res = setStatus(status,id);
+        if(res) $(this).attr('status', res)
+	},function(){
+		$(this).removeClass("current");
+		$(this).attr("title","未完成");
+        var status = $(this).attr('status');
+        var id = $(this).attr('name');
+        res = setStatus(status,id);
+        if(res) $(this).attr('status', res)
+	});	
+    */
+    $("ul.list_card_operate li").click(function() {
+        var status = $(this).attr('status');
+        var id = $(this).attr('name');
+        var status_obj = $('#status'+id);
+        //设置成完成
+        if(status==0) {
+            $.ajax({
+                type: "POST",
+                data: {'status': 1},
+                url: "/task/update/"+id,
+                dataType: "json",
+                success: function(data) { 
+                    status_obj.attr('title','完成')
+                    status_obj.removeClass('current');
+                    status_obj.attr('status', 1);
+                } 
+            });       
+        }
+        if(status==1) {
+            $.ajax({
+                type: "POST",
+                data: {'status': 0},
+                url: "/task/update/"+id,
+                dataType: "json",
+                success: function(data) { 
+                    status_obj.attr('title','未完成')
+                    status_obj.addClass('current');
+                    status_obj.attr('status', 0);
+                } 
+            }); 
+        }
     });
-
-
-
+    
+    function setStatus(status,task_id) {
+        if(status == 1)  new_status = 0;
+        if(status == 0)  new_status = 1;
+        $.ajax({
+            type: "POST",
+            data: {'status': new_status},
+            url: "/task/update/"+task_id,
+            dataType: "json",
+            success: function(data) { 
+            } 
+        }); 
+        return new_status;
+    }
 </script>
 
 
@@ -207,7 +220,7 @@
 <!--人员列表-->
 <div class="board-widget board-widget-actions bottom clearfix">
     <div class="board-widget-title">
-        <h3 class="inline-block">分享的用户</h3>
+        <h3 class="inline-block">递交给我的同事</h3>
         <!--
         <a class="quiet js-view-all-activity-header" href="#" style="margin-left: 3px;display:none;"  id="share_save_success">保存成功</a>
         <span class="app-icon small-icon dark-hover menu-icon board-widget-menu-btn js-board-widget-vis"></span>
