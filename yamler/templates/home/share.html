@@ -138,12 +138,14 @@
             $("#cancel_"+id).click(function() {
                 operation.hide();
             });
+            $(".list-card").not($(this).parent()).removeClass("active-card-current");
         }
 
     },function(){
         var id = $(this).attr('name');
         var operation = $("#operation"+id);
         operation.hide();
+        $(".list-card").not($(this).parent()).removeClass("active-card-current");
     });
     /*
 	$("ul.list_card_operate li.LC_status").toggle(function(){
