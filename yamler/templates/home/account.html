@@ -426,6 +426,7 @@
     $("#add_task_button").live('click',function() {
         var title = $("#title").val();
         if(!title) return false;
+        if(title=='写点你将要做点什么吧') return false;
         $.ajax({
             type: 'POST',
             data: $("#task_publish_form").serialize(),

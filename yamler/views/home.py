@@ -9,6 +9,7 @@ from yamler.models.companies import companies
 from yamler.models.groups import groups 
 from yamler.models.tasks import tasks, task_comments
 from yamler.models.boards import Board, boards
+from yamler.models.users import UserRemind 
 from sqlalchemy.sql import select, text
 from yamler.utils import convert_time 
 import time
@@ -96,7 +97,12 @@ def publish():
                                                  })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
-
+            
+        if request.form['to_user_id']:
+            UserRemind().update_share(request.form['to_user_id'].lstrip(',').split(','))
+        if request.form['submit_user_id']:
+            UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
+        
         return jsonify(title=request.form['title'], 
                        ismine=True, 
                        realname=g.user.realname, 

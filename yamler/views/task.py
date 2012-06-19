@@ -2,7 +2,7 @@
 from flask import Blueprint,request,render_template,session, g,jsonify
 from sqlalchemy.sql import select, text 
 from yamler.models.tasks import tasks
-from yamler.models.users import users 
+from yamler.models.users import users, UserRemind
 from datetime import datetime
 import json
 
@@ -46,7 +46,14 @@ def update(id):
 def share(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
+        to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
+        if to_user_id:
+            old_to_user_id = set(row.to_user_id)
+            new_to_user_id = set(to_user_id)
+            update_user_id = new_to_user_id.difference(old_to_user_id)
+            if update_user_id:
+                UserRemind().update_share(update_user_id)
         return jsonify(error=0) 
     share_users = dict()
     if row.to_user_id:
@@ -66,8 +73,15 @@ def share(id):
 def submit(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
+        submit_user_id = request.form['submit_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
-        print request.form['submit_user_id'], id
+        #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
+        if submit_user_id:
+            old_to_user_id = set(row.submit_user_id)
+            new_to_user_id = set(submit_user_id)
+            update_user_id = new_to_user_id.difference(old_to_user_id)
+            if update_user_id:
+                UserRemind().update_submit(update_user_id)
         return jsonify(error=0) 
     share_users = dict()
     if row.submit_user_id:

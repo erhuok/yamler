@@ -49,6 +49,20 @@ class UserRemind(Model):
     def __init__(self, submit_count=None, share_count=None):
         self.submit_count = submit_count
         self.share_count = share_count
+    
+    def update_submit(self, submit_user_id):
+        if submit_user_id:
+            sql = 'INSERT INTO users_remind(user_id, submit_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE submit_count=submit_count+1'
+            for user_id in submit_user_id:
+                if user_id:
+                    g.db.execute(text(sql), user_id=user_id)
+    
+    def update_share(self, share_user_id):
+        if share_user_id:
+            sql = 'INSERT INTO users_remind(user_id, share_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE share_count=share_count+1'
+            for user_id in share_user_id:
+                if user_id: 
+                    g.db.execute(text(sql), user_id=user_id)
 
 users = Table('users', metadata, autoload=True)
 users_remind = Table('users_remind', metadata, autoload=True)
