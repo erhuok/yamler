@@ -160,7 +160,7 @@ def getMyFeed():
         new_row['status'] = row['status'] 
         new_row['share_users'] = None
         new_row['submit_users'] = None
-        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') if row['created_at'] else '' 
+        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%M') if row['created_at'] else '' 
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
