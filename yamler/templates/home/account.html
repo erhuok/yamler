@@ -53,19 +53,16 @@
                 <div class="window-module-title">
                     <span class="app-icon window-module-title-icon board-icon"></span>
                     <h3> 
-                        <a href="{{ url_for('home.account') }}">我的全部工作列表</a>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="{{ url_for('home.account', t=1) }}">只看我自己的</a>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a href="{{ url_for('home.account', t=2) }}">安排给我的</a>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="{{ url_for('home.account') }}" class="Task_nav">我的全部工作列表</a>
+                        <a href="{{ url_for('home.account', t=1) }}" class="Task_nav">只看我自己的</a>
+                        <a href="{{ url_for('home.account', t=2) }}" class="Task_nav">安排给我的</a>
                         <a><small>完成情况</small></a>
                         <select name="status" id="task_status">
                             <option value="all">全部</option> 
                             <option value="complete">完成</option> 
                             <option value="undone">未完成</option> 
                         </select>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;
                         <a><small>时间</small></a>
                         <select name="created_at" id="task_created_at">
                             <option value="0">全部</option> 
@@ -459,6 +456,15 @@
 	$(".boards-list li a").live('click',function(){
 		$(this).addClass("current");
 		$(".boards-list li a").not($(this)).removeClass("current");
+	});
+	
+	$(".Task_nav").hover(function(){
+		$(this).addClass("hover");
+	},function(){
+		$(this).removeClass("hover");
+	}).click(function(){
+		$(this).addClass("current");
+		$(".Task_nav").not($(this)).removeClass("current");
 	});
 	
 

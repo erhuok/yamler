@@ -197,14 +197,13 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     z-index: 0;
 	}
 .list-card textarea {
-    background: none repeat scroll 0 0 transparent;
     border: medium none;
     box-shadow: none;
     height: 54px;
     margin: 0 0 4px;
     padding: 0;
 }
-.list-card.active-card { border-color: #1F6993; box-shadow: 0 0 4px #1F6993;}
+.list-card.active-card, .list-card.active-card-current{ border-color: #1F6993; box-shadow: 0 0 4px #1F6993;}
 .list-card .card-labels { margin: -6px 0 3px;}
 .list-card .card-labels:empty { margin: 0;}
 .list-card .card-operation {
@@ -232,7 +231,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     overflow: hidden;
     padding: 0;
 	float:left;
-	width:320px;
+	width:100%;
     text-decoration: none;
     text-overflow: ellipsis;
 }
@@ -285,8 +284,10 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
 
 /***********卡片面板操作**********/
 .LCT_Prompt{ float:right;}
-.LCT_Prompt li{ float:left; padding:5px 10px;}
+.LCT_Prompt li{ float:left; padding:3px 5px; color:#999;}
+.LCT_Prompt li.last{ padding-right:0;}
 
+/*留言显示*/
 .list_card_replies{ display:none;}
 .list_card_replies li{ 
 	border-radius: 2px 2px 2px 2px;
@@ -295,10 +296,22 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
     cursor: default;
     font-size: 11px;
     line-height: 16px;
-    margin: 0 4px 4px 0;
+    margin: 0 0 4px 0;
     padding: 2px 4px;
     text-decoration: none;
+	background-color:#f5f5f5;
 	}
+.list_card_replies li div{
+	margin-bottom:5px;
+	line-height:1.5em;
+	}
+
+.list_card_replies li p{
+	text-align:right;
+	line-height:1em;
+	color:#888;
+	}
+	
 
 
 .list_card_operate{ display:none;}
@@ -308,24 +321,37 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
     border: 1px solid #d0d0d0;
     color: #555555;
     cursor: default;
-    font-size: 11px;
+    font-size: 12px;
     height: 16px;
     line-height: 16px;
-    margin: 0 4px 4px 0;
-    padding: 2px 4px;
+    margin: 0 0 4px 4px;
+    padding: 3px 6px;
+	border-radius:3px;
     text-decoration: none;
 	}
 .list_card_operate li.LC_reply,.list_card_operate li.LC_status{
 	float:right;
-	background-color:#24A828;
-	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	background-color:#aaa;
     color: #FFFFFF;
 	cursor:pointer;
+	}
+.list_card_operate li.LC_status.hover,.list_card_operate li.LC_reply.hover{
+	background-color:#aaa;
+	}
+.list_card_operate li.LC_status.current,.list_card_operate li.LC_reply.current{
+	background-color:#24A828;
+	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
 	}
 
 .message_box{ display:none;}
 .message_box textarea{ border:1px solid #ccc;}
-.message_box input{ margin:4px 0 4px;}
+.message_box input{ margin:4px 4px 4px 0; padding:3px 8px; display:inline-block; float:right; font-size:12px;
+	*+height:30px; *+line-height:20px;}
+.message_box input:hover{ 
+	background-color:#24A828;
+	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	color:#fff;
+	}
 
 
 

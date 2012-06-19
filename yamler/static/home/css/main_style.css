@@ -577,8 +577,13 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 
 /**************弹窗样式 end***************/
 
+/***************任务导航状态****************/
+.Task_nav{ display: inline-block; padding:3px 5px; margin-right:10px; border-radius:3px;}
+.Task_nav:hover{ text-decoration:none;}
+.Task_nav.hover{ background-color:#e3e3e3;}
+.Task_nav.current{ background-color:#fff;}
 
-
+/***************任务导航状态 end****************/
 
 
 
