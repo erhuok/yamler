@@ -135,6 +135,7 @@ def task_get():
         #手机端的时间
         new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at else ''
         new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%M') if row['created_at'] else '' 
+        new_row['end_time'] = row['end_time'].strftime('%m月%d日 %H:%M') if row['end_time'] else '' 
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
