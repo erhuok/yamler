@@ -1,0 +1,72 @@
+@charset "utf-8";
+/* CSS Document */
+body{ background-color:#f5f5f5;}
+
+.in_header{ background:url("../images/index_img/in_header_bgimg.png") repeat-x left bottom; height:52px;}
+.head_bg{ 
+	height:40px; 
+	background-color:#FB7D01;
+	background: -moz-linear-gradient(center top , #e45319 0%, #FB7D01 100%) repeat scroll 0 0 transparent;
+	}
+
+
+
+.in_body{ background:url("../images/index_img/in_body_bgimg.png") repeat-x left top #fff;}
+.in_body .pp_flash{ background:url("../images/index_img/pp_img01.png") no-repeat right 10px; height:370px;}
+.in_body .pp_flash h1{ font-size:36px; line-height:1.5em; padding-top:15px;}
+
+/*内容区样式*/
+.in_content{}
+.in_content ul{}
+.in_content ul li{ float:left; margin-right:30px; width:300px;}
+.in_content ul li.first{ width:380px;}
+.in_content ul li.last{ margin-right:0; width:260px;}
+.in_content ul li h1{ font-size:14px; font-weight:bold; color:#2b2b2b; margin-bottom:10px;}
+.in_content ul li p{ color:#8e8e8e; line-height:1.5em; margin-bottom:20px;}
+
+
+.in_login{ background-color:#f8f8f8; border:1px solid #e5e5e5;}
+.in_login h1{ margin-bottom:20px;}
+.in_login ul{}
+.in_login ul li{ padding-top:10px; float:none; width:80%;}
+.in_login ul li h2{ color:#7a7a7a; margin-bottom:5px; font-size:12px;}	
+.in_login ul li input.input_text{ /*background-color:#515151;*/ border:0; border-radius:3px; padding:3px; line-height:25px; height:25px; width: 95%;}
+.in_login ul li input.input_but{ background:url("../images/index_img/in_login_button.png") repeat-x left center; padding:5px 20px; *+padding:5px 10px; 
+	border:1px solid #db7500; border-radius:2px; color:#fff; font-weight:bold; line-height:15px;}
+.in_login ul li.last{ margin-bottom:50px; }
+
+
+
+/*内容区样式 end*/
+
+/*******脚部块********/
+.footer{ padding:10px 0; border-top: 1px solid #e8e8e8; background-color: #F8F8F8;}
+.footer .footer_con{ color: #999999; font-size: 95%; margin: 0 auto 25px; overflow: hidden; text-align: left;}
+.footer .footer_con .food_left{ float:left; text-align:left;}
+.footer .footer_con .food_right{ float:right; overflow: hidden; max-width: 635px;}
+.footer .footer_con .food_right a{ display:block; float:left; padding-left:10px;}
+/*******脚部块 end********/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

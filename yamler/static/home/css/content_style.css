@@ -173,7 +173,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 }
 .list-card {
     background: none repeat scroll 0 0 #FFFFFF;
-    border-color: #B9B9B9 #B9B9B9 #939393;
+    border-color: #B9B9B9;
     border-radius: 3px 3px 3px 3px;
     border-style: solid;
     border-width: 1px;
@@ -184,7 +184,10 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     padding: 6px 8px 1px;
     z-index: 0;
 }
-.list-card.updone{
+.list-card.undone{
+	border:1px solid #B9B9B9;
+	}
+.list-card.complete{
 	border:1px solid #090;
 	}
 .list-card.js-composer{ height:auto;}
