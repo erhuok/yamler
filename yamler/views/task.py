@@ -38,7 +38,8 @@ def update(id):
         g.db.execute(text("UPDATE tasks SET title=:title WHERE id=:id"), id=id, title=request.form['title'])
         return jsonify(error=0, title=request.form['title'], id=id)
     if request.form.has_key('status'):
-        g.db.execute(text("UPDATE tasks SET status=:status WHERE id=:id"), id=id, status=request.form['status'])
+        end_time = datetime.now() if request.form['status'] else ''
+        g.db.execute(text("UPDATE tasks SET status=:status, end_time=:end_time WHERE id=:id"), id=id, status=request.form['status'], end_time=end_time)
         return jsonify(error=0)
     return jsonify(error=1)
 

@@ -56,7 +56,33 @@ def close_db(response):
     return response
 
 @app.template_filter('datetimeformat')
-def datetimeformat(value, format='%m月%d日 %H:%m'):
+def datetimeformat(value, format='%m月%d日 %H:%M'):
     if isinstance(value, datetime.date):
-        return value.strftime(format)
+        new_value = ''
+        if value.strftime('%Y-%m-%d') == datetime.datetime.today().strftime('%Y-%m-%d'):
+            new_value += '今天 '
+            #new_value += value.strftime("%H:%M ")
+        else:
+            new_value += value.strftime("%m月%d日 ") 
+
+        hour = int(value.strftime('%H')) 
+        if hour <= 12:
+            new_value += '上午'+str(hour)+'点 '
+        elif hour > 12 and hour <=18:
+            new_value += '下午'+str(hour-12)+'点 '
+        elif hour > 18 and hour <=24: 
+            new_value += '晚上'+str(hour-12)+'点 ' 
+
+        default_week = {
+            0: '星期天',
+            1: '周一', 
+            2: '周二', 
+            3: '周三', 
+            4: '周四', 
+            5: '周五', 
+            6: '周六', 
+        }
+        week = int(value.strftime('%w'))
+        new_value += default_week[week]
+        return new_value
     return value
