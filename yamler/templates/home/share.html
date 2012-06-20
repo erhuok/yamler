@@ -139,14 +139,15 @@
             $("#cancel_"+id).click(function() {
                 operation.hide();
             });
-            $(".list-card").not($(this).parent()).removeClass("active-card-current");
         }
+		$(this).parent().addClass("active-card-current");
 		$(".list-card").not($(this).parent()).removeClass("active-card-current");
 
     },function(){
         var id = $(this).attr('name');
         var operation = $("#operation"+id);
         operation.hide();
+		$(this).parent().addClass("active-card-current");
         $(".list-card").not($(this).parent()).removeClass("active-card-current");
     });
     /*
@@ -180,6 +181,8 @@
                 success: function(data) { 
                     status_obj.attr('title','完成')
                     status_obj.removeClass('current');
+					status_obj.parent().parent().addClass('complete');
+					status_obj.parent().parent().removeClass('undone');
                     status_obj.attr('status', 1);
                 } 
             });       
@@ -193,6 +196,8 @@
                 success: function(data) { 
                     status_obj.attr('title','未完成')
                     status_obj.addClass('current');
+					status_obj.parent().parent().addClass('undone');
+					status_obj.parent().parent().removeClass('complete');
                     status_obj.attr('status', 0);
                 } 
             }); 
