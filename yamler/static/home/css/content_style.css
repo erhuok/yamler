@@ -329,6 +329,7 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
     margin: 0 0 4px 4px;
     padding: 0;
     text-decoration: none;
+	float:right;
 	}
 /*.list_card_operate li.LC_reply{
 	float:right;
