@@ -7,7 +7,7 @@ from yamler import app
 from yamler.utils import required_login
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
-from yamler.models.tasks import tasks, task_comments
+from yamler.models.tasks import tasks, task_comments, TaskShare
 from yamler.models.boards import Board, boards
 from yamler.models.users import UserRemind 
 from sqlalchemy.sql import select, text
@@ -108,9 +108,12 @@ def publish():
                                                  })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
-            
+           
+        #id = res.inserted_primary_key[0]
         if request.form['to_user_id']:
-            UserRemind().update_share(request.form['to_user_id'].lstrip(',').split(','))
+            to_user_id = request.form['to_user_id'].lstrip(',').split(',')
+            #UserRemind().update_share(request.form['to_user_id'].lstrip(',').split(','))
+            TaskShare().insert(task_id=res.lastrowid, share_user_id=to_user_id)
         if request.form['submit_user_id']:
             UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
         
