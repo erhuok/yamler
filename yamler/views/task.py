@@ -91,7 +91,7 @@ def submit(id):
         user_rows = g.db.execute(text(sql)).fetchall()
         share_users = dict(user_rows)
 
-    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id=:id"), company_id=g.company.id, id=g.user.id).fetchall()
+    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id <> :id"), company_id=g.company.id, id=g.user.id).fetchall()
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
     return render_template('task/update_submit.html', 
                            row=row, 
