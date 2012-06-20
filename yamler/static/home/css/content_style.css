@@ -184,7 +184,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     padding: 6px 8px 1px;
     z-index: 0;
 }
-.list-card.updone{
+.list-card.undone{
 	border:1px solid #090;
 	}
 .list-card.js-composer{ height:auto;}

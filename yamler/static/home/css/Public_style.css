@@ -147,10 +147,132 @@ a.v3_button{
 	background-repeat:no-repeat;
 	}
 
+/**************************微OA-日志特有的公共样式*****************************************/
+body, input, select, textarea {
+    color: #393939;
+    font: 14px/18px "Helvetica Neue",Arial,Helvetica,sans-serif;
+}
+body{ background: none repeat scroll 0 0 #F0F0F0;
+	overflow: auto;
+	*+overflow:hidden;
+	_overflow:auto;
+    position: relative;
+    z-index: 0;
+	}
+h1, h2, h3, h4, h5, h6 {
+    color: #222222;
+    font-weight: bold;
+}
+h3, h4, h5, h6 {
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 6px;
+}
+h2 {
+    font-size: 18px;
+    line-height: 22px;
+    margin-bottom: 9px;
+}
+hr {
+    background: none repeat scroll 0 0 #DCDCDC;
+    border: medium none;
+    color: #DCDCDC;
+    height: 1px;
+    margin: 15px 0;
+    padding: 0;
+    width: 100%;
+}
+p {
+    margin-bottom: 8px;
+}
+label { display: block; font-weight: bold; margin-bottom: 4px;}
+textarea, input {
+    -moz-box-sizing: border-box;
+    background-color: #E9E9E9;
+    border: 1px solid #BFBFBF;
+    border-radius: 3px 3px 3px 3px;
+    display: block;
+    margin-bottom: 12px;
+    /*min-height: 30px;*/
+	height:17px\9;
+    padding: 6px;
+}
+textarea {
+    -moz-transition: background 85ms ease-in 0s, border-color 85ms ease-in 0s;
+    height: 150px;
+    resize: vertical;
+    width: 100%;
+}
+input[type="text"], input[type="password"], input[type="email"] {
+    -moz-transition: background 85ms ease-in 0s, border-color 85ms ease-in 0s;
+    width: 250px;
+}
+input[type="submit"], input[type="button"], button, .button {
+	background-color:#CFCFCF;
+    background: -moz-linear-gradient(center top , #CFCFCF 0%, #C2C2C2 100%) repeat scroll 0 0 transparent;
+    border: medium none;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 700;
+    line-height: 20px;
+    margin: 8px 4px 0 0;
+    padding: 7px 20px;
+    text-align: center;
+	height:30px; line-height:20px; 
+}
+:focus{outline:0 none;}
+input.primary[type="submit"], input.primary[type="button"], button.primary, .button.primary {
+	background-color:#24A828;
+    background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	
+    color: #FFFFFF;
+	height:30px; line-height:20px; 
+	}
+input[type="text"]:hover, input[type="password"]:hover, input[type="email"]:hover, textarea:hover{
+	border-color:#777;
+	}
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, textarea:focus{
+	background-color:#fcfcfc;
+	border-color:#2887bd;
+	box-shadow:0 0 2px #2887bd;
+	}
 
+.app-icon{
+	background-image:url("../images/index_img/iconImg.png");
+	background-position: -9999px -9999px;
+	background-size: auto auto;
+    display: block;
+    float: left;
+    height: 30px;
+    overflow: hidden;
+    position: relative;
+    text-indent: 100%;
+    vertical-align: top;
+    white-space: nowrap;
+    width: 30px;
+}
+.clearfix:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+.quiet {
+    color: #939393;
+}
+.quiet a {
+    color: #939393;
+}
+.error {
+    color: #EB3800;
+}
+.close-icon {
+    background-position: -630px -30px;
+}
 
-
-
+/**************************微OA-日志特有的公共样式 end*****************************************/
 
 
 

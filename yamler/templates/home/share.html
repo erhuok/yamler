@@ -139,11 +139,13 @@
                 operation.hide();
             });
         }
+		$(".list-card").not($(this).parent()).removeClass("active-card-current");
 
     },function(){
         var id = $(this).attr('name');
         var operation = $("#operation"+id);
         operation.hide();
+		$(".list-card").not($(this).parent()).removeClass("active-card-current");
     });
 
 
