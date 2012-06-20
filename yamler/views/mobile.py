@@ -7,7 +7,7 @@ from yamler.models.companies import Company, companies
 from yamler.models.user_relations import UserRelation 
 from sqlalchemy.sql import between
 from sqlalchemy import or_, and_, select, text
-from yamler.utils import convert_time
+from yamler.utils import convert_time, datetimeformat
 import datetime
 import time
 
@@ -134,8 +134,8 @@ def task_get():
         new_row['submit_users'] = None
         #手机端的时间
         new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at else ''
-        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%M') if row['created_at'] else '' 
-        new_row['end_time'] = row['end_time'].strftime('%m月%d日 %H:%M') if row['end_time'] else '' 
+        new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
+        new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time'] else '' 
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
@@ -283,16 +283,33 @@ def comment_create():
 
 @mod.route('/task/share', methods=['GET', 'POST'])
 def share():
-    #sql = "SELECT id,user_id,to_user_id,title,status,comment_count FROM tasks WHERE is_del='0' AND :to_user_id IN (to_user_id) ORDER BY status ASC, id DESC"
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  ORDER BY status ASC, id DESC"
-    task_rows = g.db.execute(text(sql), to_user_id=request.form['user_id']).fetchall()
+    user_id = request.form['user_id']
+    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
+    task_rows = g.db.execute(text(sql), to_user_id=user_id, user_id=user_id).fetchall()
     task_data = {}
     user_ids = []
     for row in task_rows:
-        if not task_data.has_key(row.user_id): 
-            user_ids.append(str(row.user_id)) 
-            task_data[row.user_id] = [] 
-        task_data[row.user_id].append(dict(row))
+        if row.user_id == user_id:
+            if not row.submit_user_id: 
+                continue
+                submit_user_id = row.submit_user_id.split(',')
+                for user_id in submit_user_id:
+                    user_id = int(user_id)
+                    if not task_data.has_key(user_id):
+                        user_ids.append(str(user_id)) 
+                        task_data[user_id] = [] 
+                    new_row = dict(row)
+                    new_row['ismine'] = False
+                    new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
+                    task_data[user_id].append(new_row)
+        else:
+            if not task_data.has_key(row.user_id): 
+                user_ids.append(str(row.user_id)) 
+                task_data[row.user_id] = [] 
+        new_row = dict(row)
+        new_row['ismine'] = True
+        new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
+        task_data[row.user_id].append(new_row)
 
     sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
     user_rows = g.db.execute(text(sql)).fetchall()
@@ -301,5 +318,3 @@ def share():
         user_data[row.id] = row.realname
 
     return jsonify(task_data=task_data, user_data=user_data)
-
-

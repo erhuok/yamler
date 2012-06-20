@@ -11,7 +11,7 @@ from yamler.models.tasks import tasks, task_comments
 from yamler.models.boards import Board, boards
 from yamler.models.users import UserRemind 
 from sqlalchemy.sql import select, text
-from yamler.utils import convert_time 
+from yamler.utils import convert_time, datetimeformat 
 import time
 
 mod = Blueprint('home', __name__, url_prefix='/home')
@@ -120,7 +120,7 @@ def publish():
                        id=res.inserted_primary_key, 
                        share_users=share_users, 
                        submit_users=submit_users,
-                       created_at = created_at.strftime('%m月%d日 %H:%m'),
+                       created_at = datetimeformat(created_at),
                       )
 
 @mod.route('/getMyFeed', methods=['GET', 'POST'])
@@ -177,9 +177,9 @@ def getMyFeed():
         new_row['user_id'] = row['user_id'] 
         new_row['title'] = row['title'] 
         new_row['status'] = row['status'] 
-        new_row['share_users'] = None
-        new_row['submit_users'] = None
-        new_row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%M') if row['created_at'] else '' 
+        new_row['share_users'] = []
+        new_row['submit_users'] = [] 
+        new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))

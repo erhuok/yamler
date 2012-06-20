@@ -198,7 +198,7 @@
     </a>
     
     {% raw %}
-    {{if share_users}} 
+    {{if share_users.length}} 
     <ul class="SharePeople">
         <li>${realname}递交给</li>
         {{tmpl(share_users) "#share_users_template"}}
@@ -207,7 +207,7 @@
     {% endraw %}
 
     {% raw %}
-    {{if submit_users}} 
+    {{if submit_users.length}} 
     <ul class="SharePeople">
         <li>${realname}安排给</li>
         {{tmpl(submit_users) "#submit_users_template"}}
