@@ -41,6 +41,7 @@
                 
                 <ul class="list_card_operate" style="display:block;">
                     <li id="status{{ data.id }}" name="{{ data.id }}" status="{{ data.status }}" {% if data.status %} class="LC_status"  title="完成" {% else %} class="LC_status current" title="未完成"  {% endif %}></li>
+                    {% if not data.ismine %} <li>{{ g.user.realname }}安排给我</li> {% endif %}
                 </ul>
                 <div class="clear"></div>
                 <div id="operation{{data.id}}" name="{{data.id}}" style="display:none;">

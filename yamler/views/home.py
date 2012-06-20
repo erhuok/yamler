@@ -50,25 +50,44 @@ def myfeed():
 @mod.route('/share', methods=['GET', 'POST'])
 @required_login
 def share():
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  ORDER BY status ASC, id DESC"
-    task_rows = g.db.execute(text(sql), to_user_id=g.user.id).fetchall()
-
+    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
+    task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
     #for key, row in enumerate(task_rows):
+    #sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '' ORDER BY status ASC, id DESC"
+    #task_submit = g.db.execute(text(sql), user_id=g.user.id).fetchall()
+
     task_data = {}
     user_ids = []
     user_data = {}
     if task_rows:
         for row in task_rows:
-            if not task_data.has_key(row.user_id): 
-                user_ids.append(str(row.user_id)) 
-                task_data[row.user_id] = [] 
-            task_data[row.user_id].append(dict(row))
-          
+            if row.user_id == g.user.id:
+                if not row.submit_user_id:
+                    continue
+                submit_user_id = row.submit_user_id.split(',')
+                for user_id in submit_user_id:
+                    user_id = int(user_id)
+                    if not task_data.has_key(user_id):
+                        user_ids.append(str(user_id)) 
+                        task_data[user_id] = [] 
+                    new_row = dict(row)
+                    new_row['ismine'] = False
+                    task_data[user_id].append(new_row)
+            else:
+                user_id = int(row.user_id)
+                if not task_data.has_key(user_id): 
+                    user_ids.append(str(user_id)) 
+                    task_data[user_id] = [] 
+                new_row = dict(row)
+                new_row['ismine'] = True
+                task_data[user_id].append(new_row)
+
         if task_rows and ','.join(user_ids):
             sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
             user_rows = g.db.execute(text(sql)).fetchall()
             for row in user_rows:
                 user_data[row.id] = row.realname
+        
     return render_template('home/share.html', task_data=task_data, user_data=user_data)
 
 @mod.route('/mytask', methods=['GET', 'POST'])
