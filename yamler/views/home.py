@@ -4,20 +4,20 @@ from flask import Blueprint,request,render_template,session, g, jsonify
 from yamler.models.users import User,RegistrationForm,LoginForm
 from yamler.database import db_session 
 from yamler import app
-from yamler.utils import required_login
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
 from yamler.models.tasks import tasks, task_comments, TaskShare
 from yamler.models.boards import Board, boards
 from yamler.models.users import UserRemind 
 from sqlalchemy.sql import select, text
-from yamler.utils import convert_time, datetimeformat 
+from yamler.utils import required_login, get_remind, convert_time, datetimeformat 
 import time
 
 mod = Blueprint('home', __name__, url_prefix='/home')
 
 @mod.route('/account', methods=['GET', 'POST'])
 @required_login
+@get_remind
 def account():
     return render_template('home/account.html')
 
@@ -49,6 +49,7 @@ def myfeed():
 
 @mod.route('/share', methods=['GET', 'POST'])
 @required_login
+@get_remind
 def share():
     sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
     task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
@@ -133,7 +134,7 @@ def getMyFeed():
     status = request.args.get('status','all')
     status_value = int(default_status[status]) 
 
-    created_at = request.args.get('created_at', '')
+    created_at = request.args.get('created_at', 0)
     start_time = convert_time(created_at) if created_at else '' 
     page = int(request.args.get('page',1))
     limit = 20

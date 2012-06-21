@@ -56,8 +56,14 @@ $(function(){
         <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('home.share') }}">
         	<span class="app-icon light board-icon"></span>
 			<span class="header-btn-text">递交给我的工作日志</span>
+          
         </a>
-        
+        {% if g.task_share_count %}
+            <a class="header-btn header-about" title="Information" href="#">
+                <span class="count js-unread-announcements" style="">{{ g.task_share_count }}</span>
+            </a>
+        {% endif %}
+
         <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('user.invite') }}">
         	<span class="app-icon light board-icon"></span>
 			<span class="header-btn-text">邀请加入</span>
