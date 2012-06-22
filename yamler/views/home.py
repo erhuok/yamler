@@ -88,7 +88,9 @@ def share():
             user_rows = g.db.execute(text(sql)).fetchall()
             for row in user_rows:
                 user_data[row.id] = row.realname
-        
+    #如果有未阅读的，将unread改成0  
+    if g.task_share_count:
+        g.db.execute(text("UPDATE task_share SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=g.user.id)
     return render_template('home/share.html', task_data=task_data, user_data=user_data)
 
 @mod.route('/mytask', methods=['GET', 'POST'])
@@ -170,7 +172,6 @@ def getMyFeed():
         if start_time:
             sql += ' AND created_at > :created_at'
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
-        print sql 
         rows = g.db.execute(text(sql),user_id=g.user.id, submit_user_id=g.user.id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
 
     data = []
