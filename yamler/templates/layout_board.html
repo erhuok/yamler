@@ -207,6 +207,13 @@
         	<span class="app-icon light notification-icon"></span>
             <span class="header-btn-text">我的工作日志列表</span>
         </a>
+        
+        {% if g.task_submit_count %}
+            <a class="header-btn header-about" title="Information" href="#">
+                <span class="count js-unread-announcements" style="">{{ g.task_submit_count }}</span>
+            </a>
+        {% endif %}
+
         <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('home.share') }}">
         	<span class="app-icon light board-icon"></span>
 			<span class="header-btn-text">递交给我的工作日志</span>

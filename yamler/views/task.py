@@ -1,7 +1,7 @@
 # encoding:utf8
 from flask import Blueprint,request,render_template,session, g,jsonify
 from sqlalchemy.sql import select, text 
-from yamler.models.tasks import tasks, TaskShare
+from yamler.models.tasks import tasks, TaskShare, TaskSubmit
 from yamler.models.users import users, UserRemind
 from datetime import datetime
 import json
@@ -49,8 +49,7 @@ def share(id):
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
-        if to_user_id:
-            TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id)
+        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id)
             #old_to_user_id = set(row.to_user_id)
             #new_to_user_id = set(to_user_id)
             #update_user_id = new_to_user_id.difference(old_to_user_id)
@@ -78,12 +77,12 @@ def submit(id):
         submit_user_id = request.form['submit_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
         #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
-        if submit_user_id:
-            old_to_user_id = set(row.submit_user_id)
-            new_to_user_id = set(submit_user_id)
-            update_user_id = new_to_user_id.difference(old_to_user_id)
-            if update_user_id:
-                UserRemind().update_submit(update_user_id)
+        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id)
+            #old_to_user_id = set(row.submit_user_id)
+            #new_to_user_id = set(submit_user_id)
+            #update_user_id = new_to_user_id.difference(old_to_user_id)
+            #if update_user_id:
+                #UserRemind().update_submit(update_user_id)
         return jsonify(error=0) 
     share_users = dict()
     if row.submit_user_id:

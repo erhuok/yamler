@@ -27,13 +27,15 @@ def get_remind(f):
     def decorated_function(*args, **kwargs):
         if g.user:
             rows = g.db.execute(text("SELECT id,own_id FROM task_share WHERE unread=:unread AND user_id=:user_id"), user_id=g.user.id, unread=1).fetchall() 
-            print rows
             g.task_share_count = len(rows) 
             g.task_share_user = dict()
             if len(rows):
                 for row in rows:
                     if not g.task_share_user.has_key(row['own_id']): g.task_share_user[row['own_id']] = 0
                     g.task_share_user[row['own_id']] += 1
+    
+            rows = g.db.execute(text("SELECT id FROM task_submit WHERE unread=:unread AND user_id=:user_id"), user_id=g.user.id, unread=1).fetchall() 
+            g.task_submit_count = len(rows)
         return f(*args, **kwargs)
     return decorated_function
 

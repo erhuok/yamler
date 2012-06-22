@@ -81,16 +81,50 @@ class TaskShare(Model):
         insert_ids = share_user_id.difference(old_user_id)
         if insert_ids:
             for user_id in insert_ids:
-                g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
-        delete_ids = old_user_id.difference(share_user_id)
+                if int(user_id) > 0:
+                    g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
 
+        delete_ids = old_user_id.difference(share_user_id)
         if delete_ids:
             for user_id in delete_ids:
                 g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
 
+class TaskSubmit(Model):
+    __tablename__ = 'task_submit'
+    id = Column(Integer, primary_key=True)
+    task_id = Column(Integer)
+    user_id = Column(Integer)
+    own_id = Column(Integer)
+    unread = Column(Integer)
+    created_at = Column(DateTime, default=datetime.datetime.now()) 
+    updated_at = Column(DateTime,default=datetime.datetime.now()) 
+    
+    def insert(self, task_id, share_user_id):
+        if not task_id or not share_user_id:
+            return False
+        for user_id in share_user_id:
+            if user_id > 0:
+                res = g.db.execute(text("SELECT id FROM task_submit WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id).fetchone()
+                if res is None:
+                    g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
+    
+    def update(self, share_user_id, old_user_id, task_id):
+        insert_ids = share_user_id.difference(old_user_id)
+        if insert_ids:
+            for user_id in insert_ids:
+                if int(user_id) > 0:
+                    g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
+        
+        delete_ids = old_user_id.difference(share_user_id)
+        if delete_ids:
+            for user_id in delete_ids:
+                if user_id > 0:
+                    g.db.execute(text("DELETE FROM `task_submit` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
+
 tasks = Table('tasks', metadata, autoload=True)
 task_comments = Table('task_comments', metadata, autoload=True)
 task_share = Table('task_share', metadata, autoload=True)
+task_submit = Table('task_submit', metadata, autoload=True)
 
 class TaskForm(Form):
     title = TextField('标题', [validators.required()])

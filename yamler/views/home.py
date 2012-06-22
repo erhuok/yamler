@@ -6,7 +6,7 @@ from yamler.database import db_session
 from yamler import app
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
-from yamler.models.tasks import tasks, task_comments, TaskShare
+from yamler.models.tasks import tasks, task_comments, TaskShare, TaskSubmit
 from yamler.models.boards import Board, boards
 from yamler.models.users import UserRemind 
 from sqlalchemy.sql import select, text
@@ -19,6 +19,8 @@ mod = Blueprint('home', __name__, url_prefix='/home')
 @required_login
 @get_remind
 def account():
+    if g.task_submit_count:
+        g.db.execute(text("UPDATE task_submit SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=g.user.id)
     return render_template('home/account.html')
 
 @mod.route('/')
@@ -118,7 +120,9 @@ def publish():
             #UserRemind().update_share(request.form['to_user_id'].lstrip(',').split(','))
             TaskShare().insert(task_id=res.lastrowid, share_user_id=to_user_id)
         if request.form['submit_user_id']:
-            UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
+            submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
+            TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id)
+            #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
         
         return jsonify(title=request.form['title'], 
                        ismine=True, 
