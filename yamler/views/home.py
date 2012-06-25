@@ -4,21 +4,23 @@ from flask import Blueprint,request,render_template,session, g, jsonify
 from yamler.models.users import User,RegistrationForm,LoginForm
 from yamler.database import db_session 
 from yamler import app
-from yamler.utils import required_login
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
-from yamler.models.tasks import tasks, task_comments
+from yamler.models.tasks import tasks, task_comments, TaskShare, TaskSubmit
 from yamler.models.boards import Board, boards
 from yamler.models.users import UserRemind 
 from sqlalchemy.sql import select, text
-from yamler.utils import convert_time, datetimeformat 
+from yamler.utils import required_login, get_remind, convert_time, datetimeformat 
 import time
 
 mod = Blueprint('home', __name__, url_prefix='/home')
 
 @mod.route('/account', methods=['GET', 'POST'])
 @required_login
+@get_remind
 def account():
+    if g.task_submit_count:
+        g.db.execute(text("UPDATE task_submit SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=g.user.id)
     return render_template('home/account.html')
 
 @mod.route('/')
@@ -49,6 +51,7 @@ def myfeed():
 
 @mod.route('/share', methods=['GET', 'POST'])
 @required_login
+@get_remind
 def share():
     sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
     task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
@@ -87,7 +90,9 @@ def share():
             user_rows = g.db.execute(text(sql)).fetchall()
             for row in user_rows:
                 user_data[row.id] = row.realname
-        
+    #如果有未阅读的，将unread改成0  
+    if g.task_share_count:
+        g.db.execute(text("UPDATE task_share SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=g.user.id)
     return render_template('home/share.html', task_data=task_data, user_data=user_data)
 
 @mod.route('/mytask', methods=['GET', 'POST'])
@@ -108,11 +113,16 @@ def publish():
                                                  })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
-            
+           
+        #id = res.inserted_primary_key[0]
         if request.form['to_user_id']:
-            UserRemind().update_share(request.form['to_user_id'].lstrip(',').split(','))
+            to_user_id = request.form['to_user_id'].lstrip(',').split(',')
+            #UserRemind().update_share(request.form['to_user_id'].lstrip(',').split(','))
+            TaskShare().insert(task_id=res.lastrowid, share_user_id=to_user_id)
         if request.form['submit_user_id']:
-            UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
+            submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
+            TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id)
+            #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
         
         return jsonify(title=request.form['title'], 
                        ismine=True, 
@@ -130,7 +140,7 @@ def getMyFeed():
     status = request.args.get('status','all')
     status_value = int(default_status[status]) 
 
-    created_at = request.args.get('created_at', '')
+    created_at = request.args.get('created_at', 0)
     start_time = convert_time(created_at) if created_at else '' 
     page = int(request.args.get('page',1))
     limit = 20
@@ -166,7 +176,6 @@ def getMyFeed():
         if start_time:
             sql += ' AND created_at > :created_at'
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
-        print sql 
         rows = g.db.execute(text(sql),user_id=g.user.id, submit_user_id=g.user.id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
 
     data = []

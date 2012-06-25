@@ -4,6 +4,7 @@ from flask import g, url_for, flash, abort, request, redirect, Markup, session
 from functools import wraps
 from yamler import app
 import datetime
+from sqlalchemy.sql import select, text
 
 def request_wants_json():
     best = request.accept_mimetypes.best_match(['application/json', 'text/html'])
@@ -21,6 +22,22 @@ def required_login(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def get_remind(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.user:
+            rows = g.db.execute(text("SELECT id,own_id FROM task_share WHERE unread=:unread AND user_id=:user_id"), user_id=g.user.id, unread=1).fetchall() 
+            g.task_share_count = len(rows) 
+            g.task_share_user = dict()
+            if len(rows):
+                for row in rows:
+                    if not g.task_share_user.has_key(row['own_id']): g.task_share_user[row['own_id']] = 0
+                    g.task_share_user[row['own_id']] += 1
+    
+            rows = g.db.execute(text("SELECT id FROM task_submit WHERE unread=:unread AND user_id=:user_id"), user_id=g.user.id, unread=1).fetchall() 
+            g.task_submit_count = len(rows)
+        return f(*args, **kwargs)
+    return decorated_function
 
 def required_admin(f):
     @wraps(f)
@@ -36,7 +53,9 @@ def allowed_images(filename):
 
 def convert_time(type):
     type = int(type)
-    if type == 1:
+    if type == 0:
+        start_time = ''
+    elif type == 1:
         start_time = datetime.date.today()
     elif type == 2:
         start_time = datetime.datetime.now() - datetime.timedelta(days=1)

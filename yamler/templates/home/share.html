@@ -254,6 +254,11 @@
                         </div>
                         <div class="phenom-desc">
                             <a class="inline-object js-show-mem-menu" href="#list{{ key }}">{{ user_data[key] }}</a>
+                            {% if g.task_share_user[key] %} 
+                            <a class="header-btn header-about" title="Information" href="#"> 
+                                <span class="count js-unread-announcements" style="">{{ g.task_share_user[key] }}</span> 
+                            </a>
+                            {% endif %}
                         </div>
                         <!--
                         <p class="phenom-meta quiet">

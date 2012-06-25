@@ -40,6 +40,8 @@ class User(Model):
                      )
         return result
 
+  
+
 class UserRemind(Model):
     __tablename__ = 'users_remind'
     id = Column(Integer, primary_key=True)

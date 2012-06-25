@@ -1,7 +1,7 @@
 # encoding:utf8
 from flask import Blueprint,request,render_template,session, g,jsonify
 from sqlalchemy.sql import select, text 
-from yamler.models.tasks import tasks
+from yamler.models.tasks import tasks, TaskShare, TaskSubmit
 from yamler.models.users import users, UserRemind
 from datetime import datetime
 import json
@@ -49,20 +49,20 @@ def share(id):
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
-        if to_user_id:
-            old_to_user_id = set(row.to_user_id)
-            new_to_user_id = set(to_user_id)
-            update_user_id = new_to_user_id.difference(old_to_user_id)
-            if update_user_id:
-                UserRemind().update_share(update_user_id)
+        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id)
+            #old_to_user_id = set(row.to_user_id)
+            #new_to_user_id = set(to_user_id)
+            #update_user_id = new_to_user_id.difference(old_to_user_id)
+            #if update_user_id:
+                #UserRemind().update_share(update_user_id)
         return jsonify(error=0) 
     share_users = dict()
     if row.to_user_id:
-        sql = "SELECT id, realname FROM users WHERE ID IN ({0})".format(','.join(row.to_user_id.split(',')))
+        sql = "SELECT id, realname FROM users WHERE id IN ({0})".format(','.join(row.to_user_id.split(',')))
         user_rows = g.db.execute(text(sql)).fetchall()
         share_users = dict(user_rows)
 
-    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id"), company_id=g.company.id).fetchall()
+    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id <> :id"), company_id=g.company.id, id=g.user.id).fetchall()
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
     return render_template('task/update_share.html', 
                            row=row, 
@@ -77,12 +77,12 @@ def submit(id):
         submit_user_id = request.form['submit_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
         #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
-        if submit_user_id:
-            old_to_user_id = set(row.submit_user_id)
-            new_to_user_id = set(submit_user_id)
-            update_user_id = new_to_user_id.difference(old_to_user_id)
-            if update_user_id:
-                UserRemind().update_submit(update_user_id)
+        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id)
+            #old_to_user_id = set(row.submit_user_id)
+            #new_to_user_id = set(submit_user_id)
+            #update_user_id = new_to_user_id.difference(old_to_user_id)
+            #if update_user_id:
+                #UserRemind().update_submit(update_user_id)
         return jsonify(error=0) 
     share_users = dict()
     if row.submit_user_id:
@@ -90,7 +90,7 @@ def submit(id):
         user_rows = g.db.execute(text(sql)).fetchall()
         share_users = dict(user_rows)
 
-    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id"), company_id=g.company.id).fetchall()
+    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id <> :id"), company_id=g.company.id, id=g.user.id).fetchall()
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
     return render_template('task/update_submit.html', 
                            row=row, 
@@ -103,8 +103,8 @@ def submit(id):
 def get(id):
     row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status,comment_count,submit_user_id,created_at FROM tasks WHERE id=:id"), id=id).first()
     row = dict(row)
-    row['share_users'] = None
-    row['submit_users'] = None
+    row['share_users'] = []
+    row['submit_users'] = []   
     row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') 
 
     if row and row.has_key('to_user_id') and row['to_user_id']:

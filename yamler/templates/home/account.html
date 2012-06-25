@@ -58,6 +58,9 @@
                         <a href="{{ url_for('home.account', t=1) }}">只看我自己的</a>
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="{{ url_for('home.account', t=2) }}">安排给我的</a>
+                        {% if g.task_submit_count %} 
+                          <a class="header-btn header-about" title="Information" href="#"><span class="count js-unread-announcements" style="">{{ g.task_submit_count }}</span></a> 
+                        {% endif %}
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <a><small>完成情况</small></a>
                         <select name="status" id="task_status">
@@ -680,7 +683,7 @@
             if(this.value=='') 
             {
                 this.value = '写点你将要做点什么吧';  
-                $('#to_people').hide();
+                //$('#to_people').hide();
             }
 
         });
