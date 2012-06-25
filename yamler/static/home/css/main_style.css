@@ -17,7 +17,8 @@
 	}
 .window-message .message_block{ position:relative;}
 .message_block span{  
-	background: url("../images/index_img/Icon_msg_text01.png") no-repeat scroll 0 0 transparent;
+	background: url("../images/index_img/Icon_msg_text01.png") no-repeat scroll 0 0;
+	_background: url("../images/index_img/Icon_msg_text01.gif") no-repeat scroll 0 0;
     display: block;
     height: 7px;
     left: 20px;
@@ -31,7 +32,7 @@
 	overflow:hidden; border-radius: 3px 3px 3px 3px; padding:6px;}
 
 .message_block textarea{ height:50px; width:635px\9;}
-.add_People{ margin-top:8px; min-height:15px; /* display:none;*/ padding:10px 6px; border-bottom-left-radius:0; border-bottom-right-radius:0; cursor:pointer;}
+.add_People{ margin-top:8px; min-height:15px; _height:30px; /* display:none;*/ padding:10px 6px; border-bottom-left-radius:0; border-bottom-right-radius:0; cursor:pointer;}
 .button_People{ /*display:none;*/ margin-top:8px;}
 .button_People .add_message{ display:inline-block; float:right; margin-top: 2px; padding: 5px 18px; height:30px\9; line-height:20px\9;}
 .people_listBlock{ border-top:0; border-top-left-radius:0; border-top-right-radius:0; background-color:#f8f8f8; padding:0;  display:none;}
@@ -54,7 +55,7 @@
     /*width: 472px;*/
 	width:100%;
 }
-.window-module { clear: both; margin-bottom: 16px; position: relative;}
+.window-module { clear: both; margin-bottom: 16px; /*position: relative;*/}
 
 .window-module-title {
     border-bottom: 1px solid #DCDCDC;
@@ -62,7 +63,7 @@
     padding: 6px 0;
     position: relative;
 }
-.board-icon {
+.window-module-title .board-icon {
     background-position: -60px -30px;
 }
 .window-module-title .app-icon.window-module-title-icon {
@@ -112,8 +113,8 @@
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
 .bold-list li a .counts { display: block; color:#777; float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
 
-.SharePeople{ margin-top:10px; color:#9c9c9c; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px;}
-.SharePeople li{ float:left; padding:3px 8px; border:0;}
+.SharePeople{ margin-top:10px; color:#9c9c9c; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px; }
+.SharePeople li{ float:left; padding:3px 8px; border:0; width:auto;}
 
 
 .bold-list li a .board-list-menu { background-clip: content-box;
@@ -156,6 +157,7 @@
 .button-link:hover .private-icon, .highlight-icon:hover .private-icon { background-position: -522px -108px;}
 .button-link:hover .pin-icon, .highlight-icon:hover .pin-icon { background-position: -360px -126px;}
 .button-link:hover .menu-icon, .highlight-icon:hover .menu-icon { background-position: -396px -126px;}
+/*.boards-list .link-item .board-list-menu{ background-position: -396px -126px;}*/
 .button-link:hover .member-icon, .highlight-icon:hover .member-icon{ background-position:-18px -126px;}
 .button-link:hover .board-icon, .highlight-icon:hover .board-icon{ background-position:-36px -126px;}
 .button-link:hover .list-icon, .highlight-icon:hover .list-icon{ background-position:-54px -126px;}

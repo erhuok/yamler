@@ -142,6 +142,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 
 .list-title h2 { float: left; font-size: 15px; line-height: 18px; margin: 2px 6px 0 0; min-height: 19px; min-width: 30px; 
 	background:url("../images/index_img/list_title_iconImg01.png") no-repeat left 2px;
+	_background:url("../images/index_img/list_title_iconImg01.gif") no-repeat left 2px;
 	padding-left:25px;
 	}
 .list-title .num-cards { color: #939393; display: none; float: left; margin: 3px 0 0;}
@@ -351,6 +352,7 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
 .list_card_operate li.LC_status{
 	float:right;
 	background-image:url("../images/index_img/complete_img02.png");
+	_background-image:url("../images/index_img/complete_img02.gif");
 	background-repeat:no-repeat;
 	width:36px; height:20px;
 	}

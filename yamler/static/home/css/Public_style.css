@@ -239,16 +239,19 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 
 .app-icon{
 	background-image:url("../images/index_img/iconImg.png");
-	background-position: -9999px -9999px;
+	_background-image:url("../images/index_img/iconImg.gif");
+	/*background-position: -9999px -9999px;
 	background-size: auto auto;
+	position: relative;
+    text-indent: 100%;
+    vertical-align: top;
+    white-space: nowrap;
+	*/
     display: block;
     float: left;
     height: 30px;
     overflow: hidden;
-    position: relative;
-    text-indent: 100%;
-    vertical-align: top;
-    white-space: nowrap;
+    
     width: 30px;
 }
 .clearfix:after {
