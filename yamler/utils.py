@@ -105,12 +105,11 @@ IPhone手机端的notify
 def iphone_notify(user_ids, type):
     user_sql = "SELECT id, realname, iphone_token  FROM `users` WHERE id IN ({0})".format(','.join(map(str,user_ids)))
     rows = g.db.execute(text(user_sql)).fetchall()
-
-    configure({'HOST': 'http://localhost:7077/'})
+    configure({'HOST': 'http://192.168.1.120:7077/'})
     provision('justoa', open(app.config['IPHONE_CERT']+'cert.pem').read(), 'production')
     if type == 'share':
         message = '我的云秘书提醒您：有1条新日志递交给您！'
 
     for row in rows:
         if row.iphone_token:
-            notify('justoa', row.iphone_token, {'aps':{'message': message}})
+            notify('justoa', row.iphone_token, {'aps':{'alert': message, 'sound': 'default'}})
