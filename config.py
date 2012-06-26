@@ -13,4 +13,5 @@ DATABASE_CONNECT_OPTIONS = {'pool_recycle':7200}
 UPLOAD_FOLDER =_basedir + '/yamler/static/uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
+IPHONE_CERT = _basedir + '/yamler/iphone/'
 del os

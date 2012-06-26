@@ -22,6 +22,8 @@ def login():
         result = User.query.filter_by(username=user.username, password=user.password).first()
         if result:
             session['user_id'] = result.id
+            if request.form.has_key('iphone_token'): 
+                g.db.execute(text('UPDATE users SET iphone_token=:iphone_token WHERE id=:id'), id=result.id, iphone_token=request.form['iphone_token']) 
             return jsonify(error=0, code='success', message='登录成功', user_id = result.id, company_id=result.company_id)
         else:
             return jsonify(error=1, code='username_or_password_error',message='用户名或密码错误',)
@@ -37,6 +39,7 @@ def register():
                     password, 
                     realname = request.form['realname'] if request.form.has_key('realname') else '',
                     company_id = request.form['company_id'] if request.form.has_key('company_id') else 0,
+                    iphone_token = request.form['iphone_token'] if request.form.has_key('iphone_token') else 0,
                    )
         result = User.query.filter_by(username = user.username).first() 
 

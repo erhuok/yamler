@@ -54,6 +54,7 @@ def myfeed():
 @get_remind
 def share():
     sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
+    #sql = "SELECT t.id, t.user_id, t.to_user_id, t.title, t.status, t.comment_count, t.created_at, t.submit_user_id FROM task_share ts LEFT JOIN tasks t ON ts.task_id = t.id "
     task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
     #for key, row in enumerate(task_rows):
     #sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '' ORDER BY status ASC, id DESC"
@@ -62,6 +63,7 @@ def share():
     task_data = {}
     user_ids = []
     user_data = {}
+    user_rows = {} 
     if task_rows:
         for row in task_rows:
             if row.user_id == g.user.id:
@@ -86,14 +88,14 @@ def share():
                 task_data[user_id].append(new_row)
 
         if task_rows and ','.join(user_ids):
-            sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
+            sql = "SELECT id, realname, avatar FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
             user_rows = g.db.execute(text(sql)).fetchall()
             for row in user_rows:
                 user_data[row.id] = row.realname
     #如果有未阅读的，将unread改成0  
     if g.task_share_count:
         g.db.execute(text("UPDATE task_share SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=g.user.id)
-    return render_template('home/share.html', task_data=task_data, user_data=user_data)
+    return render_template('home/share.html', task_data=task_data, user_data=user_data, user_rows=user_rows)
 
 @mod.route('/mytask', methods=['GET', 'POST'])
 def mytask():
@@ -106,6 +108,7 @@ def publish():
     if request.method == 'POST' and request.form['title']:
         created_at = datetime.now()
         res = g.db.execute(tasks.insert().values({tasks.c.title: request.form['title'], 
+                                                  tasks.c.unread: 1,
                                                   tasks.c.user_id: g.user.id,
                                                   tasks.c.created_at: created_at, 
                                                   tasks.c.to_user_id: request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 

@@ -82,29 +82,53 @@ def invite():
     url = request.host + '/i/' + base64.encodestring(str(g.company.id))  
     return render_template('user/invite.html', url=url)
 
-@mod.route('/avatar', methods=['GET', 'POST'])
+@mod.route('/setting', methods=['GET', 'POST'])
 @required_login
-def avatar():
+def setting():
     if request.method == 'POST':
         file = request.files['avatar']
+        filename = g.user.avatar
         if file and allowed_images(file.filename):
             filename = secure_filename(file.filename)
             today = date.today().strftime('%Y-%m-%d')
             filename = today + '/' + str(g.user.id) + '__' + filename
-            if not os.path.isdir(app.config['UPLOAD_FOLDER'] + today):
-                os.makedirs(app.config['UPLOAD_FOLDER'] + today) 
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            if os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], filename)):
-                g.db.execute(users.update().where(users.c.id==g.user.id).values(avatar=filename))
+            if not os.path.isdir(app.config['UPLOAD_FOLDER'] + 'original/'+today):
+                os.makedirs(app.config['UPLOAD_FOLDER']+'original/' + today) 
+            if not os.path.isdir(app.config['UPLOAD_FOLDER'] + 'small/'+today):
+                os.makedirs(app.config['UPLOAD_FOLDER'] + 'small/'+today) 
+            if not os.path.isdir(app.config['UPLOAD_FOLDER'] + 'big/'+today):
+                os.makedirs(app.config['UPLOAD_FOLDER'] + 'big/'+today) 
+
+            file.save(os.path.join(app.config['UPLOAD_FOLDER']+'original/', filename))
+            if os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER']+'original/', filename)):
+                print 'ok'
+                im = Image.open(os.path.join(app.config['UPLOAD_FOLDER']+'original/', filename))
+                im.thumbnail((30, 30), Image.ANTIALIAS)
+                im.save(os.path.join(app.config['UPLOAD_FOLDER'],'small/'+filename))
+                print im
+
+                im = Image.open(os.path.join(app.config['UPLOAD_FOLDER']+'original/', filename))
+                im.thumbnail((120, 120), Image.ANTIALIAS)
+                im.save(os.path.join(app.config['UPLOAD_FOLDER'],'big/'+filename))
+
                 if g.user.avatar: 
-                    old_file = os.path.join(app.config['UPLOAD_FOLDER'], g.user.avatar)
-                    if os.path.isfile(old_file):
-                        os.unlink(old_file)
+                    original_file = os.path.join(app.config['UPLOAD_FOLDER']+'original/', g.user.avatar)
+                    big_file = os.path.join(app.config['UPLOAD_FOLDER']+'big/', g.user.avatar)
+                    small_file = os.path.join(app.config['UPLOAD_FOLDER']+'small/', g.user.avatar)
+                    if os.path.isfile(original_file):
+                        os.unlink(original_file)
+                    if os.path.isfile(big_file):
+                        os.unlink(big_file)
+                    if os.path.isfile(small_file):
+                        os.unlink(small_file)
                 g.user.avatar = filename
-    return render_template('user/avatar.html',user=g.user)
+        g.db.execute(users.update().where(users.c.id==g.user.id).values(avatar=filename, realname=request.form['realname'], telephone=request.form['telephone']))
+        redirect(url_for("user.setting"))
+    return render_template('user/setting.html',user=g.user)
 
 @mod.route('/get_avatar_url', methods=['GET'])
 def get_avatar_url():
+    return ''
     key = request.args.get('key','') 
     if key:
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], key)

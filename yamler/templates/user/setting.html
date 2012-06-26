@@ -1,0 +1,33 @@
+{% extends "layout_account.html" %}
+
+{% block content %}
+<div class="content">
+    <form method="POST" action="{{ request.url }}" enctype="multipart/form-data">
+        <div>
+            <label for="username">电子邮箱</label>
+            <input type="text" name="username" id="username" value="{{ user.username }}" disabled="true">
+        </div>
+
+        <div>
+            <label for="username">真实姓名</label>
+            <input type="text" name="realname" id="realname" value="{{ user.realname }}">
+        </div>
+        
+        <div>
+            <label for="username">手机号码</label>
+            <input type="text" name="telephone" id="telephone" value="{{ user.telephone }}">
+        </div>
+
+        <div>
+            {% if user.avatar %}
+                <img src="{{ url_for('static', filename='uploads/big/'+user.avatar ) }}"/>
+            {% endif %}
+            <label for="username">个人图像</label>
+            <input type="file" name="avatar" />
+        </div>
+
+        <input type="submit" value="保存"/>
+    </form>
+
+</div>
+{% endblock %}

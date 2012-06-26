@@ -344,6 +344,9 @@
 .O_tabPanel ul.Operat_tab_head{}
 .O_tabPanel ul.Operat_tab_head li{ float:left; padding:5px 10px; margin-right:10px; background-color:#e3e3e3; cursor:pointer;}
 ul.Operat_tab_head li.hover,ul.Operat_tab_head li.current{ background-color:#134467;}
+ul.Operat_tab_head li a{ display:inline-block; position:static; padding:0;}
+ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
+
 
 .O_tabPanel .tab_content{ background-color: #FFFFFF; border: 1px solid #CECECE; border-radius: 3px 3px 3px 3px; /*min-height:50px;*/ 
 	margin-top:10px; display:none; position:relative; padding:8px;}
@@ -366,6 +369,7 @@ ul.Operat_tab_head li.hover,ul.Operat_tab_head li.current{ background-color:#134
 .O_tabPanel .Submit_body span{ left:180px;}
 .O_tabPanel .Modify_body{ display:none;}
 .O_tabPanel .Modify_body span{ left:250px;}
+
 
 
 
