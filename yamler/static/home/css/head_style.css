@@ -9,7 +9,7 @@
 	/*background: -moz-linear-gradient(center top , #e45319 0%, #c84415 100%) repeat scroll 0 0 transparent;*/
 	background: -moz-linear-gradient(center top , #e45319 0%, #FB7D01 100%) repeat scroll 0 0 transparent;
     height: 30px;
-    overflow: hidden;
+    /*overflow: hidden;*/
     padding: 5px 8px;
     position: relative;
 	}
@@ -42,6 +42,7 @@
     position: absolute;
     right: -2px;
     top: -1px;
+	z-index:100;
 }
 .header-btn span.count:empty { display: none;}
 .header-btn.header-logo { margin-right: 8px; padding-left: 4px;}
@@ -136,4 +137,10 @@
 }
 .manual-icon { background-position: -540px -30px;}
 .manual-icon.light-hover:hover, .manual-icon.light { background-position: -540px -60px;}
+
+.header_slideToggle{ position:absolute; right:1px; top:30px; width:80px; z-index:30; border:1px solid #999; background-color:#ccc; display:none;}
+.header_slideToggle li a{ padding:5px 10px; border-bottom:1px solid #999; display:block;}
+.header_slideToggle li a:hover{ background-color:#999;}
+.header_slideToggle li.last a{ border:0;}
+
 /**********************头部样式 end*****************************/

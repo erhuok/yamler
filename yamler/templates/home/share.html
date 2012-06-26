@@ -15,16 +15,12 @@
         <div class="list-gradient-bottom"></div>
         <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" >
             {% for data in task_data[key] %}
-            <div class="list-card clearfix ui-droppable {% if status %} complete {% else %} undone {% endif %}" id="list{{ data.id }}">
+            <div class="list-card clearfix ui-droppable {% if data.status %} complete {% else %} undone {% endif %}" id="list{{ data.id }}">
                 
                 <a class="list-card-title" href="javascript:;" name="{{data.id}}">
+                	<span class="card-message-news"></span>
                     <span class="card-short-id hide">#{{ data.id }} </span>
-                    {% if data.status %}
-                        <span class="complete">{{ data.title }}</span>
-                    {% else %}
-                        {{ data.title }}
-                    {% endif %}
-                    
+                    {{ data.title }}
                     <ul class="LCT_Prompt">
                         <li>{{ data.created_at|datetimeformat }}</li>
                         {% if data.comment_count %}
@@ -34,9 +30,9 @@
                     </ul>
                     <div class="clear"></div>
                 </a>
-                <div class="badges"></div>
+                <!--<div class="badges"></div>
                 <div class="list-card-members"></div>
-                <!--<span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>-->
+                <span class="js-replay card-operation app-icon dark-hover small-icon menu-icon js-card-menu" name="{{ data.id }}"></span>-->
                 <div class="clear"></div>
                 
                 <ul class="list_card_operate" style="display:block;">
