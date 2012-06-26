@@ -96,3 +96,21 @@ def datetimeformat(value, format='%m月%d日 %H:%M'):
         new_value += default_week[week]
         return new_value
     return value
+
+
+from pyapns import configure, provision, notify
+'''
+IPhone手机端的notify
+'''
+def iphone_notify(user_ids, type):
+    configure({'HOST': 'http://localhost:7077/'})
+    provision('justoa', open(app.config['IPHONE_CERT']+'cert.pem').read(), 'production')
+    user_sql = "SELECT id, realname, iphone_token  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+    rows = g.db.execute(text(user_sql)).fetchall()
+    
+    if type == 'share':
+        message = '我的云秘书提醒您：有1条新日志递交给您！'
+
+    for row in rows:
+        if row.iphone_notify:
+            notify('justoa', row.iphone_notify, {'aps':{'message': message}})

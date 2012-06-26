@@ -77,7 +77,10 @@ $(function(){
         </a>
 
         <a class="header-auth member js-open-header-member-menu" href="{{ url_for('user.logout') }}">
-        	<span class="member-initials" title="tanxiao (tanxiao)">退出</span>
+            {% if g.user.avatar %}
+                <span><img src="{{ url_for('static', filename='uploads/small/'+g.user.avatar) }}"/></span>
+            {% endif %}
+        	<span class="member-initials" title="">退出</span>
         </a>
     </div>
     <!--

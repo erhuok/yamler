@@ -45,10 +45,6 @@
                 </ul>
                 <div class="clear"></div>
                 <div id="operation{{data.id}}" name="{{data.id}}" style="display:none;">
-                    
-                    
-                    
-
                     <ul class="list_card_replies" id="comment_list_{{data.id}}" style="display:block;">
                     </ul>
 
@@ -247,16 +243,20 @@
                     -->
                     </p>
                     <!--循环体-->
-                    {% for key in user_data %}
+                    {% for user in user_rows %}
                     <div class="phenom clearfix">
                         <div class="member js-show-mem-menu">
-                            <span class="member-initials" title="{{ user_data[key] }}"> </span>
+                            {% if user.avatar %} 
+                                <img class="member-initials" title="{{ user.realname }}" src="{{ url_for('static', filename='uploads/small/'+user.avatar) }}"/> 
+                            {% else %}
+                                <span class="member-initials" title="{{ user.realname }}"> </span>
+                            {% endif %}
                         </div>
                         <div class="phenom-desc">
-                            <a class="inline-object js-show-mem-menu" href="#list{{ key }}">{{ user_data[key] }}</a>
-                            {% if g.task_share_user[key] %} 
+                            <a class="inline-object js-show-mem-menu" href="#list{{ user.id }}">{{ user.realname }}</a>
+                            {% if g.task_share_user[user.id] %} 
                             <a class="header-btn header-about" title="Information" href="#"> 
-                                <span class="count js-unread-announcements" style="">{{ g.task_share_user[key] }}</span> 
+                                <span class="count js-unread-announcements" style="">{{ g.task_share_user[user.id] }}</span> 
                             </a>
                             {% endif %}
                         </div>
