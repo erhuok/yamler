@@ -105,6 +105,7 @@ IPhone手机端的notify
 def iphone_notify(user_ids, type):
     user_sql = "SELECT id, realname, iphone_token  FROM `users` WHERE id IN ({0})".format(','.join(map(str,user_ids)))
     rows = g.db.execute(text(user_sql)).fetchall()
+
     configure({'HOST': 'http://localhost:7077/'})
     provision('justoa', open(app.config['IPHONE_CERT']+'cert.pem').read(), 'production')
     if type == 'share':
