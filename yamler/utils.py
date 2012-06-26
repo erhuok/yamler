@@ -109,6 +109,8 @@ def iphone_notify(user_ids, type):
     provision('justoa', open(app.config['IPHONE_CERT']+'cert.pem').read(), 'production')
     if type == 'share':
         message = '我的云秘书提醒您：有1条新日志递交给您！'
+    elif type == 'submit':
+        message = '我的云秘书提醒您：有1条新任务安排给您！'
 
     for row in rows:
         if row.iphone_token:
