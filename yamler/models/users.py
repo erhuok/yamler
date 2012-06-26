@@ -14,6 +14,7 @@ class User(Model):
     realname = Column(String(45))
     telephone = Column(String(45))
     avatar = Column(String(45), default='')
+    iphone_token = Column(String(64), default='')
     company_id = Column(Integer, default=0)
     is_active = Column(Integer, default=0)
     created_at = Column(DateTime,default=datetime.datetime.now())
