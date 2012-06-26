@@ -111,5 +111,5 @@ def iphone_notify(user_ids, type):
         message = '我的云秘书提醒您：有1条新日志递交给您！'
 
     for row in rows:
-        if row.iphone_notify:
-            notify('justoa', row.iphone_notify, {'aps':{'message': message}})
+        if row.iphone_token:
+            notify('justoa', row.iphone_token, {'aps':{'message': message}})
