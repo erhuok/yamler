@@ -10,3 +10,5 @@ dist
 .DS_Store
 .swp
 tag
+.log
+.pid
