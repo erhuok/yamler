@@ -4,7 +4,7 @@
     <a class="clearfix link-item highlight-icon js-open-board" href="javascript:;" name="${id}" status="${status}">
         {% raw %}
         {{if status}}
-        <del><span class="item-name" id="title${id}"> ${title} </span></del>
+        <del><span class="item-name del-text" id="title${id}"> ${title} </span></del>
         {{else}}
         <span class="item-name" id="title${id}"> ${title} </span>
         {{/if}} 
@@ -45,11 +45,13 @@
 			<li class="tab_Submit bor_radius_3 js_submit" rel="tab_03" name="${id}">安排给</li>
 			<li class="tab_Modify bor_radius_3" rel="tab_04" name="${id}">修改</li>
 			<li class="tab_Delete bor_radius_3 js-delete" >删除</li>
-            {% if status %}
+            {% raw %} 
+            {{if status}}
             <li class="tab_Status bor_radius_3 js-undone" id="status_${id}">改为未完成</li>
-            {% else %}
+            {{else}}
             <li class="tab_Status bor_radius_3 js-complete" id="status_${id}">改为完成</li>
-            {% endif %}
+            {{/if}}
+            {% endraw %}
 		</ul>
 		<div class="clear"></div>
 		
@@ -131,6 +133,8 @@
         var id = $(this).attr('name');
         $('#reply_submit_'+id).unbind('click');
         $('.js-delete').unbind('click');
+        $('.js-complete').die('click');
+        $('.js-undone').die('click');
 
         //回复
         $(".tab_Reply").click(function() {
@@ -328,16 +332,16 @@
                     dataType: "json",
                     success: function(data) {
                         if(data.error) return false;
-                        $("#title"+id).wrap("<del/>")
-                            $("#list"+id).effect("highlight", {}, 3000);
-                            //$("#list"+id+" a").attr('status', 1);
-                            $("#status_"+id).removeClass('js-complete');
-                            $("#status_"+id).addClass('js-undone');
-                            $("#status_"+id).text('改为未完成');
-                            $(".tab_content").hide();
-                        }
-                    }); 
-                }
+                        //$("#title"+id).wrap("<del/>")
+                        $("#title"+id).addClass("del-text")
+                        $("#list"+id).effect("highlight", {}, 3000);
+                        $("#status_"+id).removeClass('js-complete');
+                        $("#status_"+id).addClass('js-undone');
+                        $("#status_"+id).text('改为未完成');
+                        $(".tab_content").hide();
+                    }
+                }); 
+            }
         });
 
         $(".js-undone").live('click', function() {
@@ -349,7 +353,8 @@
                     dataType: "json",
                     success: function(data) {
                         if(data.error) return false;
-                        $('#title'+id).unwrap(); 
+                        //$('#title'+id).unwrap(); 
+                        $("#title"+id).removeClass("del-text")
                         $("#list"+id).effect("highlight", {}, 3000);
                         $("#status_"+id).addClass('js-complete');
                         $("#status_"+id).removeClass('js-undone');

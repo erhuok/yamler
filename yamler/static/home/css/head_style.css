@@ -5,9 +5,9 @@
 #header{
 	/*background: -moz-linear-gradient(center top , #23658B 0%, #1C506E 100%) repeat scroll 0 0 transparent;*/
 	/*background-color:#c84415;*/
-	background-color:#FB7D01;
+	background-color:#3d6e9b;
 	/*background: -moz-linear-gradient(center top , #e45319 0%, #c84415 100%) repeat scroll 0 0 transparent;*/
-	background: -moz-linear-gradient(center top , #e45319 0%, #FB7D01 100%) repeat scroll 0 0 transparent;
+	background: -moz-linear-gradient(center top , #5696d1 0%, #3d6e9b 100%) repeat scroll 0 0 transparent;
     height: 30px;
     /*overflow: hidden;*/
     padding: 5px 8px;
@@ -84,15 +84,15 @@
 .header-user{ position: absolute; right: 8px; top: 5px;}
 
 .header-btn.header-notifications, .header-btn.header-boards, .header-btn.header-search, .header-btn.header-login, .header-btn.header-signup {
-    /*background: -moz-linear-gradient(center top , #2B7CAB 0%, #28739F 100%) repeat scroll 0 0 transparent;*/
-	background-color:#ed6b20;
-	background: -moz-linear-gradient(center top , #ed6b20 0%, #fc9429 100%) repeat scroll 0 0 transparent;
+	background-color:#2B7CAB;
+    background: -moz-linear-gradient(center top , #2B7CAB 0%, #28739F 100%) repeat scroll 0 0 transparent;
+	/*background: -moz-linear-gradient(center top , #ed6b20 0%, #fc9429 100%) repeat scroll 0 0 transparent;*/
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 1px 1px rgba(0, 0, 0, 0.35);
 }
 .header-btn:hover{
-	/*background: -moz-linear-gradient(center top , #3291c8 0%, #2f88bc 100%) repeat scroll 0 0 transparent;*/
-	background-color:#fa9f40;
-	background: -moz-linear-gradient(center top , #f79127 0%, #fa9f40 100%) repeat scroll 0 0 transparent;
+	background-color:#3291c8;
+	background: -moz-linear-gradient(center top , #3291c8 0%, #2f88bc 100%) repeat scroll 0 0 transparent;
+	/*background: -moz-linear-gradient(center top , #f79127 0%, #fa9f40 100%) repeat scroll 0 0 transparent;*/
 	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15) inset, 0 1px 1px rgba(0, 0, 0, 0.25);
 	color:#eee;
 }
@@ -144,4 +144,3 @@
 .header_slideToggle li.last a{ border:0;}
 
 /**********************头部样式 end*****************************/
-

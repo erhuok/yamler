@@ -58,7 +58,7 @@
 .window-module { clear: both; margin-bottom: 16px; /*position: relative;*/}
 
 .window-module-title {
-    border-bottom: 1px solid #DCDCDC;
+    border-bottom: 2px solid #ccc;
     margin: 0 0 6px 40px;
     padding: 6px 0;
     position: relative;
@@ -89,20 +89,23 @@
     overflow: hidden;
     visibility: hidden;
 }
-.bold-list li { border-bottom: 1px solid #DCDCDC; padding: 8px 0; /*position: relative;*/ *+width:650px;}
+.bold-list li { border-bottom: 1px solid #DCDCDC; padding: 8px 5px; /*position: relative;*/ *+width:650px;}
 .bold-list li a:hover, .bold-list li a.current:hover, .people_listBlock ul li a:hover{ 
 	color:#fff; 
 	background-color:#fc9429;
-	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
+	background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;
 	}
+.bold-list li.current{ background-color:#fff;}
 .bold-list.boards-list li a.link-item { padding-right: 83px;}
 .bold-list li .link-item { padding: 5px 10px;}
 .bold-list li a { border-radius: 3px 3px 3px 3px; display: block; padding-right: 80px; position: relative; text-decoration: none;}
 .bold-list li .item-name { display: inline-block; font-weight: normal; margin-bottom: 0; padding-right: 8px; font-size:14px; width:440px;}
-.bold-list li a.hover{ color:#fff; background-color:#fc9429;
-	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;}
-.bold-list li a.hover .counts{ color:#fff;}
-.bold-list li a.current{ background-color:#fff;}
+.bold-list li.hover a{ color:#fff; background-color:#2887bd;
+	background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;
+	
+	}
+.bold-list li.hover a .counts{ color:#fff;}
+/*.bold-list li a.current{ background-color:#fff;}*/
 
 
 
@@ -111,9 +114,9 @@
 .small-icon.pin-icon { background-position: -360px -108px;}
 .small-icon.menu-icon { background-position: -396px -108px;}
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
-.bold-list li a .counts { display: block; color:#777; float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
+.bold-list li a .counts { display: block; color:#898989; float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
 
-.SharePeople{/* margin-top:10px;*/ color:#9c9c9c; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px; }
+.SharePeople{/* margin-top:10px;*/ color:#a3a3a3; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px; }
 .SharePeople li{ float:left; padding:3px 8px; border:0; width:auto;}
 
 
@@ -146,11 +149,11 @@
 	*+height:20px;
     white-space: nowrap;
 }
+.button-link-more{ max-width: 90%; _width:90%; text-align:center;}
 .button-link:hover{
-	/*background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;*/
 	background-color:#fc9429;
-	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;
-	border-color:#ed6b20;
+	background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;
+	border-color:#1f6993;
 	text-decoration:none;
 	color:#fff;
 	}
@@ -366,7 +369,7 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 .O_tabPanel .Modify_body .Modify_block textarea{ height:100px;}
 .O_tabPanel .Reply_body .Reply_Reply input,.O_tabPanel .Modify_body .Modify_block input{ 
 	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
-	float:right; margin-bottom:0; text-align:center; width:80px; margin-left:10px; color:#fff;}
+	float:right; margin-bottom:0; text-align:center; width:80px; margin-left:10px; color:#fff; border:0;}
  
 .O_tabPanel .Arrangement_body{ display:none; }
 .O_tabPanel .Arrangement_body span{ left:110px;}
