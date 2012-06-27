@@ -82,7 +82,7 @@ class TaskShare(Model):
     def update(self, share_user_id, old_user_id, task_id):
         insert_ids = share_user_id.difference(old_user_id)
         if insert_ids:
-            g.db.execute(text("UPDATE tasks SET unrend=:unread WHERE id=:id", id=task_id)) 
+            g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
                 if int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
@@ -116,7 +116,7 @@ class TaskSubmit(Model):
     def update(self, share_user_id, old_user_id, task_id):
         insert_ids = share_user_id.difference(old_user_id)
         if insert_ids:
-            g.db.execute(text("UPDATE tasks SET unrend=:unread WHERE id=:id", id=task_id)) 
+            g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
                 if int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        

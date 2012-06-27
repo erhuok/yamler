@@ -20,17 +20,6 @@ def create():
         return jsonify(error=0, title=request.form['title'], realname=g.user.realname, id=res.inserted_primary_key)
     return jsonify(error=1, msg="没有内容")
 
-'''
-@mod.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
-    if request.method == 'POST':
-        g.db.execute(text("UPDATE tasks SET title=:title, status=:status WHERE id=:id"), title=request.form['title'],status=request.form['status'], id=id)
-        return '修改成功'
-    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE id=:id"), id=id).first()
-    row = dict(row)
-    return render_template('task/update.html', row=row) 
-    #return render_template('task/update.html', row=row, data_users=json.dumps(data_users), share_users_default=json.dumps(row['share_users'])) 
-'''
 
 @mod.route('/update/<int:id>', methods=['POST'])
 def update(id):
@@ -45,7 +34,7 @@ def update(id):
 
 @mod.route('/update_share/<int:id>', methods=['POST', 'GET'])
 def share(id):
-    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
@@ -61,15 +50,18 @@ def share(id):
         sql = "SELECT id, realname FROM users WHERE id IN ({0})".format(','.join(row.to_user_id.split(',')))
         user_rows = g.db.execute(text(sql)).fetchall()
         share_users = dict(user_rows)
-
+        #share_users = [ user_row.realname  for user_row in user_rows]
     company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id <> :id"), company_id=g.company.id, id=g.user.id).fetchall()
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
+
+    return jsonify(share_users_default=share_users.values(), data_users=data_users, to_user_id=row.to_user_id)
+    '''
     return render_template('task/update_share.html', 
                            row=row, 
                            share_users_default=json.dumps(share_users.values()),
                            data_users = json.dumps(data_users),
                           )
-
+    '''
 @mod.route('/update_submit/<int:id>', methods=['POST', 'GET'])
 def submit(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
@@ -92,12 +84,15 @@ def submit(id):
 
     company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id <> :id"), company_id=g.company.id, id=g.user.id).fetchall()
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
+
+    return jsonify(to_user_id=row.submit_user_id, data_users=data_users, share_users_default=share_users.values())
+    '''
     return render_template('task/update_submit.html', 
                            row=row, 
                            share_users_default=json.dumps(share_users.values()),
                            data_users = json.dumps(data_users),
                           )
-
+    '''
 
 @mod.route('/get/<int:id>')
 def get(id):

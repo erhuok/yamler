@@ -1,0 +1,372 @@
+<ul class="boards-list bold-list gutter js-list-boards" id="msg_list"> </ul>
+<script id="msgTemplate" type="text/x-jquery-tmpl">
+<li id="list${id}" >
+    <a class="clearfix link-item highlight-icon js-open-board" href="javascript:;" name="${id}" status="${status}">
+        {% raw %}
+        {{if status}}
+        <del><span class="item-name del-text" id="title${id}"> ${title} </span></del>
+        {{else}}
+        <span class="item-name" id="title${id}"> ${title} </span>
+        {{/if}} 
+        {% endraw %}
+		
+        {% raw %} 
+        <span class="counts">
+            {{if comment_count }} <span class="Share_Reply">${comment_count}条回复&nbsp;&nbsp;</span> {{/if}}
+            <span>${created_at}</span>
+        </span>
+        {% endraw %}
+		<div class="clear"></div>
+    </a>
+    
+    {% raw %}
+    {{if share_users.length}} 
+    <ul class="SharePeople">
+        <li>${realname}递交给</li>
+        {{tmpl(share_users) "#share_users_template"}}
+    </ul>
+    {{/if}}
+    {% endraw %}
+
+    {% raw %}
+    {{if submit_users.length}} 
+    <ul class="SharePeople">
+        <li>${realname}安排给</li>
+        {{tmpl(submit_users) "#submit_users_template"}}
+    </ul>
+    {{/if}}
+    {% endraw %}
+	<div class="clear"></div>
+	<!--操作区-->
+	<div class="O_tabPanel">
+		<ul class="Operat_tab_head">
+			<li class="tab_Reply bor_radius_3" rel="tab_01" name="${id}">回复（10）</li>
+			<li class="tab_Arrangement bor_radius_3 js_share" rel="tab_02" name="${id}">递交给</li>
+			<li class="tab_Submit bor_radius_3 js_submit" rel="tab_03" name="${id}">安排给</li>
+			<li class="tab_Modify bor_radius_3" rel="tab_04" name="${id}">修改</li>
+			<li class="tab_Delete bor_radius_3 js-delete" >删除</li>
+            {% raw %} 
+            {{if status}}
+            <li class="tab_Status bor_radius_3 js-undone" id="status_${id}">改为未完成</li>
+            {{else}}
+            <li class="tab_Status bor_radius_3 js-complete" id="status_${id}">改为完成</li>
+            {{/if}}
+            {% endraw %}
+		</ul>
+		<div class="clear"></div>
+		
+		<div class="tab_content Reply_body" id="tab_01_${id}">
+			<span></span>
+            <ul class="Reply_Show" id="comment_list_${id}"> </ul>
+			<div class="Reply_Reply">
+                <form id="comment_form_${id}" name="comment_form">
+                    <textarea rows="" cols="" name="comment_content" id="comment_content_${id}"></textarea>
+                    <input class="Reply_Submit"  type="button" id="reply_submit_${id}" value="回复"/>
+                    <input class="Reply_Cancel" type="button" id="reply_cancel_${id}" value="取消"/>
+                </form>
+				<div class="clear"></div>
+			</div>
+		</div>
+		
+		<div class="tab_content Arrangement_body" id="tab_02_${id}">
+            <ul id="share_users_${id}"></ul>
+            <form id="share_users_form_${id}" name="share_users_form">
+                <input type="hidden" name="to_user_id" id="to_user_id_${id}"/>
+                <input class="Reply_Submit"  type="button" id="share_submit_${id}" value="保存"/>
+                <input class="Reply_Cancel" type="button" id="share_cancel_${id}" value="取消"/>
+            </form>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="tab_content Submit_body" id="tab_03_${id}">
+            <ul id="submit_users_${id}"> </ul>
+            <form id="submit_users_form_${id}" name="submit_users_form">
+                <input type="hidden" name="submit_user_id" id="submit_user_id_${id}"/>
+                <input class="Reply_Submit"  type="button" id="submit_submit_${id}" value="保存"/>
+                <input class="Reply_Cancel" type="button" id="submit_cancel_${id}" value="取消"/>
+            </form>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="tab_content Modify_body" id="tab_04_${id}">
+			<span></span>
+			<div class="Modify_block">
+				<textarea rows="" cols="" ></textarea>
+				<input class="Reply_Submit" value="保存"/>
+				<input class="Reply_Cancel" value="取消"/>
+				<div class="clear"></div>
+			</div>
+		</div>
+		
+		
+		
+		
+	</div>
+	<!--操作区 end-->
+	
+</li>
+</script>
+
+
+<!--回复的模板-->
+<script id="comment_template_list" type="text/x-jquery-tmpl">
+    <li>${realname}：${content}<i>${created_at}</i></li>
+</script>
+<!--回复的模板 end-->
+
+<script>
+
+	$(".boards-list li").live('mouseover',function(){
+		$(this).addClass("hover");
+	});
+
+	$(".boards-list li").live('mouseout',function(){
+		$(this).removeClass("hover");
+	});
+	
+	$(".boards-list li a").live('click',function(){
+		$(".O_tabPanel").hide();
+		$(this).parent().find(".O_tabPanel").show();
+		$(this).addClass("current");
+		$(".boards-list li a").not($(this)).removeClass("current");
+        
+        var id = $(this).attr('name');
+        $('#reply_submit_'+id).unbind('click');
+        $('.js-delete').unbind('click');
+        $('.js-complete').die('click');
+        $('.js-undone').die('click');
+
+        //回复
+        $(".tab_Reply").click(function() {
+            $(".tab_content").hide();
+            $("#comment_list_"+id).empty();
+            $.getJSON('/comment/get/'+id, function(res) {
+                $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list_"+id );
+            }); 
+            $("#tab_01_"+id).show();
+
+            $("#reply_cancel_"+id).click(function() {
+                $("#tab_01_"+id).hide();
+            });
+
+            $("#reply_submit_"+id).click(function() {
+                var task_id = id;
+                var comment_content = $("#comment_content_"+task_id).val();
+                if(comment_content) {
+                    var form = $('#comment_form_'+task_id)
+                    $.ajax({
+                        type: "POST",
+                        data: form.serialize(),
+                        url: "/comment/create/"+task_id,
+                        dataType: "json",
+                        success: function(data) {
+                            $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list_"+task_id );
+                            form.each(function(){ this.reset(); });
+                        }
+                    }); 
+                }
+            });
+        });
+        
+        //递交给
+        $(".js_share").click(function() {
+            $(".tab_content").hide();
+            $("#tab_02_"+id).show();
+            $.ajax({
+                type: "GET",
+                url: "/task/update_share/"+id,
+                dataType: "json",
+                success: function(data) {
+                    var share_user_id = $("#to_user_id_"+id);
+                    share_user_id.val(data.to_user_id);
+                    $("#share_users_"+id).tagHandler({
+                        assignedTags: data.share_users_default,
+                        availableTags: data.data_users,
+                        autocomplete: true,
+                        onAdd: function(name) {
+                            var in_array = $.grep(data.data_users, function(a) { if(a.value==name) return true; else return false;});
+                            if(in_array=='') return false;
+                        },
+                        afterAdd: function(name){
+                            var id = '';
+                            $.each(data.data_users, function() {
+                                if(this.value == name) 
+                                id = this.id
+                            });
+                            if(id) {
+                                var to_user_id = share_user_id.val()  
+                                to_user_id = to_user_id.split( /,\s*/ );
+                                to_user_id.push(id);
+                                share_user_id.val(to_user_id.join(",")) 
+                            }
+                        },
+                        afterDelete: function(name) {
+                            var id = '';
+                            $.each(data.data_users, function() {
+                                if(this.value == name) 
+                                id = this.id
+                            });
+                            if(id) {
+                                var to_user_id = share_user_id.val()  
+                                to_user_id = to_user_id.split( /,\s*/ );
+                                to_user_id = $.grep(to_user_id, function(a) { return a != id; });
+                                share_user_id.val(to_user_id.join(",")) 
+                            }
+                        }  
+                    });  
+                }
+            }); 
+
+            
+            $("#share_cancel_"+id).click(function() {
+                $("#tab_02_"+id).hide();
+            });
+            
+            $("#share_submit_"+id).click(function() {
+                var to_user_id = $("#to_user_id_"+id).val();   
+                if(to_user_id) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/task/update_share/"+id,
+                        dataType: "json",
+                        data: {'to_user_id': to_user_id},
+                        success: function(res) {
+                            $("#share_submit_"+id).unbind('click');
+                            $(".tab_content").hide();
+                        }
+                    }); 
+                }
+            }); 
+
+        });  
+
+        $(".js_submit").click(function() {
+            $(".tab_content").hide();
+            $("#tab_03_"+id).show();
+            $.ajax({
+                type: "GET",
+                url: "/task/update_submit/"+id,
+                dataType: "json",
+                success: function(data) {
+                    var share_user_id = $("#submit_user_id_"+id);
+                    share_user_id.val(data.to_user_id);
+                    $("#submit_users_"+id).tagHandler({
+                        assignedTags: data.share_users_default,
+                        availableTags: data.data_users,
+                        autocomplete: true,
+                        onAdd: function(name) {
+                            var in_array = $.grep(data.data_users, function(a) { if(a.value==name) return true; else return false;});
+                            if(in_array=='') return false;
+                        },
+                        afterAdd: function(name){
+                            var id = '';
+                            $.each(data.data_users, function() {
+                                if(this.value == name) 
+                                id = this.id
+                            });
+                            if(id) {
+                                var to_user_id = share_user_id.val()  
+                                to_user_id = to_user_id.split( /,\s*/ );
+                                to_user_id.push(id);
+                                share_user_id.val(to_user_id.join(",")) 
+                            }
+                        },
+                        afterDelete: function(name) {
+                            var id = '';
+                            $.each(data.data_users, function() {
+                                if(this.value == name) 
+                                id = this.id
+                            });
+                            if(id) {
+                                var to_user_id = share_user_id.val()  
+                                to_user_id = to_user_id.split( /,\s*/ );
+                                to_user_id = $.grep(to_user_id, function(a) { return a != id; });
+                                share_user_id.val(to_user_id.join(",")) 
+                            }
+                        }  
+                    });  
+                }
+            }); 
+
+            
+            $("#submit_cancel_"+id).click(function() {
+                $("#tab_03_"+id).hide();
+            });
+            
+            $("#submit_submit_"+id).click(function() {
+                var submit_user_id = $("#submit_user_id_"+id).val();   
+                if(submit_user_id) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/task/update_submit/"+id,
+                        dataType: "json",
+                        data: {'submit_user_id': submit_user_id},
+                        success: function(res) {
+                            $(".tab_content").hide();
+                            $("#submit_submit_"+id).unbind('click');
+                        }
+                    }); 
+                }
+            }); 
+
+        });  
+
+
+        $(".js-delete").click(function() {
+            if(confirm('确定要删除这条记录'))  
+            {
+                if(id) {
+                    $.getJSON('/task/delete/'+id, function(res) {
+                        $("#list"+res.id).remove();
+                    });
+                }
+            }
+        });
+        
+        $(".js-complete").live('click', function() {
+            if(id) {
+                $.ajax({
+                    type: "POST",
+                    data: {'status': '1'},
+                    url: "/task/update/"+id,
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.error) return false;
+                        //$("#title"+id).wrap("<del/>")
+                        $("#title"+id).addClass("del-text")
+                        $("#list"+id).effect("highlight", {}, 3000);
+                        $("#status_"+id).removeClass('js-complete');
+                        $("#status_"+id).addClass('js-undone');
+                        $("#status_"+id).text('改为未完成');
+                        $(".tab_content").hide();
+                    }
+                }); 
+            }
+        });
+
+        $(".js-undone").live('click', function() {
+            if(id) {
+                $.ajax({
+                    type: "POST",
+                    data: {'status': '0'},
+                    url: "/task/update/"+id,
+                    dataType: "json",
+                    success: function(data) {
+                        if(data.error) return false;
+                        //$('#title'+id).unwrap(); 
+                        $("#title"+id).removeClass("del-text")
+                        $("#list"+id).effect("highlight", {}, 3000);
+                        $("#status_"+id).addClass('js-complete');
+                        $("#status_"+id).removeClass('js-undone');
+                        $("#status_"+id).text('改为完成');
+                        $(".tab_content").hide();
+                    }
+
+                }); 
+            }
+        });
+
+        });
+
+
+    </script>

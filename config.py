@@ -6,7 +6,8 @@ DEBUG = True
 
 SECRET_KEY = '232323sljf209302nadnoasfo2031012'
 
-DATABASE_URI = 'mysql+mysqldb://root:123456@localhost:3306/yamler_development?charset=utf8'
+#DATABASE_URI = 'mysql+mysqldb://root:data@localhost:3306/yamler_development?charset=utf8'
+DATABASE_URI = 'mysql+mysqldb://root:123456@192.168.1.120:3306/yamler_development?charset=utf8'
 DATABASE_CONNECT_OPTIONS = {'pool_recycle':7200}
 
 #ADMINS = frozenset(['http://admin.yamler.com/']
