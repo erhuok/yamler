@@ -89,7 +89,7 @@
     overflow: hidden;
     visibility: hidden;
 }
-.bold-list li { border-bottom: 1px solid #DCDCDC; padding: 2px 0; /*position: relative;*/ *+width:650px;}
+.bold-list li { border-bottom: 1px solid #DCDCDC; padding: 8px 0; /*position: relative;*/ *+width:650px;}
 .bold-list li a:hover, .bold-list li a.current:hover, .people_listBlock ul li a:hover{ 
 	color:#fff; 
 	background-color:#fc9429;
@@ -98,7 +98,7 @@
 .bold-list.boards-list li a.link-item { padding-right: 83px;}
 .bold-list li .link-item { padding: 5px 10px;}
 .bold-list li a { border-radius: 3px 3px 3px 3px; display: block; padding-right: 80px; position: relative; text-decoration: none;}
-.bold-list li .item-name { display: inline; font-weight: normal; margin-bottom: 0; padding-right: 8px; font-size:14px;}
+.bold-list li .item-name { display: inline-block; font-weight: normal; margin-bottom: 0; padding-right: 8px; font-size:14px; width:440px;}
 .bold-list li a.hover{ color:#fff; background-color:#fc9429;
 	background: -moz-linear-gradient(center top , #fc9429 0%, #ed6b20 100%) repeat scroll 0 0 transparent;}
 .bold-list li a.hover .counts{ color:#fff;}
@@ -113,7 +113,7 @@
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
 .bold-list li a .counts { display: block; color:#777; float:right; margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;}
 
-.SharePeople{ margin-top:10px; color:#9c9c9c; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px; }
+.SharePeople{/* margin-top:10px;*/ color:#9c9c9c; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px; }
 .SharePeople li{ float:left; padding:3px 8px; border:0; width:auto;}
 
 

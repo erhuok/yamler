@@ -211,12 +211,13 @@
         <span class="item-name" id="title${id}"> ${title} </span>
         {{/if}} 
         {% endraw %}
-        <!--
-        <span class="app-icon small-icon permission-icon private-icon " title="">回复${comment_count}</span>
-        <span class="app-icon small-icon pin-icon" title=""></span>
-        -->
-		<span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
-		<div class="clear"></div>
+        
+        <!--<span class="app-icon small-icon permission-icon private-icon " title="">回复${comment_count}</span>
+        <span class="app-icon small-icon pin-icon" title=""></span>-->
+        
+		<!--<span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
+		<div class="clear"></div>-->
+		
         {% raw %} 
         <span class="counts">
             {{if comment_count }} <span class="Share_Reply">${comment_count}条回复&nbsp;&nbsp;</span> {{/if}}
@@ -226,7 +227,7 @@
 		<div class="clear"></div>
     </a>
     
-    <!--{% raw %}
+    {% raw %}
     {{if share_users.length}} 
     <ul class="SharePeople">
         <li>${realname}递交给</li>
@@ -242,8 +243,8 @@
         {{tmpl(submit_users) "#submit_users_template"}}
     </ul>
     {{/if}}
-    {% endraw %}-->
-	
+    {% endraw %}
+	<div class="clear"></div>
 	<!--操作区-->
 	<div class="O_tabPanel">
 		<ul class="Operat_tab_head">
@@ -555,7 +556,7 @@
 	
 	$(".boards-list li a").live('click',function(){
 		$(".O_tabPanel").hide();
-		$(this).next().show();
+		$(this).parent().find(".O_tabPanel").show();
 		$(this).addClass("current");
 		$(".boards-list li a").not($(this)).removeClass("current");
 	});
