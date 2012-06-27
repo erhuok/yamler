@@ -83,8 +83,8 @@
             </div>
             
             <div class="window-module">
-            	<a class="button-link gutter js-add-board" href="javascript:;" id="get_more_feed" name="{{ request.args.get('page',1) }}">
-                    <span class="app-icon small-icon board-icon"></span> 点击，查看更多
+            	<a class="button-link gutter js-add-board button-link-more" href="javascript:;" id="get_more_feed" name="{{ request.args.get('page',1) }}">
+                    <!--<span class="app-icon small-icon board-icon"></span>--> 点击，查看更多
                 </a>
             </div>
         	
@@ -557,8 +557,8 @@
 	$(".boards-list li a").live('click',function(){
 		$(".O_tabPanel").hide();
 		$(this).parent().find(".O_tabPanel").show();
-		$(this).addClass("current");
-		$(".boards-list li a").not($(this)).removeClass("current");
+		$(this).parent().addClass("current");
+		$(".boards-list li").not($(this).parent()).removeClass("current");
 	});
 	
 	$(".Task_nav").hover(function(){
@@ -782,6 +782,7 @@
                 }); 
             }
         });
+
         //文本输入框控制
         $("#title").focus(function() {
             //onfocus="if (value =='请写点什么'){value =''}" onblur="if (value ==''){value='请写点什么'}"   
@@ -799,5 +800,6 @@
 
         });
 
+      
     </script>
     {% endblock %}

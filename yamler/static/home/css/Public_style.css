@@ -188,7 +188,7 @@ p {
 label { display: block; font-weight: bold; margin-bottom: 4px;}
 textarea, input {
     -moz-box-sizing: border-box;
-    background-color: #E9E9E9;
+    background-color: #c9c9c9;
     border: 1px solid #BFBFBF;
     border-radius: 3px 3px 3px 3px;
     display: block;
