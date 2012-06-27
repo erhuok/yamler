@@ -76,16 +76,12 @@ $(function(){
 			<span class="header-btn-text">邀请加入</span>
         </a>
 
-<<<<<<< HEAD
         <a class="header-auth member js-open-header-member-menu install-link" href="{{ url_for('user.logout') }}">
         	<span class="member-initials" title="tanxiao (tanxiao)">设置</span>
-=======
-        <a class="header-auth member js-open-header-member-menu" href="{{ url_for('user.logout') }}">
             {% if g.user.avatar %}
                 <span><img src="{{ url_for('static', filename='uploads/small/'+g.user.avatar) }}"/></span>
             {% endif %}
         	<span class="member-initials" title="">退出</span>
->>>>>>> huzhi/master
         </a>
         <ul class="header_slideToggle rounded_bottom_3">
             <li><a href="javascript:;">设置</a></li>

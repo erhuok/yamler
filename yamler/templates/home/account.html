@@ -251,8 +251,8 @@
 			<li class="tab_Arrangement bor_radius_3" rel="tab_02" name="${id}">安排给</li>
 			<li class="tab_Submit bor_radius_3" rel="tab_03" name="${id}">递交给</li>
 			<li class="tab_Modify bor_radius_3" rel="tab_04" name="${id}">修改</li>
-			<li class="tab_Delete bor_radius_3" ><a href="javascript:;">删除</a></li>
-			<li class="tab_Status bor_radius_3" ><a href="javascript:;">改为未完成</a></li>
+			<li class="tab_Delete bor_radius_3" >删除</li>
+			<li class="tab_Status bor_radius_3" >改为未完成</li>
 		</ul>
 		<div class="clear"></div>
 		
@@ -288,9 +288,6 @@
 			<ul>
 				<li>谭少华</li>
 				<li>潘波</li>
-				<li>李英</li>
-				<li>杨秀冬</li>
-				<li>杨秀冬</li>
 				<li>丁总</li>
 			</ul>
 			<div class="clear"></div>
@@ -549,12 +546,13 @@
     $(".pop-over .pop-header .close-icon").click(function(){
         $("#pop_action").hide();
     });
-	$(".boards-list li a").live('mouseover',function(){
+	$(".boards-list li").live('mouseover',function(){
 		$(this).addClass("hover");
 	});
-	$(".boards-list li a").live('mouseout',function(){
+	$(".boards-list li").live('mouseout',function(){
 		$(this).removeClass("hover");
 	});
+	
 	$(".boards-list li a").live('click',function(){
 		$(".O_tabPanel").hide();
 		$(this).next().show();
@@ -610,6 +608,8 @@
 		var list_id = $(this).attr("name");
 		$(".tab_content").hide();
 		$("#"+li_rel+"_"+list_id).show();
+		$(this).addClass("current");
+		$("ul.Operat_tab_head li").not($(this)).removeClass("current");
 	});
 
     $('.js-replay').click(function() {
