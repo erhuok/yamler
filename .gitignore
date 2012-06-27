@@ -11,3 +11,5 @@ dist
 .swp
 tag
 .swo
+.log
+.pid
