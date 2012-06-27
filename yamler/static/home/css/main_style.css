@@ -16,7 +16,7 @@
 	margin: 0 0 6px 40px;
 	}
 .window-message .message_block{ position:relative;}
-.message_block span{  
+.message_block span,.O_tabPanel .tab_content span{  
 	background: url("../images/index_img/Icon_msg_text01.png") no-repeat scroll 0 0;
 	_background: url("../images/index_img/Icon_msg_text01.gif") no-repeat scroll 0 0;
     display: block;
@@ -354,6 +354,7 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 .O_tabPanel .tab_content span{ 
 	background:url("../images/index_img/Icon_reply01.png") no-repeat 0 0; 
 	_background:url("../images/index_img/Icon_reply01.gif") no-repeat 0 0;
+	
 	top: -7px;
 	}
 .O_tabPanel .Reply_body{ display:none;}

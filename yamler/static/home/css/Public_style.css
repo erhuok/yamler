@@ -152,7 +152,7 @@ body, input, select, textarea {
     color: #393939;
     font: 14px/18px "Helvetica Neue",Arial,Helvetica,sans-serif;
 }
-body{ background: none repeat scroll 0 0 #F0F0F0;
+body{ background: none repeat scroll 0 0 #F5F5F5;
 	overflow: auto;
 	*+overflow:hidden;
 	_overflow:auto;
@@ -276,3 +276,25 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 }
 
 /**************************微OA-日志特有的公共样式 end*****************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
