@@ -16,7 +16,7 @@
 	margin: 0 0 6px 40px;
 	}
 .window-message .message_block{ position:relative;}
-.message_block span{  
+.message_block span,.O_tabPanel .tab_content span{  
 	background: url("../images/index_img/Icon_msg_text01.png") no-repeat scroll 0 0;
 	_background: url("../images/index_img/Icon_msg_text01.gif") no-repeat scroll 0 0;
     display: block;
@@ -263,7 +263,7 @@
     width: 120px;
     z-index: 20;
 }
-
+.pop-install{ width:80px; top:40px; right:10px;}
 .pop-over .pop-header {
     border-bottom: 1px solid #DCDCDC;
     height: 26px;
@@ -339,9 +339,41 @@
 
 /***************任务导航状态 end****************/
 
+/****************我的任务列表操作区**********************/
+.O_tabPanel{ padding-top:5px; display:none;}
+.O_tabPanel ul.Operat_tab_head{}
+.O_tabPanel ul.Operat_tab_head li{ float:left; padding:5px 10px; margin-right:10px; background-color:#e3e3e3; cursor:pointer;}
+ul.Operat_tab_head li.hover,ul.Operat_tab_head li.current{ background-color:#134467;}
+ul.Operat_tab_head li a{ display:inline-block; position:static; padding:0;}
+ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
+
+
+.O_tabPanel .tab_content{ background-color: #FFFFFF; border: 1px solid #CECECE; border-radius: 3px 3px 3px 3px; /*min-height:50px;*/ 
+	margin-top:10px; display:none; position:relative; padding:8px;}
+.O_tabPanel .tab_content span{ top: -7px;}
+.O_tabPanel .Reply_body{ display:none;}
+.O_tabPanel .Reply_body ul.Reply_Show{ margin:0; margin-bottom:4px; padding:0;}
+.O_tabPanel .Reply_body ul.Reply_Show li{ background-color: #F5F5F5; border: 1px solid #D0D0D0; padding:4px; color: #555555; margin-bottom:4px;}
+.O_tabPanel .Reply_body ul.Reply_Show li i{ color:#999; display:inline-block; margin-left:20px;}
+.O_tabPanel .Reply_body .Reply_Reply{}
+.O_tabPanel .Reply_body .Reply_Reply textarea{ height:60px; margin-bottom:5px;}
+.O_tabPanel .Reply_body .Reply_Reply input,.O_tabPanel .Modify_body .Modify_block input{ 
+	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	float:right; margin-bottom:0; text-align:center; width:80px; margin-left:10px; color:#fff;}
+ 
+.O_tabPanel .Arrangement_body{ display:none; }
+.O_tabPanel .Arrangement_body span{ left:110px;}
+.O_tabPanel .Arrangement_body ul{ padding:0; margin:0; border:0;}
+.O_tabPanel .Arrangement_body ul li,.O_tabPanel .Submit_body ul li{ padding:3px 5px; background-color:#fff076; border-radius:3px; border:0; float:left; margin-right:5px;}
+.O_tabPanel .Submit_body{ display:none;}
+.O_tabPanel .Submit_body span{ left:180px;}
+.O_tabPanel .Modify_body{ display:none;}
+.O_tabPanel .Modify_body span{ left:250px;}
 
 
 
 
 
+
+/****************我的任务列表操作区 end**********************/
 

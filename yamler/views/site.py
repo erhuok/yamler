@@ -15,5 +15,5 @@ def invite(key):
 
 @mod.route('/test/iphone')
 def test_iphone():
-    iphone_notify([2,4], 'share')
+    iphone_notify([1,2,4], 'share')
     return 'ok'
