@@ -16,7 +16,7 @@
 	margin: 0 0 6px 40px;
 	}
 .window-message .message_block{ position:relative;}
-.message_block span,.O_tabPanel .tab_content span{  
+.message_block span{  
 	background: url("../images/index_img/Icon_msg_text01.png") no-repeat scroll 0 0;
 	_background: url("../images/index_img/Icon_msg_text01.gif") no-repeat scroll 0 0;
     display: block;
@@ -349,9 +349,13 @@ ul.Operat_tab_head li a{ display:inline-block; position:static; padding:0;}
 ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 
 
-.O_tabPanel .tab_content{ background-color: #FFFFFF; border: 1px solid #CECECE; border-radius: 3px 3px 3px 3px; /*min-height:50px;*/ 
+.O_tabPanel .tab_content{ background-color: #ebebeb; border: 1px solid #CECECE; border-radius: 3px 3px 3px 3px; /*min-height:50px;*/ 
 	margin-top:10px; display:none; position:relative; padding:8px;}
-.O_tabPanel .tab_content span{ top: -7px;}
+.O_tabPanel .tab_content span{ 
+	background:url("../images/index_img/Icon_reply01.png") no-repeat 0 0; 
+	_background:url("../images/index_img/Icon_reply01.gif") no-repeat 0 0;
+	top: -7px;
+	}
 .O_tabPanel .Reply_body{ display:none;}
 .O_tabPanel .Reply_body ul.Reply_Show{ margin:0; margin-bottom:4px; padding:0;}
 .O_tabPanel .Reply_body ul.Reply_Show li{ background-color: #F5F5F5; border: 1px solid #D0D0D0; padding:4px; color: #555555; margin-bottom:4px;}
