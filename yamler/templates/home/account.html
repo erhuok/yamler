@@ -79,7 +79,7 @@
                         </select>
                     </h3>
                 </div>
-                <ul class="boards-list bold-list gutter js-list-boards" id="msg_list"> </ul>
+                {% include '_tasklist.html' %}
             </div>
             
             <div class="window-module">
@@ -201,116 +201,7 @@
 </script>
 <!--end update_form_field_template-->
 
-<script id="msgTemplate" type="text/x-jquery-tmpl">
-<li id="list${id}" >
-    <a class="clearfix link-item highlight-icon js-open-board" href="javascript:;" name="${id}" status="${status}">
-        {% raw %}
-        {{if status}}
-        <del><span class="item-name" id="title${id}"> ${title} </span></del>
-        {{else}}
-        <span class="item-name" id="title${id}"> ${title} </span>
-        {{/if}} 
-        {% endraw %}
-        <!--
-        <span class="app-icon small-icon permission-icon private-icon " title="">回复${comment_count}</span>
-        <span class="app-icon small-icon pin-icon" title=""></span>
-        -->
-		<span class="board-list-menu app-icon small-icon menu-icon js-boards-list-menu"></span>
-		<div class="clear"></div>
-        {% raw %} 
-        <span class="counts">
-            {{if comment_count }} <span class="Share_Reply">${comment_count}条回复&nbsp;&nbsp;</span> {{/if}}
-            <span>${created_at}</span>
-        </span>
-        {% endraw %}
-		<div class="clear"></div>
-    </a>
-    
-    {% raw %}
-    {{if share_users.length}} 
-    <ul class="SharePeople">
-        <li>${realname}递交给</li>
-        {{tmpl(share_users) "#share_users_template"}}
-    </ul>
-    {{/if}}
-    {% endraw %}
 
-    {% raw %}
-    {{if submit_users.length}} 
-    <ul class="SharePeople">
-        <li>${realname}安排给</li>
-        {{tmpl(submit_users) "#submit_users_template"}}
-    </ul>
-    {{/if}}
-    {% endraw %}
-	
-	<!--操作区-->
-	<div class="O_tabPanel">
-		<ul class="Operat_tab_head">
-			<li class="tab_Reply bor_radius_3" rel="tab_01" name="${id}">回复（10）</li>
-			<li class="tab_Arrangement bor_radius_3" rel="tab_02" name="${id}">安排给</li>
-			<li class="tab_Submit bor_radius_3" rel="tab_03" name="${id}">递交给</li>
-			<li class="tab_Modify bor_radius_3" rel="tab_04" name="${id}">修改</li>
-			<li class="tab_Delete bor_radius_3" >删除</li>
-			<li class="tab_Status bor_radius_3" >改为未完成</li>
-		</ul>
-		<div class="clear"></div>
-		
-		<div class="tab_content Reply_body" id="tab_01_${id}">
-			<span></span>
-			<ul class="Reply_Show">
-				<li>杨秀冬：查看周边游的设计<i>2012-06-19 15:26:29</i></li>
-				<li>杨秀冬：查看周边游的设计<i>2012-06-19 15:26:29</i></li>
-			</ul>
-			<div class="Reply_Reply">
-				<textarea rows="" cols="" ></textarea>
-				<input class="Reply_Submit" value="回复"/>
-				<input class="Reply_Cancel" value="取消"/>
-				<div class="clear"></div>
-			</div>
-		</div>
-		
-		<div class="tab_content Arrangement_body" id="tab_02_${id}">
-			<span></span>
-			<ul>
-				<li>谭少华</li>
-				<li>潘波</li>
-				<li>李英</li>
-				<li>杨秀冬</li>
-				<li>杨秀冬</li>
-				<li>丁总</li>
-			</ul>
-			<div class="clear"></div>
-		</div>
-		
-		<div class="tab_content Submit_body" id="tab_03_${id}">
-			<span></span>
-			<ul>
-				<li>谭少华</li>
-				<li>潘波</li>
-				<li>丁总</li>
-			</ul>
-			<div class="clear"></div>
-		</div>
-		
-		<div class="tab_content Modify_body" id="tab_04_${id}">
-			<span></span>
-			<div class="Modify_block">
-				<textarea rows="" cols="" ></textarea>
-				<input class="Reply_Submit" value="保存"/>
-				<input class="Reply_Cancel" value="取消"/>
-				<div class="clear"></div>
-			</div>
-		</div>
-		
-		
-		
-		
-	</div>
-	<!--操作区 end-->
-	
-</li>
-</script>
 
 <script id="share_users_template" type="text/x-jquery-tmpl">
     <li>${realname}</li>
@@ -546,19 +437,6 @@
     $(".pop-over .pop-header .close-icon").click(function(){
         $("#pop_action").hide();
     });
-	$(".boards-list li").live('mouseover',function(){
-		$(this).addClass("hover");
-	});
-	$(".boards-list li").live('mouseout',function(){
-		$(this).removeClass("hover");
-	});
-	
-	$(".boards-list li a").live('click',function(){
-		$(".O_tabPanel").hide();
-		$(this).next().show();
-		$(this).addClass("current");
-		$(".boards-list li a").not($(this)).removeClass("current");
-	});
 	
 	$(".Task_nav").hover(function(){
 		$(this).addClass("hover");
@@ -575,7 +453,7 @@
 		$(".header_slideToggle").hide();
 	});
 	
-
+    /*
     $(".js-open-board").live('click',function(){
         var win_width = $(window).width();
         var mar_width = (win_width-690)/2;
@@ -601,8 +479,9 @@
         }
 
     });
-	
+    */	
 	//列表功能操作控制
+    /*
 	$("ul.Operat_tab_head li").live('click', function(){
 		var li_rel = $(this).attr("rel");
 		var list_id = $(this).attr("name");
@@ -611,6 +490,7 @@
 		$(this).addClass("current");
 		$("ul.Operat_tab_head li").not($(this)).removeClass("current");
 	});
+    */
 
     $('.js-replay').click(function() {
         var id = $("#pop_action").attr('name');
