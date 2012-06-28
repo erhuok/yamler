@@ -78,6 +78,14 @@
     min-width: 40px;
     width: auto;
 }
+.window-module-title h3 a.nav{ display:inline-block; padding:3px 5px; border-radius:3px;}
+.window-module-title h3 a.hover{ background-color:#cfcfcf;}
+.window-module-title h3 a.current{ 
+	background-color:#2887bd;
+	background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;
+	color:#fff;
+}
+.window-module-title h3 a:hover{ text-decoration:none;}
 .menu-icon { background-position: -660px -30px;}
 .gutter { margin-left: 40px;}
 
@@ -365,12 +373,18 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 .O_tabPanel .Reply_body ul.Reply_Show li{ background-color: #F5F5F5; border: 1px solid #D0D0D0; padding:4px; color: #555555; margin-bottom:4px;}
 .O_tabPanel .Reply_body ul.Reply_Show li i{ color:#999; display:inline-block; margin-left:20px;}
 .O_tabPanel .Reply_body .Reply_Reply{}
-.O_tabPanel .Reply_body .Reply_Reply textarea,.O_tabPanel .Modify_body .Modify_block textarea{ height:60px; margin-bottom:5px;}
+/*.O_tabPanel .Reply_body .Reply_Reply textarea,.O_tabPanel .Modify_body .Modify_block textarea{ height:60px; margin-bottom:5px;}*/
+.O_tabPanel textarea{ height:60px; margin-bottom:5px;}
+
 .O_tabPanel .Modify_body .Modify_block textarea{ height:100px;}
-.O_tabPanel .Reply_body .Reply_Reply input,.O_tabPanel .Modify_body .Modify_block input{ 
+/*.O_tabPanel .Reply_body .Reply_Reply input,.O_tabPanel .Modify_body .Modify_block input{ 
 	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
 	float:right; margin-bottom:0; text-align:center; width:80px; margin-left:10px; color:#fff; border:0;}
- 
+.O_tabPanel input{
+	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
+	float:right; margin-bottom:0; text-align:center; width:80px; margin-left:10px; color:#fff; border:0;
+	}*/
+.tagInput input{ background:none; background-color:#fff; margin:0; width:70px; float:none; text-align:left;}
 .O_tabPanel .Arrangement_body{ display:none; }
 .O_tabPanel .Arrangement_body span{ left:110px;}
 .O_tabPanel .Arrangement_body ul{ padding:0; margin:0; border:0;}

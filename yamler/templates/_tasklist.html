@@ -61,8 +61,8 @@
 			<div class="Reply_Reply">
                 <form id="comment_form_${id}" name="comment_form">
                     <textarea rows="" cols="" name="comment_content" id="comment_content_${id}"></textarea>
-                    <input class="Reply_Submit"  type="button" id="reply_submit_${id}" value="回复"/>
-                    <input class="Reply_Cancel" type="button" id="reply_cancel_${id}" value="取消"/>
+                    <input class="Reply_Submit Green"  type="button" id="reply_submit_${id}" value="回复"/>
+                    <input class="Reply_Cancel Green" type="button" id="reply_cancel_${id}" value="取消"/>
                 </form>
 				<div class="clear"></div>
 			</div>
@@ -72,8 +72,8 @@
             <ul id="share_users_${id}"></ul>
             <form id="share_users_form_${id}" name="share_users_form">
                 <input type="hidden" name="to_user_id" id="to_user_id_${id}"/>
-                <input class="Reply_Submit"  type="button" id="share_submit_${id}" value="保存"/>
-                <input class="Reply_Cancel" type="button" id="share_cancel_${id}" value="取消"/>
+                <input class="Reply_Submit Green"  type="button" id="share_submit_${id}" value="保存"/>
+                <input class="Reply_Cancel Green" type="button" id="share_cancel_${id}" value="取消"/>
             </form>
 			<div class="clear"></div>
 		</div>
@@ -82,8 +82,8 @@
             <ul id="submit_users_${id}"> </ul>
             <form id="submit_users_form_${id}" name="submit_users_form">
                 <input type="hidden" name="submit_user_id" id="submit_user_id_${id}"/>
-                <input class="Reply_Submit"  type="button" id="submit_submit_${id}" value="保存"/>
-                <input class="Reply_Cancel" type="button" id="submit_cancel_${id}" value="取消"/>
+                <input class="Reply_Submit Green"  type="button" id="submit_submit_${id}" value="保存"/>
+                <input class="Reply_Cancel Green" type="button" id="submit_cancel_${id}" value="取消"/>
             </form>
 			<div class="clear"></div>
 		</div>
@@ -92,8 +92,8 @@
 			<span></span>
 			<div class="Modify_block">
 				<textarea rows="" cols="" ></textarea>
-				<input class="Reply_Submit" value="保存"/>
-				<input class="Reply_Cancel" value="取消"/>
+				<input class="Reply_Submit Green" value="保存"/>
+				<input class="Reply_Cancel Green" value="取消"/>
 				<div class="clear"></div>
 			</div>
 		</div>
@@ -127,8 +127,8 @@
 	$(".boards-list li a").live('click',function(){
 		$(".O_tabPanel").hide();
 		$(this).parent().find(".O_tabPanel").show();
-		$(this).addClass("current");
-		$(".boards-list li a").not($(this)).removeClass("current");
+		$(this).parent().addClass("current");
+		$(".boards-list li").not($(this).parent()).removeClass("current");
         
         var id = $(this).attr('name');
         $('#reply_submit_'+id).unbind('click');
