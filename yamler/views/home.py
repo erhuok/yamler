@@ -107,6 +107,8 @@ def mytask():
 def publish():
     if request.method == 'POST' and request.form['title']:
         created_at = datetime.now()
+        to_user_id = request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 
+        submit_user_id = request.form['submit_user_id'].lstrip(',') if request.form['submit_user_id'] else '', 
         res = g.db.execute(tasks.insert().values({tasks.c.title: request.form['title'], 
                                                   tasks.c.unread: 1,
                                                   tasks.c.user_id: g.user.id,
