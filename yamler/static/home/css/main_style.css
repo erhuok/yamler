@@ -364,14 +364,14 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 .O_tabPanel .Modify_body .Modify_block textarea{ height:100px; }
 .tagInput input{ background:none; background-color:#fff; margin:0; width:70px; float:none; text-align:left;}
 .O_tabPanel .Arrangement_body{ display:none; }
-.O_tabPanel .Arrangement_body span{ left:110px;}
+.O_tabPanel .Arrangement_body span{ left:80px;}
 .O_tabPanel .Arrangement_body ul{ padding:0; margin:0; border:0; *+width:612px;}
 
 .O_tabPanel .Arrangement_body ul li,.O_tabPanel .Submit_body ul li{ padding:3px 5px; background-color:#fff076; border-radius:3px; border:0; float:left; margin-right:5px; *+width:auto;}
 .O_tabPanel .Submit_body{ display:none;}
-.O_tabPanel .Submit_body span{ left:180px;}
+.O_tabPanel .Submit_body span{ left:140px;}
 .O_tabPanel .Modify_body{ display:none;}
-.O_tabPanel .Modify_body span{ left:250px;}
+.O_tabPanel .Modify_body span{ left:210px;}
 .tagHandler ul.tagHandlerContainer{ background-color:#fff;}
 .tagHandler ul.tagHandlerContainer li.tagItem{ *+width:auto;}
 
