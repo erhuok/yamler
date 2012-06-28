@@ -43,12 +43,12 @@
 			<span class="header-btn-text">邀请加入</span>
         </a>
 
-        <a class="header-auth member js-open-header-member-menu install-link" href="{{ url_for('user.logout') }}">
-        	<span class="member-initials" title="tanxiao (tanxiao)">设置</span>
+        <a class="header-auth member js-open-header-member-menu install-link" href="javascript:;">
+        	<span class="member-initials" title=""></span>
             {% if g.user.avatar %}
                 <span><img src="{{ url_for('static', filename='uploads/small/'+g.user.avatar) }}"/></span>
             {% endif %}
-        	<span class="member-initials" title="">退出</span>
+            <span class="member-initials" title="">{{ g.user.realname }}</span>
         </a>
         <ul class="header_slideToggle rounded_bottom_3">
             <li><a href="{{ url_for('user.setting') }}">设置</a></li>
@@ -65,3 +65,10 @@
     -->
 </div>
 
+<script>
+	$(".header-auth.member,.header_slideToggle").hover(function(){
+		$(".header_slideToggle").show();
+	},function(){
+		$(".header_slideToggle").hide();
+	});
+</script>

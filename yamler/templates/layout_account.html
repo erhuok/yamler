@@ -31,72 +31,7 @@ $(function(){
 <body>
 <!--头部-->
 {% block header %}
-<div id="header">
-    <a class="header-btn head_logo" href="{{ url_for('home.account') }}">
-    	<span class="app-icon logo">&nbsp;</span>
-    </a>
-    
-    <div id="header-search">
-        <!--
-        <form>
-            <label for="search-text">Global Search</label>
-            <input id="search-text" type="text" spellcheck="false" autocorrect="off" autocomplete="off">
-            <input id="search-submit" type="submit" value="Search">
-            <a class="header-btn header-search js-search-submit" href="#">
-            <span class="app-icon light search-icon"></span>
-            </a>
-        </form>
-        -->
-    </div>
-    <div class="header-user">
-        <a class="header-btn header-notifications js-open-header-notifications-menu" href="{{ url_for('home.account') }}">
-        	<span class="app-icon light notification-icon"></span>
-            <span class="header-btn-text">我的工作日志列表</span>
-        </a>
-
-        {% if g.task_submit_count %}
-            <a class="header-btn header-about" title="Information" href="#">
-                <span class="count js-unread-announcements" style="">{{ g.task_submit_count }}</span>
-            </a>
-        {% endif %}
-
-        <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('home.share') }}">
-        	<span class="app-icon light board-icon"></span>
-			<span class="header-btn-text">递交给我的工作日志</span>
-          
-        </a>
-        {% if g.task_share_count %}
-            <a class="header-btn header-about" title="Information" href="#">
-                <span class="count js-unread-announcements" style="">{{ g.task_share_count }}</span>
-            </a>
-        {% endif %}
-
-        <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('user.invite') }}">
-        	<span class="app-icon light board-icon"></span>
-			<span class="header-btn-text">邀请加入</span>
-        </a>
-
-        <a class="header-auth member js-open-header-member-menu install-link" href="{{ url_for('user.logout') }}">
-        	<span class="member-initials" title="tanxiao (tanxiao)">设置</span>
-            {% if g.user.avatar %}
-                <span><img src="{{ url_for('static', filename='uploads/small/'+g.user.avatar) }}"/></span>
-            {% endif %}
-        	<span class="member-initials" title="">退出</span>
-        </a>
-        <ul class="header_slideToggle rounded_bottom_3">
-            <li><a href="javascript:;">设置</a></li>
-            <li class="last"><a href="javascript:;">退出</a></li>
-        </ul>
-    </div>
-    <!--
-    <div>
-        <a class="header-btn header-about" title="Information" href="#">
-            <span class="app-icon light manual-icon"></span>
-            <span class="count js-unread-announcements" style="">1</span>
-        </a>
-    </div>
-    -->
-</div>
+{% include '_header.html' %}
 {% endblock %}
 <!--头部 end-->
 
