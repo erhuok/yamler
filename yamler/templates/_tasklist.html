@@ -43,7 +43,7 @@
 			<li class="tab_Reply bor_radius_3" rel="tab_01" name="${id}">回复（10）</li>
 			<li class="tab_Arrangement bor_radius_3 js_share" rel="tab_02" name="${id}">递交给</li>
 			<li class="tab_Submit bor_radius_3 js_submit" rel="tab_03" name="${id}">安排给</li>
-            <!--<li class="tab_Modify bor_radius_3" rel="tab_04" name="${id}">修改</li>-->
+            <li class="tab_Modify bor_radius_3 js-modify" rel="tab_04" name="${id}">修改</li>
 			<li class="tab_Delete bor_radius_3 js-delete" >删除</li>
             {% raw %} 
             {{if status}}
@@ -91,9 +91,11 @@
 		<div class="tab_content Modify_body" id="tab_04_${id}">
 			<span></span>
 			<div class="Modify_block">
-				<textarea rows="" cols="" ></textarea>
-				<input class="Reply_Submit Green" value="保存"/>
-				<input class="Reply_Cancel Green" value="取消"/>
+                <form id="modify_form" name="modify_form" method="POST"/>
+                    <textarea rows="" cols="" name="title" id="modify_title_${id}"></textarea>
+                    <input class="Reply_Submit Green" type="button" id="modify_submit_${id}" value="保存"/>
+                    <input class="Reply_Cancel Green" type="button" id="modify_cancel_${id}" value="取消"/>
+                </form>
 				<div class="clear"></div>
 			</div>
 		</div>
@@ -233,6 +235,11 @@
                         success: function(res) {
                             $("#share_submit_"+id).unbind('click');
                             $(".tab_content").hide();
+                             $.getJSON('/task/get/'+id,function(res) {
+                                var html = $( "#msgTemplate" ).tmpl(res.row);
+                                $("#list"+id).replaceWith(html);
+                                $("#list"+id).effect("highlight", {}, 3000);
+                            });
                         }
                     }); 
                 }
@@ -304,13 +311,45 @@
                         success: function(res) {
                             $(".tab_content").hide();
                             $("#submit_submit_"+id).unbind('click');
+                            $.getJSON('/task/get/'+id,function(res) {
+                                var html = $( "#msgTemplate" ).tmpl(res.row);
+                                $("#list"+id).replaceWith(html);
+                                $("#list"+id).effect("highlight", {}, 3000);
+                            });
                         }
                     }); 
                 }
             }); 
-
         });  
 
+        $(".js-modify").click(function() {
+            if(id) {
+                $(".tab_content").hide();
+                $("#tab_04_"+id).show();  
+                var title = $("#title"+id).text();
+                $("#modify_title_"+id).val(title);
+
+                $("#modify_submit_"+id).click(function() {
+                    var new_title = $("#modify_title_"+id).val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '/task/update/'+id,
+                        dataType: 'json',
+                        data: {"title": new_title},
+                        success: function(res) {
+                            $(".tab_content").hide();
+                            $("#modify_submit_"+id).unbind('click');
+                            $("#title"+id).text(new_title);
+                            $("#list"+id).effect("highlight", {}, 3000);
+                        }
+                    }); 
+                });
+
+                $("#modify_cancel_"+id).click(function() {
+                    $("#tab_04_"+id).hide();  
+                });
+            } 
+        });
 
         $(".js-delete").click(function() {
             if(confirm('确定要删除这条记录'))  
@@ -322,7 +361,7 @@
                 }
             }
         });
-        
+
         $(".js-complete").live('click', function() {
             if(id) {
                 $.ajax({
@@ -333,39 +372,39 @@
                     success: function(data) {
                         if(data.error) return false;
                         //$("#title"+id).wrap("<del/>")
-                        $("#title"+id).addClass("del-text")
-                        $("#list"+id).effect("highlight", {}, 3000);
-                        $("#status_"+id).removeClass('js-complete');
-                        $("#status_"+id).addClass('js-undone');
-                        $("#status_"+id).text('改为未完成');
-                        $(".tab_content").hide();
-                    }
-                }); 
-            }
+                            $("#title"+id).addClass("del-text")
+                            $("#list"+id).effect("highlight", {}, 3000);
+                            $("#status_"+id).removeClass('js-complete');
+                            $("#status_"+id).addClass('js-undone');
+                            $("#status_"+id).text('改为未完成');
+                            $(".tab_content").hide();
+                        }
+                    }); 
+                }
+            });
+
+            $(".js-undone").live('click', function() {
+                if(id) {
+                    $.ajax({
+                        type: "POST",
+                        data: {'status': '0'},
+                        url: "/task/update/"+id,
+                        dataType: "json",
+                        success: function(data) {
+                            if(data.error) return false;
+                            //$('#title'+id).unwrap(); 
+                            $("#title"+id).removeClass("del-text")
+                            $("#list"+id).effect("highlight", {}, 3000);
+                            $("#status_"+id).addClass('js-complete');
+                            $("#status_"+id).removeClass('js-undone');
+                            $("#status_"+id).text('改为完成');
+                            $(".tab_content").hide();
+                        }
+                    }); 
+                }
+            });
+
+
+
         });
-
-        $(".js-undone").live('click', function() {
-            if(id) {
-                $.ajax({
-                    type: "POST",
-                    data: {'status': '0'},
-                    url: "/task/update/"+id,
-                    dataType: "json",
-                    success: function(data) {
-                        if(data.error) return false;
-                        //$('#title'+id).unwrap(); 
-                        $("#title"+id).removeClass("del-text")
-                        $("#list"+id).effect("highlight", {}, 3000);
-                        $("#status_"+id).addClass('js-complete');
-                        $("#status_"+id).removeClass('js-undone');
-                        $("#status_"+id).text('改为完成');
-                        $(".tab_content").hide();
-                    }
-                }); 
-            }
-        });
-
-        });
-
-
     </script>
