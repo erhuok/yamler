@@ -36,6 +36,7 @@
     </ul>
     {{/if}}
     {% endraw %}
+
 	<div class="clear"></div>
 	<!--操作区-->
 	<div class="O_tabPanel">
@@ -139,6 +140,14 @@
         $('.js-delete').unbind('click');
         $('.js-complete').die('click');
         $('.js-undone').die('click');
+
+        $(".tab_Reply").unbind('click');
+        $(".js_share").unbind('click');
+        $(".js_submit").unbind('click');
+        $(".js-modify").unbind('click');
+        $(".js-delete").unbind('click');
+        $(".js-complete").unbind('click');
+        $(".js-undone").unbind('click');
 
         //回复
         $(".tab_Reply").click(function() {
