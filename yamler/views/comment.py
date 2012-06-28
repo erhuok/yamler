@@ -3,6 +3,7 @@ import datetime
 from flask import Blueprint,request,render_template,session, g, jsonify
 from yamler.models.tasks import tasks, task_comments
 from sqlalchemy.sql import select, text
+from yamler.utils import iphone_notify
 
 mod = Blueprint('comment', __name__, url_prefix='/comment')
 
@@ -25,12 +26,35 @@ def get(task_id):
 @mod.route('/create/<int:task_id>', methods=['POST'])
 def create(task_id):
     if request.form['comment_content'] and g.user.id:
-        created_at = datetime.datetime.now()
-        res = g.db.execute(task_comments.insert().values({task_comments.c.user_id: g.user.id, 
-                                                    task_comments.c.task_id: task_id, 
-                                                    task_comments.c.content: request.form['comment_content'], 
-                                                    task_comments.c.created_at: created_at,
-                                                   }))
-        if res.lastrowid:
-            g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1 WHERE id = :id"), id=task_id)
-        return jsonify(content=request.form['comment_content'], task_id=task_id, realname=g.user.realname, created_at=created_at.strftime('%Y-%m-%d %T'))
+        row = g.db.execute(text("SELECT id, user_id, submit_user_id, to_user_id FROM tasks WHERE id=:id"),id=task_id).fetchone()
+        if row:
+            created_at = datetime.datetime.now()
+            res = g.db.execute(task_comments.insert().values({task_comments.c.user_id: g.user.id, 
+                                                        task_comments.c.task_id: task_id, 
+                                                        task_comments.c.content: request.form['comment_content'], 
+                                                        task_comments.c.created_at: created_at,
+                                                       }))
+            if res.lastrowid:
+                g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread WHERE id = :id"), id=task_id, unread=1)
+                to_user_id = [] 
+                submit_user_id = []
+                #通知提醒
+                if row.to_user_id:
+                    to_user_id = row.to_user_id.split(',')
+                    to_user_id.append(str(row.user_id))
+                    to_user_id = [ user_id for user_id in to_user_id if user_id != str(g.user.id) ]
+                    sql = " UPDATE task_share SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(to_user_id)) 
+                    g.db.execute(text(sql), task_id=task_id, unread=1)
+
+                if row.submit_user_id:
+                    submit_user_id = row.submit_user_id.split(',')
+                    submit_user_id.append(str(row.user_id))
+                    submit_user_id = [user_id for user_id in submit_user_id if user_id != str(g.user.id) ]
+                    sql = " UPDATE task_submit SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(submit_user_id)) 
+                    g.db.execute(text(sql), task_id=task_id, unread=1)
+                
+                notify_user_id = list(set(to_user_id) | set(submit_user_id))
+                if notify_user_id:
+                    iphone_notify(notify_user_id, type="comment")
+                    
+            return jsonify(content=request.form['comment_content'], task_id=task_id, realname=g.user.realname, created_at=created_at.strftime('%Y-%m-%d %T'))

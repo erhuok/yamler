@@ -17,8 +17,10 @@
             {% for data in task_data[key] %}
             <div class="list-card clearfix ui-droppable {% if data.status %} complete {% else %} undone {% endif %}" id="list{{ data.id }}">
                 
-                <a class="list-card-title" href="javascript:;" name="{{data.id}}">
-                	<span class="card-message-news"></span>
+                <a class="list-card-title" href="javascript:;" name="{{data.id}}" unread="{{ data.unread }}">
+                    {% if data.unread %}
+                        <span class="card-message-news" id="unread_{{ data.id }}"></span>
+                    {% endif %}
                     <span class="card-short-id hide">#{{ data.id }} </span>
                     {{ data.title }}
                     <ul class="LCT_Prompt">
@@ -103,7 +105,19 @@
     
     $(".list-card-title").toggle(function(){
         var id = $(this).attr('name');
+        var unread = $(this).attr('unread');
         if(id) {
+            if(unread) {
+                $.ajax({
+                    type: 'POST',
+                    data: {'unread': 0},
+                    url: '/task/update/'+id,
+                    dataType: 'json',
+                    success: function(data) {
+                        $("#unread_"+id).removeClass('card-message-news');
+                    }
+                });
+            }
             var operation = $("#operation"+id);
             $.getJSON('/comment/get/'+id, function(res) {
                 $("#comment_list_"+id).empty();
