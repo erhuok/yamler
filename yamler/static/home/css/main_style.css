@@ -118,8 +118,9 @@
 .bold-list li .link-item .app-icon { margin: 0 -2px;}
 .bold-list li a .counts { display: block; color:#898989; float:right; /*margin-right:-80px; *+margin-right:-80px; _margin-right:-40px;*/}
 
-.SharePeople{/* margin-top:10px;*/ color:#a3a3a3; float:right; margin-right:-8px; *+margin-right:-4px; _margin-right:-4px; }
-.SharePeople li{ float:left; padding:3px 8px; border:0; width:auto;}
+.SharePeople{/* margin-top:10px;*/ color:#a3a3a3; float:right; margin:3px 0; /*margin-right:-8px; *+margin-right:-4px; _margin-right:-4px;*/ }
+.SharePeople li{ float:left; padding:0px 0px 0px 8px; border:0; width:auto;}
+.SharePeople02{ margin-left:8px; border-left:1px solid #aaa;}
 
 
 
