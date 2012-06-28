@@ -237,8 +237,11 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 	box-shadow:0 0 2px #2887bd;
 	}
 input.Green{
+	background-color:#24A828;
 	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
 	float:right; margin-bottom:0; text-align:center; width:80px; margin-left:10px; color:#fff; border:0;
+	height: 30px;
+    line-height: 20px;
 	}
 .app-icon{
 	background-image:url("../images/index_img/iconImg.png");
