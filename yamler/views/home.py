@@ -53,7 +53,7 @@ def myfeed():
 @required_login
 @get_remind
 def share():
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
+    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY unread DESC, status ASC, id DESC"
     #sql = "SELECT t.id, t.user_id, t.to_user_id, t.title, t.status, t.comment_count, t.created_at, t.submit_user_id FROM task_share ts LEFT JOIN tasks t ON ts.task_id = t.id "
     task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
     #for key, row in enumerate(task_rows):

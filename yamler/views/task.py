@@ -30,6 +30,9 @@ def update(id):
         end_time = datetime.now() if request.form['status'] else ''
         g.db.execute(text("UPDATE tasks SET status=:status, end_time=:end_time WHERE id=:id"), id=id, status=request.form['status'], end_time=end_time)
         return jsonify(error=0)
+    if request.form.has_key('unread'):
+        g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=id, unread=request.form['unread'])
+        return jsonify(error=0)
     return jsonify(error=1)
 
 @mod.route('/update_share/<int:id>', methods=['POST', 'GET'])
