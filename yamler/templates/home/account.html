@@ -53,11 +53,11 @@
                 <div class="window-module-title">
                     <span class="app-icon window-module-title-icon board-icon"></span>
                     <h3> 
-                    	<a href="{{ url_for('home.account') }}" class="nav current">我的全部工作列表</a>
+                    	<a href="{{ url_for('home.account') }}" class="nav {% if t==0 %} current {% endif %}">我的全部工作列表</a>
                         
-                        <a href="{{ url_for('home.account', t=1) }}" class="nav">只看我自己的</a>
+                        <a href="{{ url_for('home.account', t=1) }}" class="nav {% if t=='1' %} current {% endif %}">只看我自己的</a>
                         
-                        <a href="{{ url_for('home.account', t=2) }}" class="nav">安排给我的</a>
+                        <a href="{{ url_for('home.account', t=2) }}" class="nav {% if t=='2' %} current {% endif %}">安排给我的</a>
                         {% if g.task_submit_count %} 
                         <a class="header-btn header-about" title="Information" href="#"><span class="count js-unread-announcements" style="">{{ g.task_submit_count }}</span></a> 
                         {% endif %}

@@ -138,6 +138,7 @@
                         success: function(data) {
                             $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list_"+task_id );
                             form.each(function(){ this.reset(); });
+                            $("#submit_"+id).unbind('click');
                         }
                     }); 
                 }

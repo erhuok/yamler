@@ -21,7 +21,7 @@ mod = Blueprint('home', __name__, url_prefix='/home')
 def account():
     if g.task_submit_count:
         g.db.execute(text("UPDATE task_submit SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=g.user.id)
-    return render_template('home/account.html')
+    return render_template('home/account.html', t=request.args.get('t',0))
 
 @mod.route('/')
 @required_login
