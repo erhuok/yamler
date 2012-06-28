@@ -359,7 +359,7 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 	}
 .O_tabPanel .Reply_body ul.Reply_Show li i{ color:#999; display:inline-block; margin-left:20px;}
 .O_tabPanel .Reply_body .Reply_Reply{}
-.O_tabPanel textarea{ height:60px; margin-bottom:5px; *+width:608px;}
+.O_tabPanel textarea{ height:60px; margin-bottom:5px; width:608px\9;}
 .O_tabPanel ul li{*+width:612px;}
 .O_tabPanel .Modify_body .Modify_block textarea{ height:100px; }
 .tagInput input{ background:none; background-color:#fff; margin:0; width:70px; float:none; text-align:left;}
