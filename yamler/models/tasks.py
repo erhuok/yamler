@@ -6,7 +6,7 @@ from yamler.database import Model, metadata
 from werkzeug import http_date
 from wtforms import Form, TextField, validators
 from sqlalchemy.sql import select, text
-from yamler.utils import iphone_notify
+from yamler.utils import iphone_notify, datetimeformat
 
 class Task(Model):
     __tablename__ = 'tasks'
@@ -46,10 +46,10 @@ class Task(Model):
 
         return result
 
-    def get_share_data(self, user_id, created_at, status):
+    def get_share_data(self, user_id, created_at=None, status=None):
         start_time = ''
-        created_at = int(created_at) 
-        if created_at and created_at != 0:
+        if created_at and created_at != '0':
+            created_at = int(created_at) 
             now = datetime.datetime.now()
             days = int(now.strftime('%w')) - 1
             if created_at == 2:
@@ -90,6 +90,7 @@ class Task(Model):
                             task_data_undone[user_id2] = [] 
                         new_row = dict(row)
                         new_row['ismine'] = False
+                        new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
                         task_data_undone[user_id2].append(new_row)
                 else:
                     user_id2 = int(row.user_id)
@@ -98,6 +99,7 @@ class Task(Model):
                         task_data_undone[user_id2] = [] 
                     new_row = dict(row)
                     new_row['ismine'] = True
+                    new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
                     task_data_undone[user_id2].append(new_row)
 
         #已完成
@@ -122,6 +124,7 @@ class Task(Model):
                             task_data_complete[user_id2] = [] 
                         new_row = dict(row)
                         new_row['ismine'] = False
+                        new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
                         task_data_complete[user_id2].append(new_row)
                 else:
                     user_id2 = int(row.user_id)
@@ -130,6 +133,7 @@ class Task(Model):
                         task_data_complete[user_id2] = [] 
                     new_row = dict(row)
                     new_row['ismine'] = True
+                    new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
                     task_data_complete[user_id2].append(new_row)
 
         user_ids = list(set(user_ids)) 
@@ -139,9 +143,8 @@ class Task(Model):
             for user_row in user_rows:
                 user_data[user_row.id] = user_row.realname 
 
-        if g.task_share_count:
-            g.db.execute(text("UPDATE task_share SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=user_id)
-        return (task_data_undone, task_data_complete, user_data, user_rows)
+      
+        return (task_data_undone, task_data_complete, user_data, [dict(zip(res.keys(), res)) for res in user_rows])
                     
 
 class TaskComment(Model):

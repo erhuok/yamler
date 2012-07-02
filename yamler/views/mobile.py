@@ -286,7 +286,7 @@ def comment_create():
 
 @mod.route('/task/share', methods=['GET', 'POST'])
 def share():
-    user_id = request.form['user_id']
+    '''
     sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
     task_rows = g.db.execute(text(sql), to_user_id=user_id, user_id=user_id).fetchall()
     task_data = {}
@@ -319,5 +319,10 @@ def share():
     user_data = {}
     for row in user_rows:
         user_data[row.id] = row.realname
-
     return jsonify(task_data=task_data, user_data=user_data)
+    '''
+    user_id = request.form['user_id']
+    created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
+    status = request.form['status'] if request.form.has_key('status') else 'all'
+    task_data_undone, task_data_complete, user_data, user_rows = Task().get_share_data(user_id=user_id, created_at=created_at, status=status)
+    return jsonify(user_data=user_data, task_data_undone=task_data_undone, task_data_complete=task_data_complete, user_rows=user_rows)

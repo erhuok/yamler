@@ -28,9 +28,9 @@
                     <span class="card-short-id hide">#{{ data.id }} </span>
                     {{ data.title }}
                     <ul class="LCT_Prompt">
-                        <li>{{ data.created_at|datetimeformat }}</li>
+                        <li>{{ data.created_at }}</li>
                         {% if data.comment_count %}
-                            <li>回复({{ data.comment_count }})</li>
+                            <li>&nbsp;&nbsp;{{ data.comment_count }}回复</li>
                         {% endif %}
                         
                     </ul>

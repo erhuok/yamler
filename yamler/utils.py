@@ -86,7 +86,7 @@ def datetimeformat(value, format='%m月%d日 %H:%M'):
         new_value = value.strftime("%m-%d %H:%M ")
 
         default_week = {
-            0: '星期天',
+            0: '周日',
             1: '周一', 
             2: '周二', 
             3: '周三', 

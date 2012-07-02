@@ -63,6 +63,8 @@ def share():
     created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
     status = request.form['status'] if request.form.has_key('status') else ''
     task_data_undone, task_data_complete, user_data, user_rows = Task().get_share_data(user_id=g.user.id, created_at=created_at, status=status)
+    if g.task_share_count:
+        g.db.execute(text("UPDATE task_share SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=user_id)
     return render_template('home/share.html', 
                            user_data=user_data, 
                            task_data_undone=task_data_undone, 
