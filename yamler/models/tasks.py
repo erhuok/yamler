@@ -1,5 +1,5 @@
 #encoding:utf8
-from flask import g
+from flask import g, url_for
 import datetime,time
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from yamler.database import Model, metadata 
@@ -66,6 +66,7 @@ class Task(Model):
         user_ids = []
         user_rows = []
         user_data = {}
+        user_avatar = {} 
         #未完成
         if status != 'complete':
             sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND status=:status"
@@ -142,9 +143,9 @@ class Task(Model):
             user_rows = g.db.execute(text(sql), is_active=1).fetchall()
             for user_row in user_rows:
                 user_data[user_row.id] = user_row.realname 
+                user_avatar[user_row.id] = url_for('static', filename='uploads/small/'+user_row.avatar) if user_row.avatar else ''
 
-      
-        return (task_data_undone, task_data_complete, user_data, [dict(zip(res.keys(), res)) for res in user_rows])
+        return (task_data_undone, task_data_complete, user_data, [dict(zip(res.keys(), res)) for res in user_rows], user_avatar)
                     
 
 class TaskComment(Model):
