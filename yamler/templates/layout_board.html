@@ -198,11 +198,29 @@
                 	<a class="js-board-title js-open-board-menu-title" href="#">递交给我的工作日志</a>
                 </h2>
                 <h4 class="quiet org-name"></h4>
-                <div id="permission-level">
-                	<span class="app-icon small-icon public-status private-icon" title=""></span>
+
+                <form id="task_select_form" method="POST" action="{{ url_for('home.share') }}">
+                <div id="permission-level"> 
+                    &nbsp;&nbsp; &nbsp;&nbsp;
+                    按时间查看
+                    <select name="created_at" id="task_created_at">
+                        <option value="2" {% if created_at == '2' %} selected=true {% endif %}>从上周起</option> 
+                        <option value="1" {% if created_at == '1' %} selected=true {% endif %}>从本周起</option> 
+                        <option value="3" {% if created_at == '3' %} selected=true {% endif %}>从本月起</option> 
+                        <option value="0" {% if created_at == '0' %} selected=true {% endif %}>全部</option> 
+                    </select> 
+                    &nbsp;&nbsp; &nbsp;&nbsp;
+                    按完成情况查看
+                    <select name="status" id="task_status">
+                        <option value='all' {% if status == 'all' %} selected=true {% endif %}>全部</option> 
+                        <option value='undone' {% if status == 'undone' %} selected=true {% endif %}>未完成</option> 
+                        <option value='complete' {% if status == 'complete' %} selected=true {% endif %}>已完成</option> 
+                    </select> 
                 </div>
-                <div class="desc-btn js-open-desc">
-                	<span class="app-icon small-icon edit-icon dark-hover"></span>
+                </form>
+
+                <div class="desc-btn js-open-desc"> 
+                   
                 </div>
             </div>
         </div>

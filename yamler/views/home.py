@@ -1,12 +1,12 @@
 # encoding:utf8
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from flask import Blueprint,request,render_template,session, g, jsonify
 from yamler.models.users import User,RegistrationForm,LoginForm
 from yamler.database import db_session 
 from yamler import app
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
-from yamler.models.tasks import tasks, task_comments, TaskShare, TaskSubmit
+from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit
 from yamler.models.boards import Board, boards
 from yamler.models.users import UserRemind 
 from sqlalchemy.sql import select, text
@@ -53,13 +53,47 @@ def myfeed():
 @required_login
 @get_remind
 def share():
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY unread DESC, status ASC, id DESC"
-    #sql = "SELECT t.id, t.user_id, t.to_user_id, t.title, t.status, t.comment_count, t.created_at, t.submit_user_id FROM task_share ts LEFT JOIN tasks t ON ts.task_id = t.id "
-    task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
-    #for key, row in enumerate(task_rows):
-    #sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '' ORDER BY status ASC, id DESC"
-    #task_submit = g.db.execute(text(sql), user_id=g.user.id).fetchall()
+    '''
+    now = datetime.now()
+    week = int(now.strftime('%w')) - 1
+    start_time = now - timedelta(days=week)
+    start_time = start_time.strftime('%Y-%m-%d')
+    '''
+    
+    created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
+    status = request.form['status'] if request.form.has_key('status') else ''
+    print created_at, status 
+    task_data_undone, task_data_complete, user_data, user_rows = Task().get_share_data(user_id=g.user.id, created_at=created_at, status=status)
+    return render_template('home/share.html', 
+                           user_data=user_data, 
+                           task_data_undone=task_data_undone, 
+                           task_data_complete=task_data_complete, 
+                           user_rows=user_rows,
+                           created_at=created_at,
+                           status=status,
+                          )
 
+    
+    task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
+    
+    #递交给我的人
+    '''
+    share_user_id = []
+    sql = "SELECT GROUP_CONCAT(own_id) AS own_id FROM task_share WHERE user_id=:user_id"
+    res = g.db.execute(text(sql), user_id=g.user.id).fetchone()
+    if res:
+        share_user_id = res.own_id.split(',')
+
+    #安排给那些人
+    submit_user_id = []
+    sql = "SELECT GROUP_CONCAT(user_id) AS user_id FROM task_submit WHERE own_id=:own_id"
+    res = g.db.execute(text(sql), own_id=g.user.id).fetchone()
+    if res:
+        submit_user_id = res.user_id.split(',')
+    
+    all_user_ids = list(set(share_user_id) | set(submit_user_id))
+    '''
+    
     task_data = {}
     user_ids = []
     user_data = {}
@@ -86,6 +120,13 @@ def share():
                 new_row = dict(row)
                 new_row['ismine'] = True
                 task_data[user_id].append(new_row)
+        '''
+        extra_user_id = set(all_user_ids).difference(set(user_ids))
+        if extra_user_id:
+            for user_id in extra_user_id:
+                user_id = int(user_id)
+                task_data[user_id] = []
+        '''
 
         if task_rows and ','.join(user_ids):
             sql = "SELECT id, realname, avatar FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
@@ -153,7 +194,7 @@ def getMyFeed():
     next_page = '/home/getMyFeed?t='+str(t)+'&status='+str(status)+'&page='+str(page+1)+'&created_at='+str(created_at) 
     #只看我自己的
     if 1 == int(t):
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id,unread FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -161,7 +202,7 @@ def getMyFeed():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=g.user.id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     elif 2 == int(t): 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -169,13 +210,13 @@ def getMyFeed():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql), submit_user_id=g.user.id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     else: 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status ' 
         
         if start_time:
             sql += ' AND created_at > :created_at'
-        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
+        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
         if status_value != 2:
             sql += ' AND status = :status ' 
         if start_time:
@@ -193,6 +234,8 @@ def getMyFeed():
         new_row['status'] = row['status'] 
         new_row['share_users'] = []
         new_row['submit_users'] = [] 
+        if row.user_id != g.user.id:
+            new_row['unread'] = row['unread']
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')

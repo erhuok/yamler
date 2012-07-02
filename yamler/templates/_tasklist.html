@@ -3,6 +3,11 @@
 <li id="list${id}" >
     <a class="clearfix link-item highlight-icon js-open-board" href="javascript:;" name="${id}" status="${status}">
         {% raw %}
+        <!--
+        {{if unread}}
+            <span class="card-message-news" id="unread_${id}"></span>
+        {{/if}}
+        -->
         {{if status}}
         <del><span class="item-name del-text" id="title${id}"> ${title} </span></del>
         {{else}}
@@ -39,7 +44,7 @@
 
 	<div class="clear"></div>
 	<!--操作区-->
-	<div class="O_tabPanel">
+    <div class="O_tabPanel" display="1" id="display_${id}">
 		<ul class="Operat_tab_head">
 			<li class="tab_Reply bor_radius_3" rel="tab_01" name="${id}">回复</li>
 			<li class="tab_Arrangement bor_radius_3 js_share" rel="tab_02" name="${id}">递交给</li>
@@ -129,13 +134,27 @@
 		$(this).removeClass("hover");
 	});
 	
+	
 	$(".boards-list li a").live('click',function(){
+        var id = $(this).attr('name');
 		$(".O_tabPanel").hide();
-		$(this).parent().find(".O_tabPanel").show();
+        var display = $("#display_"+id)
+        var display_value = display.attr('display');
+        if(display_value=='1')
+        {
+            display.show();
+            display.attr('display','0'); 
+        }
+        if(display_value=='0')
+        {
+            display.hide();
+            display.attr('display','1'); 
+        }
+        //var tabPanel0 = $(this).parent().find(".O_tabPanel").show();
+        //.show();
 		$(this).parent().addClass("current");
 		$(".boards-list li").not($(this).parent()).removeClass("current");
         
-        var id = $(this).attr('name');
         $('#reply_submit_'+id).unbind('click');
         $('.js-delete').unbind('click');
         $('.js-complete').die('click');
@@ -414,8 +433,6 @@
                     }); 
                 }
             });
-
-
-
         });
     </script>
+	<div class="O_tabPanel">

@@ -420,7 +420,8 @@
             dataType: 'json',
             success: function(data) {
                 $( "#msgTemplate" ).tmpl( data ).prependTo( "#msg_list" );
-                $("form").each(function(){ this.reset(); });
+                //$("form").each(function(){ this.reset(); });
+                $('#title').val('');
             }
         });
         return false;
@@ -458,231 +459,22 @@
 		$(".window-module-title h3 a.nav").not($(this)).removeClass("current");
 	});
 	
-    /*
-    $(".js-open-board").live('click',function(){
-        var win_width = $(window).width();
-        var mar_width = (win_width-690)/2;
-        var pos_left = mar_width+670;
-        var s_top = $(this).offset();
-        if(win_width <= (670+120+mar_width)){
-            $("#pop_action").css({top:s_top.top+"px", right:mar_width+"px"}).show();
-            } else {
-            $("#pop_action").css({top:s_top.top+"px", left:pos_left+"px"}).show();
-        }
-
-        var id = $(this).attr('name');
-        $("#pop_action").attr('name',id);
-
-        //根据状态来决定操作列表
-        var status = $(this).attr('status');
-        if(status=='0') {
-            $('.js-status-complete').show();
-            $('.js-status-undone').hide();
-            } else {
-            $('.js-status-complete').hide();
-            $('.js-status-undone').show();
-        }
-
-    });
-    */	
-	//列表功能操作控制
-    /*
-	$("ul.Operat_tab_head li").live('click', function(){
-		var li_rel = $(this).attr("rel");
-		var list_id = $(this).attr("name");
-		$(".tab_content").hide();
-		$("#"+li_rel+"_"+list_id).show();
-		$(this).addClass("current");
-		$("ul.Operat_tab_head li").not($(this)).removeClass("current");
-	});
-    */
-    /*
-    $('.js-replay').click(function() {
-        var id = $("#pop_action").attr('name');
-        $("#comment_list").empty();
-        $.getJSON('/comment/get/'+id, function(res) {
-            $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list" );
-            $.fancybox({
-                //type: 'html',
-                content: $("#comment"),
-				autoSize: false,
-                width: '25%',
-                height: 'auto',
-				
-                //minWidth: '180px',
-                //autoSize: true,
-                afterClose: function() {
-                    $.getJSON('/task/get/'+id,function(res) {
-                        var html = $( "#msgTemplate" ).tmpl(res.row);
-                        $("#list"+id).replaceWith(html);
-                        $("#list"+id).effect("highlight", {}, 3000);
-                        $(".pop-over").hide();
-                    });
-                    //$("#list"+id).effect("highlight", {}, 3000);
-                    $("#comment_save_button").unbind('click');
-                }
-            });
-        }); 
-        $("#comment_save_button").click(function() {
-            var task_id = $("#pop_action").attr('name');
-            var comment_content = $("#comment_content").val();
-            if(comment_content) {
-                var form = $('#comment_form')
-                $.ajax({
-                    type: "POST",
-                    data: form.serialize(),
-                    url: "/comment/create/"+task_id,
-                    dataType: "json",
-                    success: function(data) {
-                        $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list" );
-                        form.each(function(){ this.reset(); });
-                        $(".pop-over").hide();
-                    }
-                }); 
-            }
-        });
-    });
-
-    $(".js-share").click(function() {
-        var id = $("#pop_action").attr('name');
-        $.fancybox({
-			autoSize: false,
-			width: '40%',
-			height: '60%',
-            type: 'iframe',
-            href: '/task/update_share/'+id,
-            afterClose: function() {
-                $.getJSON('/task/get/'+id,function(res) {
-                    var html = $( "#msgTemplate" ).tmpl(res.row);
-                    $("#list"+id).replaceWith(html);
-                    $("#list"+id).effect("highlight", {}, 3000);
-                    $(".pop-over").hide();
-                });
-            }
-        });
-    });
-    
-    $(".js-submit").click(function() {
-        var id = $("#pop_action").attr('name');
-        $.fancybox({
-			autoSize: false,
-			width: '40%',
-			height: '60%',
-            type: 'iframe',
-            href: '/task/update_submit/'+id,
-            afterClose: function() {
-                $.getJSON('/task/get/'+id,function(res) {
-                    var html = $( "#msgTemplate" ).tmpl(res.row);
-                    $("#list"+id).replaceWith(html);
-                    $("#list"+id).effect("highlight", {}, 3000);
-                    $(".pop-over").hide();
-                });
-            }
-        });
-    });
-
-    $(".js-modify").click(function() {
-        var id = $("#pop_action").attr('name');
-        $("#update_form_field").empty();
-        $.getJSON('/task/get/'+id, function(res) {
-            $( "#update_form_field_template" ).tmpl( res.row ).appendTo( "#update_form_field" );
-            $.fancybox({
-                content: $("#update_form"),
-				autoSize: false,
-                width: '30%',
-                height: '550px',
-				//type: 'iframe',
-                afterClose: function() {
-                    //$("#list"+id).effect("highlight", {}, 3000);
-                    $("#update_save_button").unbind('click');
-                }
-            });
-
-            $("#update_save_button").click(function() {
-                var task_id = $("#pop_action").attr('name');
-                var form = $('#update_form')
-                $.ajax({
-                    type: "POST",
-                    data: form.serialize(),
-                    url: "/task/update/"+task_id,
-                    dataType: "json",
-                    success: function(data) {
-                        $(".pop-over").hide();
-                        $.fancybox.close();
-                        $("#title"+task_id).text(data.title)
-                        $("#list"+task_id).effect("highlight", {}, 3000);
-                    }
-                }); 
-            });
-        });
-    });
-
-    $(".js-delete").click(function() {
-        if(confirm('确定要删除这条记录'))  
+    //文本输入框控制
+    $("#title").focus(function() {
+        //onfocus="if (value =='请写点什么'){value =''}" onblur="if (value ==''){value='请写点什么'}"   
+        if(this.value=='写点你将要做点什么吧') 
         {
-            var id = $("#pop_action").attr('name');
-            if(id) {
-                $.getJSON('/task/delete/'+id, function(res) {
-                    $("#list"+res.id).remove();
-                    $(".pop-over").hide();
-                });
-            }
+            this.value = ''; 
         }
+        $('#to_people').show();
+    }).blur(function() {
+        if(this.value=='') 
+        {
+            this.value = '写点你将要做点什么吧';  
+            //$('#to_people').hide();
+        }
+
     });
-
-    $(".js-status-complete").click(function() {
-        var task_id = $("#pop_action").attr('name');
-        if(task_id) {
-            $.ajax({
-                type: "POST",
-                data: {'status': '1'},
-                url: "/task/update/"+task_id,
-                dataType: "json",
-                success: function(data) {
-                    if(data.error) return false;
-                    $("#title"+task_id).wrap("<del/>")
-                        $("#list"+task_id).effect("highlight", {}, 3000);
-                        $("#list"+task_id+" a").attr('status', 1);
-                        $(".pop-over").hide();
-                    }
-                }); 
-            }
-        });
-        $(".js-status-undone").click(function() {
-            var task_id = $("#pop_action").attr('name');
-            if(task_id) {
-                $.ajax({
-                    type: "POST",
-                    data: {'status': '0'},
-                    url: "/task/update/"+task_id,
-                    dataType: "json",
-                    success: function(data) {
-                        if(data.error) return false;
-                        $('#title'+task_id).unwrap(); 
-                        $("#list"+task_id).effect("highlight", {}, 3000);
-                        $("#list"+task_id+" a").attr('status', 0);
-                        $(".pop-over").hide();
-                    }
-                }); 
-            }
-        });
-        */
-        //文本输入框控制
-        $("#title").focus(function() {
-            //onfocus="if (value =='请写点什么'){value =''}" onblur="if (value ==''){value='请写点什么'}"   
-            if(this.value=='写点你将要做点什么吧') 
-            {
-                this.value = ''; 
-            }
-            $('#to_people').show();
-        }).blur(function() {
-            if(this.value=='') 
-            {
-                this.value = '写点你将要做点什么吧';  
-                //$('#to_people').hide();
-            }
-
-        });
 
       
     </script>

@@ -24,7 +24,7 @@ class Task(Model):
     created_at = Column(DateTime, default=datetime.datetime.now()) 
     updated_at = Column(DateTime,default=datetime.datetime.now()) 
 
-    def __init__(self, title, user_id, note=None, priority=None, end_time=None, to_user_id=None, created_at=None, submit_user_id=None):
+    def __init__(self, title=None, user_id=None, note=None, priority=None, end_time=None, to_user_id=None, created_at=None, submit_user_id=None):
         self.title = title
         self.note = note
         self.user_id = user_id
@@ -45,6 +45,102 @@ class Task(Model):
             result['end_time'] = '' 
 
         return result
+
+    def get_share_data(self, user_id, created_at, status):
+        start_time = ''
+        created_at = int(created_at) 
+        if created_at and created_at != 0:
+            now = datetime.datetime.now()
+            days = int(now.strftime('%w')) - 1
+            if created_at == 2:
+                days = days + 7
+            elif created_at == 1:
+                days = days
+            elif created_at == 3:
+                days = 30
+            start_time = now - datetime.timedelta(days=days)
+            start_time = start_time.strftime('%Y-%m-%d')
+
+        task_data_undone = {}
+        task_data_complete = {}
+        user_ids = []
+        user_rows = []
+        user_data = {}
+        #未完成
+        if status != 'complete':
+            sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND status=:status"
+            if status == 'undone' and start_time:
+                sql += ' AND created_at >= :start_time'
+
+            sql += " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' "
+            if status == 'undone' and start_time:
+                sql += ' AND created_at >= :start_time'
+            sql += " AND status=:status ORDER BY unread DESC,id DESC"
+            task_rows = g.db.execute(text(sql), to_user_id=user_id, user_id=user_id, status='0', start_time=start_time).fetchall()
+
+            for row in task_rows:
+                if row.user_id == user_id:
+                    if not row.submit_user_id:
+                        continue
+                    submit_user_id = row.submit_user_id.split(',')
+                    for user_id2 in submit_user_id:
+                        user_id2 = int(user_id2)
+                        if not task_data_undone.has_key(user_id2):
+                            user_ids.append(str(user_id2)) 
+                            task_data_undone[user_id2] = [] 
+                        new_row = dict(row)
+                        new_row['ismine'] = False
+                        task_data_undone[user_id2].append(new_row)
+                else:
+                    user_id2 = int(row.user_id)
+                    if not task_data_undone.has_key(user_id2): 
+                        user_ids.append(str(user_id2)) 
+                        task_data_undone[user_id2] = [] 
+                    new_row = dict(row)
+                    new_row['ismine'] = True
+                    task_data_undone[user_id2].append(new_row)
+
+        #已完成
+        if status != 'undone':
+            sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND status=:status"
+            if start_time:
+                sql += ' AND created_at >= :start_time'
+            sql += " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' "
+            if start_time:
+                sql += ' AND created_at >= :start_time'
+            sql += " AND status=:status ORDER BY unread DESC, id DESC"
+            task_rows = g.db.execute(text(sql), to_user_id=user_id, user_id=user_id, status=1, start_time=start_time).fetchall()
+            for row in task_rows:
+                if row.user_id == user_id:
+                    if not row.submit_user_id:
+                        continue
+                    submit_user_id = row.submit_user_id.split(',')
+                    for user_id2 in submit_user_id:
+                        user_id2 = int(user_id2)
+                        if not task_data_complete.has_key(user_id2):
+                            user_ids.append(str(user_id2)) 
+                            task_data_complete[user_id2] = [] 
+                        new_row = dict(row)
+                        new_row['ismine'] = False
+                        task_data_complete[user_id2].append(new_row)
+                else:
+                    user_id2 = int(row.user_id)
+                    if not task_data_complete.has_key(user_id2): 
+                        user_ids.append(str(user_id2)) 
+                        task_data_complete[user_id2] = [] 
+                    new_row = dict(row)
+                    new_row['ismine'] = True
+                    task_data_complete[user_id2].append(new_row)
+
+        user_ids = list(set(user_ids)) 
+        if len(user_ids) and ','.join(user_ids):
+            sql = "SELECT id, realname, avatar FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
+            user_rows = g.db.execute(text(sql)).fetchall()
+            for user_row in user_rows:
+                user_data[user_row.id] = user_row.realname 
+
+        return (task_data_undone, task_data_complete, user_data, user_rows)
+                    
 
 class TaskComment(Model):
     __tablename__ = 'task_comments'

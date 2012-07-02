@@ -1,6 +1,7 @@
 {% extends "layout_board.html" %}
 {% block content %}
-{% for key in task_data recursive %}
+{% for key in user_data recursive %}
+
 <!--第二块-->
 <div class="list active-list" id="list{{ key }}">
     <div class="list-header">
@@ -14,6 +15,9 @@
         <div class="list-gradient-top"></div>
         <div class="list-gradient-bottom"></div>
         <div class="list-cards fancy-scrollbar clearfix js-sortable ui-sortable" >
+            {% macro set_data(task_data) %}
+            {% if not task_data[key] %} {% endif %}
+
             {% for data in task_data[key] %}
             <div class="list-card clearfix ui-droppable {% if data.status %} complete {% else %} undone {% endif %}" id="list{{ data.id }}">
                 
@@ -57,6 +61,10 @@
                 </div>
             </div>
             {% endfor %}
+            {% endmacro %}
+
+            {{ set_data(task_data=task_data_undone) }}
+            {{ set_data(task_data=task_data_complete) }}
         </div>
         <!--添加消息块-->
         <!--
@@ -102,10 +110,24 @@
 
 <script>
 
+    //时间查找
+    $("#task_created_at").change(function() {
+        var created_at = $(this).children('option:selected').val();
+        if(created_at)
+            $("#task_select_form").submit();
+        //var url = getQueryUrl('created_at', created_at);
+    });
+
+    $("#task_status").change(function() {
+        var status = $(this).children('option:selected').val();
+        if(status) 
+            $("#task_select_form").submit();
+    });
     
     $(".list-card-title").toggle(function(){
         var id = $(this).attr('name');
         var unread = $(this).attr('unread');
+        $("#submit_"+id).unbind('click');
         if(id) {
             if(unread) {
                 $.ajax({
@@ -138,7 +160,6 @@
                         success: function(data) {
                             $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list_"+task_id );
                             form.each(function(){ this.reset(); });
-                            $("#submit_"+id).unbind('click');
                         }
                     }); 
                 }

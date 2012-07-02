@@ -243,7 +243,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     text-decoration: none;
     text-overflow: ellipsis;
 }
-.card-message-news{ /*position:absolute; left:-10px; top:-9px;*/ display:inline-block; width:15px; height:21px; background:url("../images/index_img/news.gif") no-repeat; margin-right:3px;}
+
 .list-card-title:hover{ text-decoration:none;}
 .badges { float: left; margin: 0; padding: 0 0 2px;}
 .badges:empty { display: none;}

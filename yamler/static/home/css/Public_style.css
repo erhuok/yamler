@@ -280,27 +280,5 @@ input.Green{
 .close-icon {
     background-position: -630px -30px;
 }
-
+.card-message-news{ /*position:absolute; left:-10px; top:-9px;*/ display:inline-block; width:15px; height:21px; background:url("../images/index_img/news.gif") no-repeat; margin-right:3px;}
 /**************************微OA-日志特有的公共样式 end*****************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
