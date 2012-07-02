@@ -62,7 +62,6 @@ def share():
     
     created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
     status = request.form['status'] if request.form.has_key('status') else ''
-    print created_at, status 
     task_data_undone, task_data_complete, user_data, user_rows = Task().get_share_data(user_id=g.user.id, created_at=created_at, status=status)
     return render_template('home/share.html', 
                            user_data=user_data, 
@@ -73,9 +72,6 @@ def share():
                            status=status,
                           )
 
-    
-    task_rows = g.db.execute(text(sql), to_user_id=g.user.id, user_id=g.user.id).fetchall()
-    
     #递交给我的人
     '''
     share_user_id = []
@@ -92,51 +88,12 @@ def share():
         submit_user_id = res.user_id.split(',')
     
     all_user_ids = list(set(share_user_id) | set(submit_user_id))
+    extra_user_id = set(all_user_ids).difference(set(user_ids))
+    if extra_user_id:
+        for user_id in extra_user_id:
+            user_id = int(user_id)
+            task_data[user_id] = []
     '''
-    
-    task_data = {}
-    user_ids = []
-    user_data = {}
-    user_rows = {} 
-    if task_rows:
-        for row in task_rows:
-            if row.user_id == g.user.id:
-                if not row.submit_user_id:
-                    continue
-                submit_user_id = row.submit_user_id.split(',')
-                for user_id in submit_user_id:
-                    user_id = int(user_id)
-                    if not task_data.has_key(user_id):
-                        user_ids.append(str(user_id)) 
-                        task_data[user_id] = [] 
-                    new_row = dict(row)
-                    new_row['ismine'] = False
-                    task_data[user_id].append(new_row)
-            else:
-                user_id = int(row.user_id)
-                if not task_data.has_key(user_id): 
-                    user_ids.append(str(user_id)) 
-                    task_data[user_id] = [] 
-                new_row = dict(row)
-                new_row['ismine'] = True
-                task_data[user_id].append(new_row)
-        '''
-        extra_user_id = set(all_user_ids).difference(set(user_ids))
-        if extra_user_id:
-            for user_id in extra_user_id:
-                user_id = int(user_id)
-                task_data[user_id] = []
-        '''
-
-        if task_rows and ','.join(user_ids):
-            sql = "SELECT id, realname, avatar FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
-            user_rows = g.db.execute(text(sql)).fetchall()
-            for row in user_rows:
-                user_data[row.id] = row.realname
-    #如果有未阅读的，将unread改成0  
-    if g.task_share_count:
-        g.db.execute(text("UPDATE task_share SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=g.user.id)
-    return render_template('home/share.html', task_data=task_data, user_data=user_data, user_rows=user_rows)
 
 @mod.route('/mytask', methods=['GET', 'POST'])
 def mytask():

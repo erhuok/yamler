@@ -139,6 +139,8 @@ class Task(Model):
             for user_row in user_rows:
                 user_data[user_row.id] = user_row.realname 
 
+        if g.task_share_count:
+            g.db.execute(text("UPDATE task_share SET unread=:unread WHERE user_id=:user_id"), unread=0, user_id=user_id)
         return (task_data_undone, task_data_complete, user_data, user_rows)
                     
 
