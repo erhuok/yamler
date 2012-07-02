@@ -68,7 +68,7 @@ def convert_time(type):
 
 def datetimeformat(value, format='%m月%d日 %H:%M'):
     if isinstance(value, datetime.date):
-        new_value = ''
+        '''
         if value.strftime('%Y-%m-%d') == datetime.datetime.today().strftime('%Y-%m-%d'):
             new_value += '今天 '
             #new_value += value.strftime("%H:%M ")
@@ -82,6 +82,8 @@ def datetimeformat(value, format='%m月%d日 %H:%M'):
             new_value += '下午'+str(hour-12)+'点 '
         elif hour > 18 and hour <=24: 
             new_value += '晚上'+str(hour-12)+'点 ' 
+        '''
+        new_value = value.strftime("%m-%d %H:%M ")
 
         default_week = {
             0: '星期天',
