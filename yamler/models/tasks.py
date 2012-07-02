@@ -134,8 +134,8 @@ class Task(Model):
 
         user_ids = list(set(user_ids)) 
         if len(user_ids) and ','.join(user_ids):
-            sql = "SELECT id, realname, avatar FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
-            user_rows = g.db.execute(text(sql)).fetchall()
+            sql = "SELECT id, realname, avatar FROM `users` WHERE is_active=:is_active AND id IN ({0})".format(','.join(user_ids)) 
+            user_rows = g.db.execute(text(sql), is_active=1).fetchall()
             for user_row in user_rows:
                 user_data[user_row.id] = user_row.realname 
 
