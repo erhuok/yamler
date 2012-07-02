@@ -63,7 +63,6 @@ def task_create():
                     user_id = request.form['user_id'], 
                     to_user_id = request.form['to_user_id'] if request.form.has_key('to_user_id') else 0,
                     submit_user_id = request.form['submit_user_id'] if request.form.has_key('submit_user_id') else 0,
-                    #note = request.form['note'] if request.form.has_key('note') else '', 
                     priority = request.form['priority'] if request.form.has_key('priority') else 1, 
                     end_time = request.form['end_time'] if request.form.has_key('end_time') else '',
                     #created_at = request.form['created_at'] if request.form.has_key('created_at') else '',
@@ -183,9 +182,7 @@ def task_update():
             if request.form.has_key('to_user_id'):
                 task.to_user_id = request.form['to_user_id']
             if request.form.has_key('submit_user_id'):
-                task.to_user_id = request.form['submit_user_id']
-            if request.form.has_key('description'):
-                task.description = request.form['description']
+                task.submit_user_id = request.form['submit_user_id']
             db_session.commit()
             return jsonify(error=0, code='success', message='修改成功', id=task.id)
     
