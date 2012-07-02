@@ -115,7 +115,7 @@ def iphone_notify(user_ids, type):
         elif type == 'submit':
             message = '我的云秘书提醒您：有1条新任务安排给您！'
         elif type == 'comment':
-            message = '我的云秘书提醒您：您的日志有一条新回复！'
+            message = '我的云秘书提醒您：您的日志有1条新回复！'
 
         for row in rows:
             if row.iphone_token:
