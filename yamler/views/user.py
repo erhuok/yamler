@@ -4,7 +4,7 @@ from flask import Blueprint,request,render_template,session,flash,redirect,url_f
 from yamler.models.users import User,RegistrationForm,LoginForm, users
 from yamler.database import db_session
 from yamler.utils import request_wants_json, required_login, allowed_images
-from datetime import date
+from datetime import date, datetime
 from yamler import app
 from werkzeug import secure_filename
 import os
@@ -30,6 +30,7 @@ def login():
         result = User.query.filter_by(username = user.username).filter_by(password = user.password).first()
         if result:
             session['user_id']=result.id
+            g.db.execute(text("UPDATE users SET last_login_time=:last_login_time WHERE id=:id"), last_login_time=datetime.now(), id=result.id) 
             #session['group_id'] = result.group_id
             #session['company_id'] = result.company_id
             return redirect(url_for(url))

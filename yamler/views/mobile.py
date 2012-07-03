@@ -23,7 +23,11 @@ def login():
         if result:
             session['user_id'] = result.id
             if request.form.has_key('iphone_token'): 
-                g.db.execute(text('UPDATE users SET iphone_token=:iphone_token WHERE id=:id'), id=result.id, iphone_token=request.form['iphone_token']) 
+                sql = "UPDATE users SET last_login_time=:last_login_time,iphone_token=:iphone_token WHERE id=:id"
+                g.db.execute(text(sql), id=result.id, last_login_time=datetime.datetime.now(), iphone_token=request.form['iphone_token']) 
+            else:
+                sql = "UPDATE users SET last_login_time=:last_login_time WHERE id=:id"
+                g.db.execute(text(sql), id=result.id, last_login_time=datetime.datetime.now()) 
             return jsonify(error=0, code='success', message='登录成功', user_id = result.id, company_id=result.company_id)
         else:
             return jsonify(error=1, code='username_or_password_error',message='用户名或密码错误',)
@@ -198,54 +202,6 @@ def task_delete():
             return jsonify(error=0, code='success', message='删除成功', id=task.id)
 
     return jsonify(error=1, code='failed', message='删除失败')
-
-@mod.route('/rel/create', methods=['POST'])
-def rel_create():
-    if request.method == "POST" and request.form['user_id'] and request.form['username']:
-        user = db_session.query(User).filter_by(username=request.form['username']).first() 
-        if user is None:
-            return jsonify(error=1, code='empty', message='用户名不存在')
-        user_relations = db_session.query(UserRelation).filter_by(from_user_id=request.form['user_id']).filter_by(to_user_id=user.id).first()
-        if user_relations is None:
-            from_user = db_session.query(User).get(request.form['user_id'])
-            rel = UserRelation(from_user_id=request.form['user_id'], to_user_id=user.id, status=0, from_user_name=from_user.username, to_user_name=request.form['username'])
-            db_session.add(rel)
-            db_session.commit()
-            return jsonify(error=0, code='success', from_user_id=rel.from_user_id, to_user_id=rel.to_user_id, status=rel.status)
-
-        return jsonify(error=0, code='success', from_user_id=request.form['user_id'], to_user_id=user_relations.to_user_id, status=user_relations.status)
-    return jsonify(error=1, code='failed', message='参数传递不正确')
-
-@mod.route('/rel/update', methods=['POST'])
-def rel_update():
-    if request.method == 'POST' and request.form['id'] and request.form['user_id']:
-        rel = db_session.query(UserRelation).get(request.form['id'])
-        if rel and rel.to_user_id == int(request.form['user_id']):
-            if request.form.has_key('status'):
-                rel.status = request.form['status']
-            db_session.commit()
-            return jsonify(error=0, code='success', from_user_id=rel.from_user_id, to_user_id=rel.to_user_id, status=rel.status)
-    
-    return jsonify(error=1, code='failed', message='参数传递不正确')
-
-@mod.route('/rel/get', methods=['POST'])
-def rel_get():
-    if request.method == 'POST':
-        if request.form.has_key('user_id') and request.form.has_key('status'):
-            #rows = db_session.query(UserRelation).filter(or_(UserRelation.from_user_id==request.form['user_id'],UserRelation.to_user_id==request.form['user_id'])).filter_by(status=request.form['status']).all()
-            rows = db_session.query(UserRelation,User).filter(User.id==UserRelation.to_user_id).filter(and_(UserRelation.from_user_id==request.form['user_id'],UserRelation.status==request.form['status'])).all()
-            data = [ dict(user.to_json().items() + user_rel.to_json().items())  for user_rel, user in rows]
-            rows2 = db_session.query(UserRelation,User).filter(User.id==UserRelation.from_user_id).filter(and_(UserRelation.to_user_id==request.form['user_id'],UserRelation.status==request.form['status'])).all()
-            data_to = [ dict(user.to_json().items() + user_rel.to_json().items())  for user_rel, user in rows2]
-            return jsonify(error=0, data=data, data_to=data_to)
-
-        if request.form.has_key('to_user_id') and request.form.has_key('status'):
-            rows = db_session.query(UserRelation).filter_by(to_user_id=request.form['to_user_id']).filter_by(status=request.form['status']).all() 
-        elif request.form.has_key('from_user_id') and request.form.has_key('status'):
-            rows = db_session.query(UserRelation).filter_by(from_user_id=request.form['from_user_id']).filter_by(status=request.form['status']).all() 
-
-        data = [row.to_json() for row in rows]
-        return jsonify(error=0, data=data)
 
 @mod.route('/company/get', methods=['POST'])
 def company_get(): 

@@ -17,6 +17,7 @@ class User(Model):
     iphone_token = Column(String(64), default='')
     company_id = Column(Integer, default=0)
     is_active = Column(Integer, default=0)
+    last_login_time = Column(DateTime, default=datetime.datetime.now())
     created_at = Column(DateTime,default=datetime.datetime.now())
     updated_at = Column(DateTime,default=datetime.datetime.now())
 
