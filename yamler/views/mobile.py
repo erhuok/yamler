@@ -276,7 +276,8 @@ def share():
         user_data[row.id] = row.realname
     return jsonify(task_data=task_data, user_data=user_data)
     '''
-    user_id = int(request.form['user_id']) 
+    user_id = request.form['user_id']
+    user_id = int(user_id)
     created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
     status = request.form['status'] if request.form.has_key('status') else 'all'
     task_data_undone, task_data_complete, user_data, user_rows, user_avatar = Task().get_share_data(user_id=user_id, created_at=created_at, status=status)
