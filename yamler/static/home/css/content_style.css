@@ -20,7 +20,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 .list-icon { background-position: -90px -30px;}
 
 /*******************导航展示区***********************/
-.board-widgets { padding: 0 8px; position: absolute; right: 0; top: 38px; width: 231px;}
+.board-widgets { padding: 0 8px; position: absolute; right: 0; top: 38px; width: 180px;}
 .master-board-widget-menu {
     display: none;
     position: absolute;
@@ -119,7 +119,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 #board {
     background: none repeat scroll 0 0 #666;
     border-radius: 3px 3px 3px 3px;
-    margin: 0 251px 0 8px;
+    margin: 0 200px 0 8px;
     overflow: hidden;
     padding: 8px;
     position: relative;
@@ -243,7 +243,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     text-decoration: none;
     text-overflow: ellipsis;
 }
-
+.card-message-news{ /*position:absolute; left:-10px; top:-9px;*/ display:inline-block; width:15px; height:21px; background:url("../images/index_img/news.gif") no-repeat; margin-right:3px;}
 .list-card-title:hover{ text-decoration:none;}
 .badges { float: left; margin: 0; padding: 0 0 2px;}
 .badges:empty { display: none;}
@@ -371,5 +371,7 @@ a.open-card-composer:hover{ background-color:#c3c3c3; color:#222; text-decoratio
 	background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
 	color:#fff;
 	}
+
+
 
 
