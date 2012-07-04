@@ -5,6 +5,8 @@ from functools import wraps
 from yamler import app
 import datetime
 from sqlalchemy.sql import select, text
+from yamler.queue import Queue
+from pyapns import configure, provision, notify
 
 def request_wants_json():
     best = request.accept_mimetypes.best_match(['application/json', 'text/html'])
@@ -100,25 +102,29 @@ def datetimeformat(value, format='%m月%d日 %H:%M'):
     return value
 
 
-from pyapns import configure, provision, notify
-'''
-IPhone手机端的notify
-'''
+#IPhone手机端的提醒，入队列
 def iphone_notify(user_ids, type):
     user_sql = "SELECT id, realname, iphone_token  FROM `users` WHERE id IN ({0})".format(','.join(map(str,user_ids)))
     rows = g.db.execute(text(user_sql)).fetchall()
     try:
-        configure({'HOST': 'http://localhost:7077/'})
-        provision('justoa', open(app.config['IPHONE_CERT']+'cert.pem').read(), 'production')
         if type == 'share':
-            message = '我的云秘书提醒您：有1条新日志递交给您！'
+            message = '我的云任务秘书提醒您：有1条新日志递交给您！'
         elif type == 'submit':
-            message = '我的云秘书提醒您：有1条新任务安排给您！'
+            message = '我的云任务秘书提醒您：有1条新任务安排给您！'
         elif type == 'comment':
-            message = '我的云秘书提醒您：您的日志有1条新回复！'
+            message = '我的云任务秘书提醒您：您的日志有1条新回复！'
 
+        queue = Queue('notify')
         for row in rows:
             if row.iphone_token:
-                notify('justoa', row.iphone_token, {'aps':{'alert': message, 'sound': 'default'}})
+                value = {'iphone_token':row.iphone_token, 'message': message}
+                queue.lpush(value)
     except:
         pass
+    '''
+    configure({'HOST': 'http://localhost:7077/'})
+    provision('justoa', open(app.config['IPHONE_CERT']+'cert.pem').read(), 'production')
+    for row in rows:
+        if row.iphone_token:
+            notify('justoa', row.iphone_token, {'aps':{'alert': message, 'sound': 'default'}})
+    '''
