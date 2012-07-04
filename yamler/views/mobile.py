@@ -230,14 +230,48 @@ def user_get():
 @mod.route('/comment/get', methods=['POST'])
 def commit_get():
     if request.method == 'POST' and request.form.has_key('task_id'):
-        rows = g.db.execute(text("SELECT id, user_id, task_id, content FROM task_comments WHERE task_id=:task_id"), task_id=request.form['task_id']).fetchall() 
-        data = [dict(zip(row.keys(), row)) for row in rows]
+        rows = g.db.execute(text("SELECT tc.id, tc.user_id, tc.task_id, u.realname, content, tc.created_at FROM task_comments tc LEFT JOIN users u ON tc.user_id=u.id WHERE task_id=:task_id"), task_id=request.form['task_id']).fetchall() 
+        data = []
+        for row in rows:
+            new_row = {'id': row.id, 'user_id': row.user_id, 'task_id': row.task_id, 'realname': row.realname}
+            new_row['created_at'] = row.created_at.strftime("%Y-%m-%d %T") if row.created_at else ''
+            data.append(new_row)
+        #data = [dict(zip(row.keys(), row)) for row in rows]
         return jsonify(error=0, data=data)
 
 @mod.route('/comment/create', methods=['POST'])
 def comment_create():
     if request.method == 'POST' and request.form.has_key('task_id') and request.form.has_key('content') and request.form.has_key('user_id'):
+        task_id = request.form['task_id']
+        user_id = request.form['user_id']
+        row = g.db.execute(text("SELECT id, user_id, submit_user_id, to_user_id FROM tasks WHERE id=:id"),id=task_id).fetchone()
+
         res = g.db.execute(text("INSERT INTO task_comments (user_id, task_id, content, created_at) VALUES (:user_id, :task_id, :content, :created_at)"),user_id=request.form['user_id'], task_id=request.form['task_id'], content=request.form['content'], created_at=datetime.datetime.now())
+        if res.lastrowid:
+            g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread WHERE id = :id"), id=task_id, unread=1)
+            to_user_id = [] 
+            submit_user_id = []
+            #通知提醒
+            if row.to_user_id:
+                to_user_id = row.to_user_id.split(',')
+                to_user_id.append(str(row.user_id))
+                to_user_id = [ user_id for user_id in to_user_id if user_id != str(user_id) ]
+                if len(to_user_id):
+                    sql = " UPDATE task_share SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(to_user_id)) 
+                    g.db.execute(text(sql), task_id=task_id, unread=1)
+
+            if row.submit_user_id:
+                submit_user_id = row.submit_user_id.split(',')
+                submit_user_id.append(str(row.user_id))
+                submit_user_id = [user_id for user_id in submit_user_id if user_id != str(user_id) ]
+                if len(submit_user_id):
+                    sql = " UPDATE task_submit SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(submit_user_id)) 
+                    g.db.execute(text(sql), task_id=task_id, unread=1)
+            
+            notify_user_id = list(set(to_user_id) | set(submit_user_id))
+            if notify_user_id:
+                iphone_notify(notify_user_id, type="comment")
+
         return jsonify(error=0, id=res.lastrowid) 
 
 @mod.route('/task/share', methods=['GET', 'POST'])
