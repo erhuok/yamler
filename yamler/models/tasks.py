@@ -69,11 +69,11 @@ class Task(Model):
         user_avatar = {} 
         #未完成
         if status != 'complete':
-            sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND status=:status"
+            sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread, priority FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND status=:status"
             if status == 'undone' and start_time:
                 sql += ' AND created_at >= :start_time'
 
-            sql += " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' "
+            sql += " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread, priority FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' "
             if status == 'undone' and start_time:
                 sql += ' AND created_at >= :start_time'
             sql += " AND status=:status ORDER BY unread DESC,id DESC"
@@ -105,13 +105,13 @@ class Task(Model):
 
         #已完成
         if status != 'undone':
-            sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND status=:status"
+            sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread, priority FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND status=:status"
             if start_time:
                 sql += ' AND created_at >= :start_time'
-            sql += " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' "
+            sql += " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread, priority FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' "
             if start_time:
                 sql += ' AND created_at >= :start_time'
-            sql += " AND status=:status ORDER BY unread DESC, id DESC"
+            sql += " AND status=:status ORDER BY unread DESC id DESC"
             task_rows = g.db.execute(text(sql), to_user_id=user_id, user_id=user_id, status=1, start_time=start_time).fetchall()
             for row in task_rows:
                 if row.user_id == user_id:
