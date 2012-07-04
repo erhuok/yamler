@@ -111,7 +111,7 @@ class Task(Model):
             sql += " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id, unread, priority FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' "
             if start_time:
                 sql += ' AND created_at >= :start_time'
-            sql += " AND status=:status ORDER BY unread DESC id DESC"
+            sql += " AND status=:status ORDER BY unread DESC, id DESC"
             task_rows = g.db.execute(text(sql), to_user_id=user_id, user_id=user_id, status=1, start_time=start_time).fetchall()
             for row in task_rows:
                 if row.user_id == user_id:
