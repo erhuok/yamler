@@ -91,7 +91,7 @@ def task_get():
 
     created_at = request.form['created_at'] if request.form.has_key('created_at') else ''
     start_time = convert_time(created_at) if created_at else '' 
-    page = request.form['page'] if request.form.has_key('page') else 1 
+    page = int(request.form['page'])  if request.form.has_key('page') else 1 
 
     limit = 20
     skip = (page-1) * limit
