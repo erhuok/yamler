@@ -86,22 +86,24 @@ class Task(Model):
                     submit_user_id = row.submit_user_id.split(',')
                     for user_id2 in submit_user_id:
                         user_id2 = int(user_id2)
-                        if not task_data_undone.has_key(user_id2):
+                        if user_id2:
+                            if not task_data_undone.has_key(user_id2):
+                                user_ids.append(str(user_id2)) 
+                                task_data_undone[user_id2] = [] 
+                            new_row = dict(row)
+                            new_row['ismine'] = False
+                            new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
+                            task_data_undone[user_id2].append(new_row)
+                else:
+                    user_id2 = int(row.user_id)
+                    if user_id2:
+                        if not task_data_undone.has_key(user_id2): 
                             user_ids.append(str(user_id2)) 
                             task_data_undone[user_id2] = [] 
                         new_row = dict(row)
-                        new_row['ismine'] = False
+                        new_row['ismine'] = True
                         new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
                         task_data_undone[user_id2].append(new_row)
-                else:
-                    user_id2 = int(row.user_id)
-                    if not task_data_undone.has_key(user_id2): 
-                        user_ids.append(str(user_id2)) 
-                        task_data_undone[user_id2] = [] 
-                    new_row = dict(row)
-                    new_row['ismine'] = True
-                    new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
-                    task_data_undone[user_id2].append(new_row)
 
         #已完成
         if status != 'undone':
@@ -120,22 +122,24 @@ class Task(Model):
                     submit_user_id = row.submit_user_id.split(',')
                     for user_id2 in submit_user_id:
                         user_id2 = int(user_id2)
-                        if not task_data_complete.has_key(user_id2):
+                        if user_id2:
+                            if not task_data_complete.has_key(user_id2):
+                                user_ids.append(str(user_id2)) 
+                                task_data_complete[user_id2] = [] 
+                            new_row = dict(row)
+                            new_row['ismine'] = False
+                            new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
+                            task_data_complete[user_id2].append(new_row)
+                else:
+                    user_id2 = int(row.user_id)
+                    if user_id2:
+                        if not task_data_complete.has_key(user_id2): 
                             user_ids.append(str(user_id2)) 
                             task_data_complete[user_id2] = [] 
                         new_row = dict(row)
-                        new_row['ismine'] = False
+                        new_row['ismine'] = True
                         new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
                         task_data_complete[user_id2].append(new_row)
-                else:
-                    user_id2 = int(row.user_id)
-                    if not task_data_complete.has_key(user_id2): 
-                        user_ids.append(str(user_id2)) 
-                        task_data_complete[user_id2] = [] 
-                    new_row = dict(row)
-                    new_row['ismine'] = True
-                    new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
-                    task_data_complete[user_id2].append(new_row)
 
         user_ids = list(set(user_ids)) 
         if len(user_ids) and ','.join(user_ids):
