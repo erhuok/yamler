@@ -233,7 +233,7 @@ def commit_get():
         rows = g.db.execute(text("SELECT tc.id, tc.user_id, tc.task_id, u.realname, content, tc.created_at FROM task_comments tc LEFT JOIN users u ON tc.user_id=u.id WHERE task_id=:task_id"), task_id=request.form['task_id']).fetchall() 
         data = []
         for row in rows:
-            new_row = {'id': row.id, 'user_id': row.user_id, 'task_id': row.task_id, 'realname': row.realname, 'content': content}
+            new_row = {'id': row.id, 'user_id': row.user_id, 'task_id': row.task_id, 'realname': row.realname, 'content': row.content}
             new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
             data.append(new_row)
         #data = [dict(zip(row.keys(), row)) for row in rows]
