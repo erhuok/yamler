@@ -233,8 +233,8 @@ def commit_get():
         rows = g.db.execute(text("SELECT tc.id, tc.user_id, tc.task_id, u.realname, content, tc.created_at FROM task_comments tc LEFT JOIN users u ON tc.user_id=u.id WHERE task_id=:task_id"), task_id=request.form['task_id']).fetchall() 
         data = []
         for row in rows:
-            new_row = {'id': row.id, 'user_id': row.user_id, 'task_id': row.task_id, 'realname': row.realname}
-            new_row['created_at'] = row.created_at.strftime("%Y-%m-%d %T") if row.created_at else ''
+            new_row = {'id': row.id, 'user_id': row.user_id, 'task_id': row.task_id, 'realname': row.realname, 'content': content}
+            new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
             data.append(new_row)
         #data = [dict(zip(row.keys(), row)) for row in rows]
         return jsonify(error=0, data=data)
@@ -276,41 +276,6 @@ def comment_create():
 
 @mod.route('/task/share', methods=['GET', 'POST'])
 def share():
-    '''
-    sql = "SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id)  UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id FROM tasks WHERE is_del='0' AND user_id=:user_id AND submit_user_id <> '0' ORDER BY status ASC, id DESC"
-    task_rows = g.db.execute(text(sql), to_user_id=user_id, user_id=user_id).fetchall()
-    task_data = {}
-    user_ids = []
-    for row in task_rows:
-        if row.user_id == user_id:
-            if not row.submit_user_id: 
-                continue
-                submit_user_id = row.submit_user_id.split(',')
-                for user_id in submit_user_id:
-                    user_id = int(user_id)
-                    if not task_data.has_key(user_id):
-                        user_ids.append(str(user_id)) 
-                        task_data[user_id] = [] 
-                    new_row = dict(row)
-                    new_row['ismine'] = False
-                    new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
-                    task_data[user_id].append(new_row)
-        else:
-            if not task_data.has_key(row.user_id): 
-                user_ids.append(str(row.user_id)) 
-                task_data[row.user_id] = [] 
-        new_row = dict(row)
-        new_row['ismine'] = True
-        new_row['created_at'] = datetimeformat(new_row['created_at']) if new_row['created_at'] else ''
-        task_data[row.user_id].append(new_row)
-
-    sql = "SELECT id, realname FROM `users` WHERE id IN ({0})".format(','.join(user_ids)) 
-    user_rows = g.db.execute(text(sql)).fetchall()
-    user_data = {}
-    for row in user_rows:
-        user_data[row.id] = row.realname
-    return jsonify(task_data=task_data, user_data=user_data)
-    '''
     user_id = request.form['user_id']
     user_id = int(user_id)
     created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
