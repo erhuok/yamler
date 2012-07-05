@@ -19,9 +19,9 @@
             {% if not task_data[key] %} {% endif %}
 
             {% for data in task_data[key] %}
-            <div class="list-card clearfix ui-droppable {% if data.status %} complete {% else %} undone {% endif %}" id="list{{ data.id }}">
+            <div class="list-card clearfix ui-droppable {% if data.status %} complete {% else %} undone {% endif %}" id="list{{ data.id }}_{{ key}}">
                 
-                <a class="list-card-title" href="javascript:;" name="{{data.id}}" unread="{{ data.unread }}">
+                <a class="list-card-title" href="javascript:;" name="{{data.id}}" unread="{{ data.unread }}" user_id="{{ key }}">
                     {% if data.unread %}
                         <span class="card-message-news" id="unread_{{ data.id }}"></span>
                     {% endif %}
@@ -46,15 +46,15 @@
                     {% if not data.ismine %} <li>{{ g.user.realname }}安排给我</li> {% endif %}
                 </ul>
                 <div class="clear"></div>
-                <div id="operation{{data.id}}" name="{{data.id}}" style="display:none;">
-                    <ul class="list_card_replies" id="comment_list_{{data.id}}" style="display:block;">
+                <div id="operation{{data.id}}_{{ key }}" name="{{data.id}}" style="display:none;">
+                    <ul class="list_card_replies" id="comment_list_{{data.id}}_{{key}}" style="display:block;">
                     </ul>
 
                     <div class="message_box" style="display:block;">
-                        <form id="comment_form_{{data.id}}" name="comment_form">
-                            <textarea name="comment_content" id="comment_content_{{data.id}}" cols="" rows="" ></textarea>
-                            <input type="button" value="回复" class="Submit" id="submit_{{data.id}}"/>
-                            <input type="button" value="取消" class="cancel" id="cancel_{{data.id}}"/>
+                        <form id="comment_form_{{data.id}}_{{key}}" name="comment_form">
+                            <textarea name="comment_content" id="comment_content_{{data.id}}_{{key}}" cols="" rows="" ></textarea>
+                            <input type="button" value="回复" class="Submit" id="submit_{{data.id}}_{{key}}"/>
+                            <input type="button" value="取消" class="cancel" id="cancel_{{data.id}}_{{key}}"/>
                         </form>
                         <div class="clear"></div>
                     </div>
@@ -127,7 +127,8 @@
     $(".list-card-title").toggle(function(){
         var id = $(this).attr('name');
         var unread = $(this).attr('unread');
-        $("#submit_"+id).unbind('click');
+        var user_id = $(this).attr('user_id');
+        $("#submit_"+id+"_"+user_id).unbind('click');
         if(id) {
             if(unread) {
                 $.ajax({
@@ -140,31 +141,31 @@
                     }
                 });
             }
-            var operation = $("#operation"+id);
+            var operation = $("#operation"+id+"_"+user_id);
             $.getJSON('/comment/get/'+id, function(res) {
                 $("#comment_list_"+id).empty();
-                $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list_"+id );
+                $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list_"+id+"_"+user_id );
             });
             operation.show();
-            $("#comment_content_"+id).focus();
-            $("#submit_"+id).click(function() {
+            $("#comment_content_"+id+"_"+user_id).focus();
+            $("#submit_"+id+"_"+user_id).click(function() {
                 var task_id = id;
-                var comment_content = $("#comment_content_"+task_id).val();
+                var comment_content = $("#comment_content_"+task_id+"_"+user_id).val();
                 if(comment_content) {
-                    var form = $('#comment_form_'+task_id)
+                    var form = $('#comment_form_'+task_id+"_"+user_id)
                     $.ajax({
                         type: "POST",
                         data: form.serialize(),
                         url: "/comment/create/"+task_id,
                         dataType: "json",
                         success: function(data) {
-                            $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list_"+task_id );
+                            $( "#comment_template_list" ).tmpl( data ).appendTo( "#comment_list_"+task_id+"_"+user_id );
                             form.each(function(){ this.reset(); });
                         }
                     }); 
                 }
             });
-            $("#cancel_"+id).click(function() {
+            $("#cancel_"+id+"_"+user_id).click(function() {
                 operation.hide();
             });
         }
