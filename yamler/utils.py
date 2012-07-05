@@ -108,13 +108,13 @@ def iphone_notify(user_ids, type, title=None, realname=None):
     rows = g.db.execute(text(user_sql)).fetchall()
     try:
         if type == 'share':
-            message = realname+"递交日志给您:"+title+"--我的云秘书"
+            message = '<'+realname+">递交日志给您:"+title+"--我的云秘书"
             #message = '我的云任务秘书提醒您：有1条新日志递交给您！'
         elif type == 'submit':
-            message = realname+"安排任务给您:"+title+"--我的云秘书"
+            message = '<'+realname+">安排任务给您:"+title+"--我的云秘书"
             #message = '我的云任务秘书提醒您：有1条新任务安排给您！'
         elif type == 'comment':
-            message = '来自'+realname+'的回复:'+title+'--我的云秘书'
+            message = '来自<'+realname+'>的回复:'+title+'--我的云秘书'
             #message = '我的云任务秘书提醒您：您的日志有1条新回复！'
 
         queue = Queue('notify')
