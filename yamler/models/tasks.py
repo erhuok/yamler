@@ -176,22 +176,24 @@ class TaskShare(Model):
     created_at = Column(DateTime, default=datetime.datetime.now()) 
     updated_at = Column(DateTime,default=datetime.datetime.now()) 
     
-    def insert(self, task_id, share_user_id, title=None, realname=None):
+    def insert(self, task_id, share_user_id, own_id=None, title=None, realname=None):
+        own_id = own_id if own_id else g.user.id
         if not task_id or not share_user_id:
             return False
         for user_id in share_user_id:
             res = g.db.execute(text("SELECT id FROM task_share WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id).fetchone()
             if res is None:
-                g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
+                g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
         iphone_notify(share_user_id, type='share', title=title, realname=realname) 
         
-    def update(self, share_user_id, old_user_id, task_id, title=None, realname=None):
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None):
+        own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
         if insert_ids:
             g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
                 if int(user_id) > 0:
-                    g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
+                    g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
             iphone_notify(insert_ids, type='share', title=title, realname=realname)
 
         delete_ids = old_user_id.difference(share_user_id)
@@ -209,7 +211,8 @@ class TaskSubmit(Model):
     created_at = Column(DateTime, default=datetime.datetime.now()) 
     updated_at = Column(DateTime,default=datetime.datetime.now()) 
     
-    def insert(self, task_id, share_user_id, title=None, realname=None):
+    def insert(self, task_id, share_user_id, own_id=None, title=None, realname=None):
+        own_id = own_id if own_id else g.user.id
         if not task_id or not share_user_id:
             return False
         for user_id in share_user_id:
@@ -219,13 +222,14 @@ class TaskSubmit(Model):
                     g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
         iphone_notify(share_user_id, type='submit', title=title, realname=realname)
 
-    def update(self, share_user_id, old_user_id, task_id, title=None, realname=None):
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None):
+        own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
         if insert_ids:
             g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
                 if int(user_id) > 0:
-                    g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
+                    g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
             iphone_notify(insert_ids, type='submit', title=title, realname=realname)
         
         delete_ids = old_user_id.difference(share_user_id)

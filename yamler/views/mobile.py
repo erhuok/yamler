@@ -2,12 +2,12 @@
 from flask import Blueprint, request, session, jsonify, g
 from yamler.database import db_session
 from yamler.models.users import User, users
-from yamler.models.tasks import Task
+from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit
 from yamler.models.companies import Company, companies 
 from yamler.models.user_relations import UserRelation 
 from sqlalchemy.sql import between
 from sqlalchemy import or_, and_, select, text
-from yamler.utils import convert_time, datetimeformat
+from yamler.utils import convert_time, datetimeformat, iphone_notify
 import datetime
 import time
 
@@ -63,18 +63,28 @@ def register():
 @mod.route('/task/create',methods=['POST'])
 def task_create():
     if request.form['user_id'] and request.form['title']:
-        task = Task(title = request.form['title'], 
-                    user_id = request.form['user_id'], 
-                    to_user_id = request.form['to_user_id'] if request.form.has_key('to_user_id') else 0,
-                    submit_user_id = request.form['submit_user_id'] if request.form.has_key('submit_user_id') else 0,
-                    priority = request.form['priority'] if request.form.has_key('priority') else 1, 
-                    end_time = request.form['end_time'] if request.form.has_key('end_time') else '',
-                    #created_at = request.form['created_at'] if request.form.has_key('created_at') else '',
-                    created_at = datetime.datetime.now(),
-                    ) 
-        db_session.add(task)
-        db_session.commit()
-        return jsonify(error=0, code='success', message='添加成功', id=task.id)
+        res = g.db.execute(tasks.insert().values({
+            tasks.c.title: request.form['title'], 
+            tasks.c.unread: 1, 
+            tasks.c.user_id: request.form['user_id'], 
+            tasks.c.created_at: datetime.datetime.now(), 
+            tasks.c.priority: request.form['priority'] if request.form.has_key('priority') else 1, 
+            tasks.c.to_user_id: request.form['to_user_id'].lstrip(',') if request.form.has_key('to_user_id') else '', 
+            tasks.c.submit_user_id: request.form['submit_user_id'].lstrip(',') if request.form.has_key('submit_user_id')  else '', 
+            tasks.c.end_time: request.form['end_time'] if request.form.has_key('end_time') else '',
+        })) 
+
+        user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
+
+        if request.form.has_key('to_user_id') and request.form['to_user_id']:
+            to_user_id = request.form['to_user_id'].lstrip(',').split(',')
+            TaskShare().insert(task_id=res.lastrowid, own_id=request.form['user_id'], share_user_id=to_user_id, realname=user_row.realname, title=request.form['title'])
+
+        if request.form.has_key('submit_user_id') and request.form['submit_user_id']:
+            submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
+            TaskSubmit().insert(task_id=res.lastrowid, own_id=request.form['user_id'], share_user_id=submit_user_id, realname=user_row.realname, title=request.form['title'])
+
+        return jsonify(error=0, code='success', message='添加成功', id=res.lastrowid)
     return jsonify(error=1, code='failed', message='输入数据不合法')
 
 
@@ -172,6 +182,8 @@ def task_get():
 def task_update():
     if request.method == 'POST' and request.form['id']:
         task = db_session.query(Task).get(request.form['id']) 
+        old_to_user_id = set(task.to_user_id.split(',')) 
+        old_submit_user_id = set(task.submit_user_id.split(',')) 
         if task:
             if request.form.has_key('status') : 
                 task.status = request.form['status']
@@ -188,6 +200,15 @@ def task_update():
             if request.form.has_key('submit_user_id'):
                 task.submit_user_id = request.form['submit_user_id']
             db_session.commit()
+
+            user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
+            if request.form.has_key('to_user_id') and request.form['to_user_id']:
+                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname)
+
+            if request.form.has_key('submit_user_id') and request.form['submit_user_id']:
+                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(request.form['submit_user_id'].split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname)
+
+
             return jsonify(error=0, code='success', message='修改成功', id=task.id)
     
     return jsonify(error=1, code='failed', message='修改失败')
@@ -270,7 +291,8 @@ def comment_create():
             
             notify_user_id = list(set(to_user_id) | set(submit_user_id))
             if notify_user_id:
-                iphone_notify(notify_user_id, type="comment")
+                user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
+                iphone_notify(notify_user_id, type="comment", realname=user_row.realname, title=request.form['content'])
 
         return jsonify(error=0, id=res.lastrowid) 
 

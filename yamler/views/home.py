@@ -188,10 +188,10 @@ def getMyFeed():
         #我自己的
         if row['user_id'] == g.user.id:
             new_row['realname'] = '我' 
-            new_row['ismine'] = True
+            new_row['ismine'] = 1 
         #安排给我的
         else:
-            new_row['ismine'] = False 
+            new_row['ismine'] =  0 
             new_row['realname'] = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first().realname
 
         data.append(new_row)
