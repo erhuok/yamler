@@ -103,14 +103,16 @@ def datetimeformat(value, format='%m月%d日 %H:%M'):
 
 
 #IPhone手机端的提醒，入队列
-def iphone_notify(user_ids, type):
+def iphone_notify(user_ids, type, title=None, realname=None):
     user_sql = "SELECT id, realname, iphone_token  FROM `users` WHERE id IN ({0})".format(','.join(map(str,user_ids)))
     rows = g.db.execute(text(user_sql)).fetchall()
     try:
         if type == 'share':
-            message = '我的云任务秘书提醒您：有1条新日志递交给您！'
+            message = realname+"递交日志给您:"+title+"--我的云秘书"
+            #message = '我的云任务秘书提醒您：有1条新日志递交给您！'
         elif type == 'submit':
-            message = '我的云任务秘书提醒您：有1条新任务安排给您！'
+            message = realname+"安排任务给您:"+title+"--我的云秘书"
+            #message = '我的云任务秘书提醒您：有1条新任务安排给您！'
         elif type == 'comment':
             message = '我的云任务秘书提醒您：您的日志有1条新回复！'
 
@@ -121,10 +123,3 @@ def iphone_notify(user_ids, type):
                 queue.lpush(value)
     except:
         pass
-    '''
-    configure({'HOST': 'http://localhost:7077/'})
-    provision('justoa', open(app.config['IPHONE_CERT']+'cert.pem').read(), 'production')
-    for row in rows:
-        if row.iphone_token:
-            notify('justoa', row.iphone_token, {'aps':{'alert': message, 'sound': 'default'}})
-    '''

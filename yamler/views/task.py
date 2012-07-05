@@ -41,7 +41,7 @@ def share(id):
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
-        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id)
+        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname)
             #old_to_user_id = set(row.to_user_id)
             #new_to_user_id = set(to_user_id)
             #update_user_id = new_to_user_id.difference(old_to_user_id)
@@ -72,7 +72,7 @@ def submit(id):
         submit_user_id = request.form['submit_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
         #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
-        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id)
+        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname)
             #old_to_user_id = set(row.submit_user_id)
             #new_to_user_id = set(submit_user_id)
             #update_user_id = new_to_user_id.difference(old_to_user_id)

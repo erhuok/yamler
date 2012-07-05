@@ -109,25 +109,24 @@ def publish():
         created_at = datetime.now()
         to_user_id = request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 
         submit_user_id = request.form['submit_user_id'].lstrip(',') if request.form['submit_user_id'] else '', 
-        res = g.db.execute(tasks.insert().values({tasks.c.title: request.form['title'], 
-                                                  tasks.c.unread: 1,
-                                                  tasks.c.user_id: g.user.id,
-                                                  tasks.c.created_at: created_at, 
-                                                  tasks.c.to_user_id: request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 
-                                                  tasks.c.submit_user_id: request.form['submit_user_id'].lstrip(',') if request.form['submit_user_id'] else '',
-                                                 })) 
+        res = g.db.execute(tasks.insert().values({
+            tasks.c.title: request.form['title'], 
+            tasks.c.unread: 1, 
+            tasks.c.user_id: g.user.id, 
+            tasks.c.created_at: created_at, 
+            tasks.c.to_user_id: request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 
+            tasks.c.submit_user_id: request.form['submit_user_id'].lstrip(',') if request.form['submit_user_id'] else '', 
+        })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
            
         #id = res.inserted_primary_key[0]
         if request.form['to_user_id']:
             to_user_id = request.form['to_user_id'].lstrip(',').split(',')
-            #UserRemind().update_share(request.form['to_user_id'].lstrip(',').split(','))
-            TaskShare().insert(task_id=res.lastrowid, share_user_id=to_user_id)
+            TaskShare().insert(task_id=res.lastrowid, share_user_id=to_user_id, realname=g.user.realname, title=request.form['title'])
         if request.form['submit_user_id']:
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
-            TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id)
-            #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
+            TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id, realname=g.user.realname, title=request.form['title'])
         
         return jsonify(title=request.form['title'], 
                        ismine=True, 

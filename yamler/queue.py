@@ -15,8 +15,8 @@ class Queue(object):
     def rpop(self):
         return self.db.lpop(self.key) 
 
-queue = Queue('notify')
-queue.lpush({'message': 'hello world', 'iphone_token':'11111111111'})
+#queue = Queue('notify')
+#queue.lpush({'message': 'hello world', 'iphone_token':'11111111111'})
 #data = queue.rpop()
 #if data:
 #    print json.loads(data)
