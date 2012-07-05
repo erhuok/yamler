@@ -74,29 +74,6 @@ def share():
                            status=status,
                           )
 
-    #递交给我的人
-    '''
-    share_user_id = []
-    sql = "SELECT GROUP_CONCAT(own_id) AS own_id FROM task_share WHERE user_id=:user_id"
-    res = g.db.execute(text(sql), user_id=g.user.id).fetchone()
-    if res:
-        share_user_id = res.own_id.split(',')
-
-    #安排给那些人
-    submit_user_id = []
-    sql = "SELECT GROUP_CONCAT(user_id) AS user_id FROM task_submit WHERE own_id=:own_id"
-    res = g.db.execute(text(sql), own_id=g.user.id).fetchone()
-    if res:
-        submit_user_id = res.user_id.split(',')
-    
-    all_user_ids = list(set(share_user_id) | set(submit_user_id))
-    extra_user_id = set(all_user_ids).difference(set(user_ids))
-    if extra_user_id:
-        for user_id in extra_user_id:
-            user_id = int(user_id)
-            task_data[user_id] = []
-    '''
-
 @mod.route('/mytask', methods=['GET', 'POST'])
 def mytask():
     s = text("SELECT id,user_id,to_user_id,title,created_at,end_time,status FROM tasks WHERE user_id = :user_id") 
