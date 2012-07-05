@@ -219,7 +219,7 @@ class TaskSubmit(Model):
             if user_id > 0:
                 res = g.db.execute(text("SELECT id FROM task_submit WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id).fetchone()
                 if res is None:
-                    g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=g.user.id, unread=1, created_at=datetime.datetime.now() )        
+                    g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
         iphone_notify(share_user_id, type='submit', title=title, realname=realname)
 
     def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None):
