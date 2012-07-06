@@ -65,6 +65,7 @@ def task_create():
     if request.form['user_id'] and request.form['title']:
         res = g.db.execute(tasks.insert().values({
             tasks.c.title: request.form['title'], 
+            tasks.c.flag: 1,
             tasks.c.unread: 1, 
             tasks.c.user_id: request.form['user_id'], 
             tasks.c.created_at: datetime.datetime.now(), 
@@ -144,7 +145,7 @@ def task_get():
     start_time = convert_time(created_at) if created_at else '' 
     page = int(request.form['page'])  if request.form.has_key('page') else 1 
 
-    limit = 20
+    limit = 100
     skip = (page-1) * limit
     next_page = 't='+str(t)+'&status='+str(status)+'&page='+str(page+1)+'&created_at='+str(created_at) 
     #只看我自己的

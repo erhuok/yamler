@@ -16,6 +16,7 @@ class Task(Model):
     to_user_id = Column(String(45), default=0)
     submit_user_id = Column(String(45), default=0)
     status = Column(Integer, default = 0)
+    flag = Column(Integer, default = 0)
     board_id = Column(Integer, default = 0)
     note = Column(String(200),default='')
     description = Column(String(500),default='')

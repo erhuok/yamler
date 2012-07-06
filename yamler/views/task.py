@@ -24,11 +24,11 @@ def create():
 @mod.route('/update/<int:id>', methods=['POST'])
 def update(id):
     if request.form.has_key('title'):
-        g.db.execute(text("UPDATE tasks SET title=:title WHERE id=:id"), id=id, title=request.form['title'])
+        g.db.execute(text("UPDATE tasks SET title=:title, flag='0' WHERE id=:id"), id=id, title=request.form['title'])
         return jsonify(error=0, title=request.form['title'], id=id)
     if request.form.has_key('status'):
         end_time = datetime.now() if request.form['status'] else ''
-        g.db.execute(text("UPDATE tasks SET status=:status, end_time=:end_time WHERE id=:id"), id=id, status=request.form['status'], end_time=end_time)
+        g.db.execute(text("UPDATE tasks SET status=:status, end_time=:end_time, flag='0' WHERE id=:id"), id=id, status=request.form['status'], end_time=end_time)
         return jsonify(error=0)
     if request.form.has_key('unread'):
         g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=id, unread=request.form['unread'])
@@ -40,7 +40,7 @@ def share(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
-        res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
+        res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id, flag='0' WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
         TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname)
             #old_to_user_id = set(row.to_user_id)
             #new_to_user_id = set(to_user_id)
@@ -70,7 +70,7 @@ def submit(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         submit_user_id = request.form['submit_user_id'].lstrip(',')
-        res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
+        res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id, flag='0' WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
         #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
         TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname)
             #old_to_user_id = set(row.submit_user_id)
