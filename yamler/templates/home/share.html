@@ -143,7 +143,7 @@
             }
             var operation = $("#operation"+id+"_"+user_id);
             $.getJSON('/comment/get/'+id, function(res) {
-                $("#comment_list_"+id).empty();
+                $("#comment_list_"+id+"_"+user_id).empty();
                 $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#comment_list_"+id+"_"+user_id );
             });
             operation.show();
