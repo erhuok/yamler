@@ -87,7 +87,47 @@ def task_create():
 
         return jsonify(error=0, code='success', message='添加成功', id=res.lastrowid)
     return jsonify(error=1, code='failed', message='输入数据不合法')
+def process_task_data(rows, user_id):
+    data = []
+    for row in rows:
+        new_row = {}
+        new_row['id'] = row['id']
+        new_row['comment_count'] = row['comment_count']
+        new_row['user_id'] = row['user_id'] 
+        new_row['title'] = row['title'] 
+        new_row['status'] = row['status'] 
+        new_row['priority'] = row['priority']
+        new_row['share_users'] = None
+        new_row['submit_users'] = None
+        #手机端的时间
+        #new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at else ''
+        new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
+        new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time'] else '' 
+        new_row['notify_time'] = row['notify_time']
+        if row['to_user_id']:
+            user_ids = row['to_user_id'].lstrip(',').split(',')
+            #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+            user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+            result = g.db.execute(text(user_sql)).fetchall()
+            new_row['share_users'] = [dict(zip(res.keys(), res)) for res in result]  
 
+        if row['submit_user_id']:
+            user_ids = row.submit_user_id.lstrip(',').split(',')
+            user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
+            result = g.db.execute(text(user_sql)).fetchall()
+            new_row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]  
+
+        #我自己的
+        if row['user_id'] == user_id:
+            new_row['realname'] = '我' 
+            new_row['ismine'] = True
+        #安排给我的
+        else:
+            new_row['ismine'] = False 
+            new_row['realname'] = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first().realname
+
+        data.append(new_row)
+    return data
 
 @mod.route('/task/get',methods=['POST'])
 def task_get():
@@ -139,46 +179,30 @@ def task_get():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=user_id, submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
 
-    data = []
-    for row in rows:
-        new_row = {}
-        new_row['id'] = row['id']
-        new_row['comment_count'] = row['comment_count']
-        new_row['user_id'] = row['user_id'] 
-        new_row['title'] = row['title'] 
-        new_row['status'] = row['status'] 
-        new_row['priority'] = row['priority']
-        new_row['share_users'] = None
-        new_row['submit_users'] = None
-        #手机端的时间
-        new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at else ''
-        new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
-        new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time'] else '' 
-        new_row['notify_time'] = row['notify_time']
-        if row['to_user_id']:
-            user_ids = row['to_user_id'].lstrip(',').split(',')
-            #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
-            user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
-            result = g.db.execute(text(user_sql)).fetchall()
-            new_row['share_users'] = [dict(zip(res.keys(), res)) for res in result]  
-
-        if row['submit_user_id']:
-            user_ids = row.submit_user_id.lstrip(',').split(',')
-            user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
-            result = g.db.execute(text(user_sql)).fetchall()
-            new_row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]  
-
-        #我自己的
-        if row['user_id'] == user_id:
-            new_row['realname'] = '我' 
-            new_row['ismine'] = True
-        #安排给我的
-        else:
-            new_row['ismine'] = False 
-            new_row['realname'] = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first().realname
-
-        data.append(new_row)
+    data = process_task_data(rows, user_id=user_id)
     return jsonify(data=data, next_page=next_page)
+
+
+@mod.route('/task/get_update', methods=['POST'])
+def get_update():
+    if request.form.has_key('user_id'):
+        user_id = request.form['user_id']
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
+        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
+        sql +=  " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
+        #sql += " ORDER BY id DESC"
+        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+        data = process_task_data(rows, user_id)
+        return jsonify(error=0, data=data)
+
+@mod.route('/task/update_by_ids', methods=['POST'])
+def update_by_ids():
+    if request.form.has_key('ids') and len(request.form['ids']):
+        ids = request.form['ids'].split(',')
+        sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
+        g.db.execute(text(sql))
+        return jsonify(error=0)
+    return jsonify(error=1)
 
 @mod.route('/task/update', methods=['POST'])
 def task_update():
