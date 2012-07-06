@@ -29,11 +29,11 @@ def send_iphone_notify():
         queue = Queue('notify')
         #configure({'HOST': 'http://localhost:7077/'})
         #provision('justoa', open(os.path.join(os.path.dirname(__file__), 'iphone/cert.pem')).read(), 'production')
-        wrapper = APNSNotificationWrapper(os.path.join(os.path.dirname(__file__), 'iphone/cert.pem'), True)
-        message = APNSNotification()
         while 1:
             data = queue.rpop()
             if data:
+                wrapper = APNSNotificationWrapper(os.path.join(os.path.dirname(__file__), 'iphone/cert.pem'), True)
+                message = APNSNotification()
                 data = json.loads(data)
                 deviceToken = binascii.unhexlify(data['iphone_token'])
                 message.token(deviceToken)
