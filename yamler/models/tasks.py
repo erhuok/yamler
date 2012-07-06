@@ -21,6 +21,7 @@ class Task(Model):
     description = Column(String(500),default='')
     priority = Column(Integer, default=1)
     end_time = Column(DateTime,default = '') 
+    notify_time = Column(DateTime,default = '') 
     created_at = Column(DateTime, default=datetime.datetime.now()) 
     updated_at = Column(DateTime,default=datetime.datetime.now()) 
 

@@ -157,10 +157,6 @@
 		$(this).parent().addClass("current");
 		$(".boards-list li").not($(this).parent()).removeClass("current");
         
-        $('#reply_submit_'+id).unbind('click');
-        $('.js-delete').unbind('click');
-        $('.js-complete').die('click');
-        $('.js-undone').die('click');
 
         $(".tab_Reply").unbind('click');
         $(".js_share").unbind('click');
@@ -170,8 +166,14 @@
         $(".js-complete").unbind('click');
         $(".js-undone").unbind('click');
 
+        $('.js-delete').unbind('click');
+        $('.js-complete').die('click');
+        $('.js-undone').die('click');
+
         //回复
         $(".tab_Reply").click(function() {
+            $('#reply_submit_'+id).unbind('click');
+
             $(".tab_content").hide();
             $("#comment_list_"+id).empty();
             $.getJSON('/comment/get/'+id, function(res) {
