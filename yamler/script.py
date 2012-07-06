@@ -1,11 +1,13 @@
 #encoding:utf8
 from queue import Queue
 import json
-from pyapns import configure, provision, notify
+#from pyapns import configure, provision, notify
 import sys 
 reload(sys) 
 sys.setdefaultencoding('utf8') 
 import os
+from APNSWrapper import *
+import binascii
 
 if not sys.argv[1:]:
     print "Usage python pagedata.py [OPTIONS] query words\n"
@@ -25,13 +27,22 @@ while (i<len(sys.argv)):
 def send_iphone_notify():
     try:
         queue = Queue('notify')
-        configure({'HOST': 'http://localhost:7077/'})
-        provision('justoa', open(os.path.join(os.path.dirname(__file__), 'iphone/cert.pem')).read(), 'production')
+        #configure({'HOST': 'http://localhost:7077/'})
+        #provision('justoa', open(os.path.join(os.path.dirname(__file__), 'iphone/cert.pem')).read(), 'production')
+        wrapper = APNSNotificationWrapper(os.path.join(os.path.dirname(__file__), 'iphone/cert.pem'), True)
+        message = APNSNotification()
         while 1:
             data = queue.rpop()
             if data:
                 data = json.loads(data)
-                notify('justoa', data['iphone_token'], {'aps':{'alert': data['message'], 'sound': 'default'}})
+                deviceToken = binascii.unhexlify(data['iphone_token'])
+                message.token(deviceToken)
+                message.alert(data['message'])
+                message.badge(5)
+                message.sound()
+                wrapper.append(message)
+                wrapper.notify()
+                #notify('justoa', data['iphone_token'], {'aps':{'alert': data['message'], 'sound': 'default'}})
     except:
         pass
 
