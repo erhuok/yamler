@@ -321,7 +321,7 @@ def comment_create():
             if row.to_user_id:
                 to_user_id = row.to_user_id.split(',')
                 to_user_id.append(str(row.user_id))
-                to_user_id = [ user_id for user_id in to_user_id if user_id != str(user_id) ]
+                to_user_id = [ user_id2 for user_id2 in to_user_id if user_id2 != str(user_id) ]
                 if len(to_user_id):
                     sql = " UPDATE task_share SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(to_user_id)) 
                     g.db.execute(text(sql), task_id=task_id, unread=1)
@@ -329,7 +329,7 @@ def comment_create():
             if row.submit_user_id:
                 submit_user_id = row.submit_user_id.split(',')
                 submit_user_id.append(str(row.user_id))
-                submit_user_id = [user_id for user_id in submit_user_id if user_id != str(user_id) ]
+                submit_user_id = [user_id2 for user_id2 in submit_user_id if user_id2 != str(user_id) ]
                 if len(submit_user_id):
                     sql = " UPDATE task_submit SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(submit_user_id)) 
                     g.db.execute(text(sql), task_id=task_id, unread=1)
