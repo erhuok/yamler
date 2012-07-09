@@ -181,7 +181,7 @@ def task_get():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=user_id, submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     #rows = [dict(zip(row.keys(), row)) for row in rows]  
-    data = data1 + data2
+    data = process_task_data(rows, user_id)
     return jsonify(data=data, next_page=next_page)
 
 
