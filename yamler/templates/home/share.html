@@ -108,8 +108,8 @@
     </div>
 <!--回复的html end-->
 
-<script>
-
+<script type="text/javascript" defer>
+    $.ajaxSetup({ cache: false });
     //时间查找
     $("#task_created_at").change(function() {
         var created_at = $(this).children('option:selected').val();

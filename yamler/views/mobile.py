@@ -196,15 +196,15 @@ def get_update():
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
         data2 = process_task_data(rows, user_id)
 
-        sql =  "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
-        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        data3 = process_task_data(rows, user_id)
+        #sql =  "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
+        #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+        #data3 = process_task_data(rows, user_id)
         
         #sql += " ORDER BY id DESC"
         #rows = [dict(zip(row.keys(), row)) for row in rows]  
         #data = process_task_data(rows, user_id)
         #data = data1 + data2 + data3
-        data = data1 + data2 + data3
+        data = data1 + data2 
         return jsonify(error=0, data=data)
 
 @mod.route('/task/update_by_ids', methods=['POST'])
