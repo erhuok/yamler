@@ -36,7 +36,7 @@ def create(task_id):
                 task_comments.c.created_at: created_at,
             }))
             if res.lastrowid:
-                g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread WHERE id = :id"), id=task_id, unread=1)
+                g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
                 to_user_id = [] 
                 submit_user_id = []
                 #通知提醒
