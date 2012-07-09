@@ -29,7 +29,8 @@ def login():
             else:
                 sql = "UPDATE users SET last_login_time=:last_login_time WHERE id=:id"
                 g.db.execute(text(sql), id=result.id, last_login_time=datetime.datetime.now()) 
-            return jsonify(error=0, code='success', message='登录成功', user_id = result.id, company_id=result.company_id)
+            url = 'http://'+request.host + '/i/' + base64.encodestring(str(result.company_id)) 
+            return jsonify(error=0, code='success', message='登录成功', user_id = result.id, company_id=result.company_id, url=url)
         else:
             return jsonify(error=1, code='username_or_password_error',message='用户名或密码错误',)
     else:
