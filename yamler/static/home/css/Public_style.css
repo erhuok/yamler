@@ -217,14 +217,15 @@ input[type="submit"], input[type="button"], button, .button {
     line-height: 20px;
     margin: 8px 4px 0 0;
     padding: 7px 20px;
+	_padding: 5px 18px;
     text-align: center;
-	height:30px; line-height:20px; 
+	height:30px\9; line-height:20px\9; 
 }
 :focus{outline:0 none;}
-input.primary[type="submit"], input.primary[type="button"], button.primary, .button.primary {
+input.primary, input.primary[type="submit"], input.primary[type="button"], button.primary, .button.primary {
 	background-color:#24A828;
     background: -moz-linear-gradient(center top , #24A828 0%, #1B7E1E 100%) repeat scroll 0 0 transparent;
-	
+	_padding: 5px 18px;
     color: #FFFFFF;
 	height:30px; line-height:20px; 
 	}
@@ -280,5 +281,27 @@ input.Green{
 .close-icon {
     background-position: -630px -30px;
 }
-.card-message-news{ /*position:absolute; left:-10px; top:-9px;*/ display:inline-block; width:15px; height:21px; background:url("../images/index_img/news.gif") no-repeat; margin-right:3px;}
+
 /**************************微OA-日志特有的公共样式 end*****************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
