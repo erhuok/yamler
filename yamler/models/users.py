@@ -21,13 +21,14 @@ class User(Model):
     created_at = Column(DateTime,default=datetime.datetime.now())
     updated_at = Column(DateTime,default=datetime.datetime.now())
 
-    def __init__(self, username=None, password=None,is_active=None, realname=None, company_id=None, telephone=None):
+    def __init__(self, username=None, password=None,is_active=None, realname=None, company_id=None, telephone=None, iphone_token=None):
         self.username = username
         self.is_active = is_active
         self.password = hashlib.md5(password).hexdigest() 
         self.realname = realname
         self.company_id = company_id
         self.telephone = telephone
+        self.iphone_token = iphone_token
 
     def __repr__(self):
         return '<User %r>' % (self.username)
