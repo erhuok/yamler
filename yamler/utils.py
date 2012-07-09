@@ -106,6 +106,8 @@ def datetimeformat(value, format='%m月%d日 %H:%M'):
 def iphone_notify(user_ids, type, title=None, realname=None):
     user_sql = "SELECT id, realname, iphone_token  FROM `users` WHERE id IN ({0})".format(','.join(map(str,user_ids)))
     rows = g.db.execute(text(user_sql)).fetchall()
+    if len(title) > 80:
+        title = title[0:80] + '...'
     try:
         if type == 'share':
             message = '<'+realname+'>递交日志给您:"'+title+'"--我的云秘书'
