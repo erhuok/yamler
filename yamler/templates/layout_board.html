@@ -125,9 +125,9 @@
 			var w_height = $(window).height();
 			var b_height = w_height-(78+26);
 			var w_width = $(window).width();
-			var con_width = w_width-214;
+			var con_width = w_width-184;
 			var list_count = $(".list").length;
-			var list_countWidth = 400*list_count;
+			var list_countWidth = 350*list_count;
 			//var listblock_height = $(".list");
 
 			if(list_countWidth > con_width){
@@ -163,10 +163,10 @@
 			var ws_top = $(window).scrollTop();
 			var ws_height = $(window).height();
 			var w_width = $(window).width();
-			var con_width = w_width-214;
+			var con_width = w_width-184;
 			var bo_height = ws_height-(78+26)+ws_top;
 			var list_count = $(".list").length;
-			var list_countWidth = 400*list_count;
+			var list_countWidth = 350*list_count;
 			if(list_countWidth > con_width){
 				$(".list-area-wrapper").css("overflow-x","scroll");
 				$("#board").css({height:bo_height+"px", width:(con_width-14)+"px"});

@@ -2,7 +2,7 @@
 /* CSS Document */
 
 .account-page { background-color: #E6E6E6;}
-.account-page #surface { margin: 0 auto; max-width: 540px; padding: 15px 10px 50px; position: relative;}
+.account-page #surface { margin: 0 auto; max-width: 540px; _width:540px; padding: 15px 10px 50px; position: relative;}
 .account-page .account-header { margin-bottom: 10px; text-align: center;}
 .account-page .account-header img { max-width: 200px; width: 80%;}
 .account-page .account-content {
@@ -21,6 +21,23 @@
 .account-page .primary-col input[type="submit"] {
     margin-bottom: 20px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
