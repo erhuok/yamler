@@ -69,7 +69,7 @@ def task_create():
     if request.form['user_id'] and request.form['title']:
         res = g.db.execute(tasks.insert().values({
             tasks.c.title: request.form['title'], 
-            tasks.c.flag: 1,
+            tasks.c.flag: '0',
             tasks.c.unread: 1, 
             tasks.c.user_id: request.form['user_id'], 
             tasks.c.created_at: datetime.datetime.now(), 
@@ -243,6 +243,7 @@ def task_update():
                 task.to_user_id = request.form['to_user_id']
             if request.form.has_key('submit_user_id'):
                 task.submit_user_id = request.form['submit_user_id']
+            task.flag = '0'
         
             db_session.commit()
 
@@ -314,7 +315,7 @@ def comment_create():
 
         res = g.db.execute(text("INSERT INTO task_comments (user_id, task_id, content, created_at) VALUES (:user_id, :task_id, :content, :created_at)"),user_id=request.form['user_id'], task_id=request.form['task_id'], content=request.form['content'], created_at=datetime.datetime.now())
         if res.lastrowid:
-            g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread WHERE id = :id"), id=task_id, unread=1)
+            g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
             to_user_id = [] 
             submit_user_id = []
             #通知提醒
