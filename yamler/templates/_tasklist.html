@@ -1,4 +1,5 @@
 <ul class="boards-list bold-list gutter js-list-boards" id="msg_list"> </ul>
+
 <script id="msgTemplate" type="text/x-jquery-tmpl">
 <li id="list${id}" >
     <a class="clearfix link-item highlight-icon js-open-board" href="javascript:;" name="${id}" status="${status}">
@@ -110,9 +111,6 @@
 			</div>
 		</div>
 		
-		
-		
-		
 	</div>
 	<!--操作区 end-->
 	
@@ -126,7 +124,7 @@
 </script>
 <!--回复的模板 end-->
 
-<script>
+<script type="text/javascript">
 
 	$(".boards-list li").live('mouseover',function(){
 		$(this).addClass("hover");
