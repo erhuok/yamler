@@ -88,6 +88,7 @@ def task_create():
 
         return jsonify(error=0, code='success', message='添加成功', id=res.lastrowid)
     return jsonify(error=1, code='failed', message='输入数据不合法')
+
 def process_task_data(rows, user_id):
     data = []
     for row in rows:
@@ -101,9 +102,9 @@ def process_task_data(rows, user_id):
         new_row['share_users'] = None
         new_row['submit_users'] = None
         #手机端的时间
-        #new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at else ''
+        new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
-        new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time'] else '' 
+        new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time']  and isinstance(row.created_at, datetime.datetime) else '' 
         new_row['notify_time'] = row['notify_time']
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
@@ -113,7 +114,7 @@ def process_task_data(rows, user_id):
             new_row['share_users'] = [dict(zip(res.keys(), res)) for res in result]  
 
         if row['submit_user_id']:
-            user_ids = row.submit_user_id.lstrip(',').split(',')
+            user_ids = row['submit_user_id'].lstrip(',').split(',')
             user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
             result = g.db.execute(text(user_sql)).fetchall()
             new_row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]  
@@ -179,8 +180,8 @@ def task_get():
             sql += ' AND created_at > :created_at'
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=user_id, submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
-
-    data = process_task_data(rows, user_id=user_id)
+    #rows = [dict(zip(row.keys(), row)) for row in rows]  
+    data = data1 + data2
     return jsonify(data=data, next_page=next_page)
 
 
@@ -189,11 +190,22 @@ def get_update():
     if request.form.has_key('user_id'):
         user_id = request.form['user_id']
         sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
-        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
-        sql +=  " UNION ALL SELECT id,user_id,to_user_id,title,status,comment_count,created_at,submit_user_id,unread, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
-        #sql += " ORDER BY id DESC"
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        data = process_task_data(rows, user_id)
+        data1 = process_task_data(rows, user_id)
+
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
+        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+        data2 = process_task_data(rows, user_id)
+
+        sql =  "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
+        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+        data3 = process_task_data(rows, user_id)
+        
+        #sql += " ORDER BY id DESC"
+        #rows = [dict(zip(row.keys(), row)) for row in rows]  
+        #data = process_task_data(rows, user_id)
+        #data = data1 + data2 + data3
+        data = data1 + data2 + data3
         return jsonify(error=0, data=data)
 
 @mod.route('/task/update_by_ids', methods=['POST'])
