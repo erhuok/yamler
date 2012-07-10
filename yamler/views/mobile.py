@@ -105,8 +105,6 @@ def process_task_data(rows, user_id):
         new_row['priority'] = row['priority']
         new_row['share_users'] = None
         new_row['submit_users'] = None
-        if row.has_key('is_del'):
-            new_row['is_del'] = row['is_del'] 
         #手机端的时间
         new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
@@ -194,24 +192,26 @@ def task_get():
 def get_update():
     if request.form.has_key('user_id'):
         user_id = request.form['user_id']
-        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND flag=:flag"
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
         data1 = process_task_data(rows, user_id)
 
-        sql = "SELECT * FROM tasks WHERE FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
+        sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+
         data2 = process_task_data(rows, user_id)
+        data = data1 + data2 
+
+        sql = "SELECT GROUP_CONCAT(id) AS delete_ids FROM tasks WHERE is_del = '1' AND flag='0'  AND user_id=:user_id"
+        result = g.db.execute(text(sql), user_id=user_id).first()
+        if result.has_key('delete_ids'):
+            delete_ids = result['delete_ids']
 
         #sql =  "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
         #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
         #data3 = process_task_data(rows, user_id)
         
-        #sql += " ORDER BY id DESC"
-        #rows = [dict(zip(row.keys(), row)) for row in rows]  
-        #data = process_task_data(rows, user_id)
-        #data = data1 + data2 + data3
-        data = data1 + data2 
-        return jsonify(error=0, data=data)
+        return jsonify(error=0, data=data, delete_ids=delete_ids)
 
 @mod.route('/task/update_by_ids', methods=['POST'])
 def update_by_ids():
