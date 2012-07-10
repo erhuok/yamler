@@ -262,12 +262,10 @@ def task_update():
 @mod.route('/task/delete', methods=['POST'])
 def task_delete():
     if request.method == 'POST' and request.form['id'] and request.form['user_id']:
-        task = db_session.query(Task).get(request.form['id']) 
-        if task and task.user_id == int(request.form['user_id']) :
-            db_session.delete(task)
-            db_session.commit()
-            return jsonify(error=0, code='success', message='删除成功', id=task.id)
-
+        row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=request.form['id']).first()
+        if row and row.user_id == int(request.form['user_id']):
+            g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=request.form['id'])
+            return jsonify(error=0, code='success', message='删除成功', id=row.id)
     return jsonify(error=1, code='failed', message='删除失败')
 
 @mod.route('/company/get', methods=['POST'])

@@ -124,5 +124,5 @@ def get(id):
 def delete(id):
     row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=id).first()
     if row and row['user_id'] == g.user.id:
-        g.db.execute(text("UPDATE tasks SET is_del=:is_del WHERE id=:id"),is_del=1,id=id)
+        g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=id)
         return jsonify(id=id)
