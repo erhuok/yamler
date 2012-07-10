@@ -194,11 +194,11 @@ def task_get():
 def get_update():
     if request.form.has_key('user_id'):
         user_id = request.form['user_id']
-        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND flag=:flag"
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
         data1 = process_task_data(rows, user_id)
 
-        sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
+        sql = "SELECT * FROM tasks WHERE FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
         data2 = process_task_data(rows, user_id)
 
