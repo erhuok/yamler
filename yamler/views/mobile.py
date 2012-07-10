@@ -105,6 +105,8 @@ def process_task_data(rows, user_id):
         new_row['priority'] = row['priority']
         new_row['share_users'] = None
         new_row['submit_users'] = None
+        if row.has_key('is_del'):
+            new_row['is_del'] = row['is_del'] 
         #手机端的时间
         new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
@@ -192,11 +194,11 @@ def task_get():
 def get_update():
     if request.form.has_key('user_id'):
         user_id = request.form['user_id']
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
         data1 = process_task_data(rows, user_id)
 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
+        sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
         rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
         data2 = process_task_data(rows, user_id)
 
