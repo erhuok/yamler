@@ -204,7 +204,8 @@ def get_update():
 
         sql = "SELECT GROUP_CONCAT(id) AS delete_ids FROM tasks WHERE is_del = '1' AND flag='0'  AND user_id=:user_id"
         result = g.db.execute(text(sql), user_id=user_id).first()
-        if result.has_key('delete_ids'):
+        delete_ids = []
+        if result.has_key('delete_ids') and result['delete_ids']:
             delete_ids = result['delete_ids'].split(',')
 
         #sql =  "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
