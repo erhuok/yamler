@@ -79,22 +79,23 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 .bottom { margin-bottom: 0; padding-bottom: 0;}
 .inline-block { display: inline-block;}
 .board-actions-list { overflow-x: hidden; overflow-y: auto; padding: 0 8px 0 0;}
-.phenom { border-bottom: 1px solid #DCDCDC; padding: 8px 0 8px 10px; /*position: relative;*/ _height:33px;}
+.phenom { border-bottom: 1px solid #DCDCDC; padding: 8px 0 8px 0; /*position: relative;*/ _height:43px;}
 .phenom:first-child { margin-top: -8px;}
-.phenom .member { /*left: 0; position: absolute; top: 10px; */ margin-right:5px;}
-.member .member-initials {
+.phenom .member { /*left: 0; position: absolute; top: 10px; */ margin-right:5px; width:40px; height:40px;}
+.phenom .member .member-initials {
     display: block;
     font-size: 12px;
     font-weight: bold;
-    height: 30px;
+    height: 40px;
+	width:40px;
     left: 0;
-    line-height: 30px;
+    /*line-height: 30px;*/
     overflow: hidden;
     position: absolute;
     text-align: center;
     top: 0;
-    width: 100%;
 }
+
 .phenom-desc { margin-bottom: 2px;}
 .inline-object { font-weight: bold; text-decoration: none;}
 .phenom-meta { display: inline; font-size: 13px; margin: 0;}

@@ -3,13 +3,18 @@
 
 .account-page { background-color: #E6E6E6;}
 .account-page #surface { margin: 0 auto; max-width: 540px; _width:540px; padding: 15px 10px 50px; position: relative;}
-.account-page .account-header { margin-bottom: 10px; text-align: center;}
-.account-page .account-header img { max-width: 200px; width: 80%;}
+.account-page .account-header { text-align: left; margin-top:30px; margin-bottom:15px; margin-left:10px;}
+.account-page .account-header a{ width:auto; 
+	height:46px;
+	background:url("../images/index_img/login_logo.png") no-repeat 0 center;
+	_background:url("../images/index_img/login_logo.gif") no-repeat 0 center;
+	display: block;
+	}
 .account-page .account-content {
     background-color: #F0F0F0;
     border: 1px solid #BFBFBF;
     border-radius: 3px 3px 3px 3px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     padding: 20px;
 }
 .account-page .primary-col {

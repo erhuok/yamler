@@ -20,7 +20,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 .list-icon { background-position: -90px -30px;}
 
 /*******************导航展示区***********************/
-.board-widgets { padding: 0 8px; position: absolute; right: 0; top: 38px; width: 180px;}
+.board-widgets { padding: 0 8px; position: absolute; right: 0; top: 38px; width: 150px;}
 .master-board-widget-menu {
     display: none;
     position: absolute;
@@ -86,15 +86,16 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
     display: block;
     font-size: 12px;
     font-weight: bold;
-    height: 30px;
+    height: 50px;
+	width:50px;
     left: 0;
     line-height: 30px;
     overflow: hidden;
     position: absolute;
     text-align: center;
     top: 0;
-    width: 100%;
 }
+
 .phenom-desc { margin-bottom: 2px;}
 .inline-object { font-weight: bold; text-decoration: none;}
 .phenom-meta { display: inline; font-size: 13px; margin: 0;}
@@ -119,7 +120,7 @@ body.extra-large-window.full-content #content, body.large-window.full-content #c
 #board {
     background: none repeat scroll 0 0 #666;
     border-radius: 3px 3px 3px 3px;
-    margin: 0 200px 0 8px;
+    margin: 0 170px 0 8px;
     overflow: hidden;
     padding: 8px;
     position: relative;
