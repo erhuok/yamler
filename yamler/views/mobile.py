@@ -188,12 +188,13 @@ def task_get():
     return jsonify(data=data, next_page=next_page)
 
 def get_task_data_by_ids(ids, user_id):
-    ids = ids.split(',')
     data = []
-    if len(ids):
-        sql = "SELECT * FROM `tasks` WHERE id IN ({0})".format(','.join(ids))
-        rows = g.db.execute(text(sql)).fetchall()
-        data = process_task_data(rows, user_id)
+    if ids:
+        ids = ids.split(',')
+        if len(ids):
+            sql = "SELECT * FROM `tasks` WHERE id IN ({0})".format(','.join(ids))
+            rows = g.db.execute(text(sql)).fetchall()
+            data = process_task_data(rows, user_id)
     return data
 
 @mod.route('/task/get_update', methods=['POST'])
