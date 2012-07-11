@@ -48,9 +48,9 @@
 .header-btn.header-logo { margin-right: 8px; padding-left: 4px;}
 .header-btn.header-logo { margin-right: 8px; padding-left: 4px;}
 .app-icon.logo { 
-	background:url("../images/index_img/logo_img.png") no-repeat left center;
-	_background:url("../images/index_img/logo_img.gif") no-repeat left center;
-	width: 115px;}
+	background:url("../images/index_img/logo_img.png") no-repeat center center;
+	_background:url("../images/index_img/logo_img.gif") no-repeat center center;
+	width: 140px;}
 
 /*搜索区*/
 #header-search { float: left; margin: 1px 8px 0 0; position: relative; z-index: 1;}
@@ -103,6 +103,7 @@
 .header-btn-text { padding-left: 2px; }
 .board-icon.light-hover:hover, .board-icon.light { background-position: -60px -60px;}
 .header-btn .board-icon{ background-position:-60px -60px; _background-position: -60px -30px;}
+.header-btn .PlusUser_icon{ background-position:-450px -60px; _background-position: -450px -30px;}
 .header-auth.member {
     border-color: #999999;
     margin-top: -1px;
