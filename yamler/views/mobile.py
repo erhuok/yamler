@@ -267,7 +267,7 @@ def task_delete():
     if request.method == 'POST' and request.form['id'] and request.form['user_id']:
         row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=request.form['id']).first()
         if row and row.user_id == int(request.form['user_id']):
-            g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=request.form['id'])
+            g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='1' WHERE id=:id"),is_del=1,id=request.form['id'])
             return jsonify(error=0, code='success', message='删除成功', id=row.id)
     return jsonify(error=1, code='failed', message='删除失败')
 
