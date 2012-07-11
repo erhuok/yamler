@@ -23,12 +23,18 @@ def create():
 
 @mod.route('/update/<int:id>', methods=['POST'])
 def update(id):
+    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,submit_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
     if request.form.has_key('title'):
         g.db.execute(text("UPDATE tasks SET title=:title, flag='0' WHERE id=:id"), id=id, title=request.form['title'])
         return jsonify(error=0, title=request.form['title'], id=id)
     if request.form.has_key('status'):
         end_time = datetime.now() if request.form['status'] else ''
         g.db.execute(text("UPDATE tasks SET status=:status, end_time=:end_time, flag='0' WHERE id=:id"), id=id, status=request.form['status'], end_time=end_time)
+        if row.submit_user_id:
+            ids = row.submit_user_id.split(',')
+            sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
+            g.db.execute(text(sql), task_id=id)
+
         return jsonify(error=0)
     if request.form.has_key('unread'):
         g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=id, unread=request.form['unread'])

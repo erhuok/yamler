@@ -303,7 +303,7 @@ def task_update():
             task.flag = '0'
         
             db_session.commit()
-
+            
             user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
             if request.form.has_key('to_user_id') and request.form['to_user_id']:
                 TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname)
