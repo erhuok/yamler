@@ -202,9 +202,9 @@ def get_task_data_by_ids(ids, user_id):
 def get_update():
     if request.form.has_key('user_id'):
         user_id = request.form['user_id']
-        #sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
-        #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        #data1 = process_task_data(rows, user_id)
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
+        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+        data = process_task_data(rows, user_id)
 
         #sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
         #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
@@ -248,7 +248,7 @@ def get_update():
         if result.has_key('delete_ids') and result['delete_ids']:
             delete_ids = result['delete_ids'].split(',')
 
-        return jsonify(error=0, data_submit=data_submit, delete_ids=delete_ids, data_comment=data_comment, data_status=data_status)
+        return jsonify(error=0, data=data, data_submit=data_submit, delete_ids=delete_ids, data_comment=data_comment, data_status=data_status)
 
 @mod.route('/task/update_by_ids', methods=['POST'])
 def update_by_ids():
@@ -303,7 +303,12 @@ def task_update():
             task.flag = '0'
         
             db_session.commit()
-            
+
+            if task.submit_user_id and request.form.has_key('status'):
+                ids = task.submit_user_id.split(',')
+                sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
+                g.db.execute(text(sql), task_id=task.id)
+
             user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
             if request.form.has_key('to_user_id') and request.form['to_user_id']:
                 TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname)
