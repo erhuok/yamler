@@ -49,5 +49,6 @@ def send_iphone_notify():
     except:
         pass
 
+
 if type == 'iphone':
     send_iphone_notify()

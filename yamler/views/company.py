@@ -31,7 +31,7 @@ def create():
 
 @mod.route('/get')
 def get():
-    rows = g.db.execute(text("SELECT id, realname FROM users WHERE company_id=:company_id AND id!=:id "), company_id=g.company.id, id=g.user.id).fetchall()
+    rows = g.db.execute(text("SELECT id, realname FROM users WHERE company_id=:company_id AND is_active=:is_active AND id!=:id "), company_id=g.company.id, is_active=1, id=g.user.id).fetchall()
     data = []
     name = []
     for row in rows:
