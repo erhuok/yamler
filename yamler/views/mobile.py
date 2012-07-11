@@ -268,13 +268,11 @@ def update_by_ids():
         sql = "UPDATE `task_submit` SET is_status='1' WHERE user_id=:user_id AND task_id IN ({0})".format(','.join(ids))
         g.db.execute(text(sql), user_id=user_id) 
         
-    '''
-    if request.form.has_key('ids') and len(request.form['ids']):
-        ids = request.form['ids'].split(',')
+    if request.form.has_key('data') and len(request.form['data']):
+        ids = request.form['data'].split(',')
         sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
         g.db.execute(text(sql))
-        return jsonify(error=0)
-    '''
+
     return jsonify(error=0)
 
 @mod.route('/task/update', methods=['POST'])
