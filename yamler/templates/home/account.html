@@ -50,30 +50,35 @@
                 <div class="window-module-title">
                     <span class="app-icon window-module-title-icon board-icon"></span>
                     <h3> 
-                    	<a href="{{ url_for('home.account') }}" class="nav {% if t==0 %} current {% endif %}">我的全部工作列表</a>
-                        
-                        <a href="{{ url_for('home.account', t=1) }}" class="nav {% if t=='1' %} current {% endif %}">只看我自己的</a>
-                        
-                        <a href="{{ url_for('home.account', t=2) }}" class="nav {% if t=='2' %} current {% endif %}">安排给我的</a>
-                        {% if g.task_submit_count %} 
-                        <a class="header-btn header-about" title="Information" href="#"><span class="count js-unread-announcements" style="">{{ g.task_submit_count }}</span></a> 
-                        {% endif %}
-                        
-                        <a><small>完成情况</small></a>
-                        <select name="status" id="task_status">
-                            <option value="all">全部</option> 
-                            <option value="complete">完成</option> 
-                            <option value="undone">未完成</option> 
-                        </select>
-                        &nbsp;&nbsp;
-                        <a><small>时间</small></a>
-                        <select name="created_at" id="task_created_at">
-                            <option value="0">全部</option> 
-                            <option value="1">今天起</option> 
-                            <option value="2">昨天起</option> 
-                            <option value="3">本周起</option> 
-                            <option value="4">30天前起</option> 
-                        </select>
+                    	<div class=" nav_left">
+                            <a href="{{ url_for('home.account') }}" class="nav {% if t==0 %} current {% endif %}">我的全部工作列表</a>
+                            
+                            <a href="{{ url_for('home.account', t=1) }}" class="nav {% if t=='1' %} current {% endif %}">只看我自己的</a>
+                            
+                            <a href="{{ url_for('home.account', t=2) }}" class="nav {% if t=='2' %} current {% endif %}">安排给我的</a>
+                            
+                            {% if g.task_submit_count %} 
+                             <a class="header-btn header-about" title="Information" href="#"><span class="count js-unread-announcements" style="">{{ g.task_submit_count }}</span></a> 
+                             {% endif %}
+                         </div>
+                          <div class="nav_select">
+                          <a>完成情况</a>
+                          <select name="status" id="task_status">
+                              <option value="all">全部</option> 
+                              <option value="complete">完成</option> 
+                              <option value="undone">未完成</option> 
+                          </select>
+                          &nbsp;&nbsp;
+                          <a>时间</a>
+                          <select name="created_at" id="task_created_at">
+                              <option value="0">全部</option> 
+                              <option value="1">今天起</option> 
+                              <option value="2">昨天起</option> 
+                              <option value="3">本周起</option> 
+                              <option value="4">30天前起</option> 
+                          </select>
+                        </div>
+                        <div class="clear"></div>
                     </h3>
                 </div>
                 {% include '_tasklist.html' %}

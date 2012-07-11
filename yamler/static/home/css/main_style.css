@@ -74,9 +74,8 @@
 .window-module-title h3 {
     display: inline-block;
     margin: 0 2px 0 0;
-    min-height: 18px;
-    min-width: 40px;
-    width: auto;
+    height: 30px;
+    width: 650px;
 }
 .window-module-title h3 a.nav{ display:inline-block; padding:3px 5px; border-radius:3px;}
 .window-module-title h3 a.nav.hover{ background-color:#cfcfcf;}
@@ -86,6 +85,8 @@
 	color:#fff;
 }
 .window-module-title h3 a:hover{ text-decoration:none;}
+.window-module-title h3 .nav_left{ float:left;}
+.window-module-title h3 .nav_select{ float: right; padding-top:3px;}
 .menu-icon { background-position: -660px -30px;}
 .gutter { margin-left: 40px;}
 
@@ -135,7 +136,6 @@
     display: block;
     font-weight: bold;
     margin-top: 6px;
-    max-width: 220px;
 	*+height:auto;
     overflow: hidden;
     padding: 6px;
@@ -144,8 +144,9 @@
     text-overflow: ellipsis;
 	*+height:20px;
     white-space: nowrap;
+	
 }
-.button-link-more{ max-width: 90%; _width:90%; text-align:center;}
+.button-link-more{ width: 636px; text-align:center;}
 .button-link:hover{
 	background-color:#2887bd;
 	background: -moz-linear-gradient(center top , #2887bd 0%, #1f6993 100%) repeat scroll 0 0 transparent;
@@ -360,7 +361,7 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 	}
 .O_tabPanel .Reply_body ul.Reply_Show li i{ color:#999; display:inline-block; margin-left:20px;}
 .O_tabPanel .Reply_body .Reply_Reply{}
-.O_tabPanel textarea{ height:60px; margin-bottom:5px; width:608px\9;}
+.O_tabPanel textarea{ height:60px; margin-bottom:5px; width:608px;}
 .O_tabPanel ul li{*+width:612px;}
 .O_tabPanel .Modify_body .Modify_block textarea{ height:100px; }
 .tagInput input{ background:none; background-color:#fff; margin:0; width:70px; float:none; text-align:left;}
@@ -368,7 +369,7 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 .O_tabPanel .Arrangement_body span{ left:80px;}
 .O_tabPanel .Arrangement_body ul{ padding:0; margin:0; border:0; *+width:612px;}
 
-.O_tabPanel .Arrangement_body ul li,.O_tabPanel .Submit_body ul li{ padding:3px 5px; background-color:#fff076; border-radius:3px; border:0; float:left; margin-right:5px; *+width:auto;}
+.O_tabPanel .Arrangement_body ul li,.O_tabPanel .Submit_body ul li{ padding:3px 5px; /*background-color:#fff076;*/ border-radius:3px; border:0; float:left; margin-right:5px; *+width:auto;}
 .O_tabPanel .Submit_body{ display:none;}
 .O_tabPanel .Submit_body span{ left:140px;}
 .O_tabPanel .Modify_body{ display:none;}
@@ -376,7 +377,7 @@ ul.Operat_tab_head li a.hover{ background:none; color:#393939;}
 .tagHandler ul.tagHandlerContainer{ background-color:#fff;}
 .tagHandler ul.tagHandlerContainer li.tagItem{ *+width:auto;}
 
-
+.tagHandler ul.tagHandlerContainer input.tagInputField { height:18px; line-height:18px; *+height:12px; *+line-height:12px; border:1px solid #efefef !important;}
 
 
 
