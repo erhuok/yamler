@@ -195,6 +195,7 @@ def get_task_data_by_ids(ids, user_id):
             sql = "SELECT * FROM `tasks` WHERE id IN ({0})".format(','.join(ids))
             rows = g.db.execute(text(sql)).fetchall()
             data = process_task_data(rows, user_id)
+
     return data
 
 @mod.route('/task/get_update', methods=['POST'])
