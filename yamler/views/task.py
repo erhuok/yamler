@@ -54,7 +54,7 @@ def share(id):
         user_rows = g.db.execute(text(sql)).fetchall()
         share_users = dict(user_rows)
         #share_users = [ user_row.realname  for user_row in user_rows]
-    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id <> :id"), company_id=g.company.id, id=g.user.id).fetchall()
+    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND is_active=:is_active AND id <> :id"), company_id=g.company.id, is_active=1, id=g.user.id).fetchall()
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
 
     return jsonify(share_users_default=share_users.values(), data_users=data_users, to_user_id=row.to_user_id)
@@ -85,7 +85,7 @@ def submit(id):
         user_rows = g.db.execute(text(sql)).fetchall()
         share_users = dict(user_rows)
 
-    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND id <> :id"), company_id=g.company.id, id=g.user.id).fetchall()
+    company_users = g.db.execute(text("SELECT id, realname  FROM users WHERE company_id=:company_id AND is_active=:is_active AND id <> :id"), company_id=g.company.id, is_active=1, id=g.user.id).fetchall()
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
 
     return jsonify(to_user_id=row.submit_user_id, data_users=data_users, share_users_default=share_users.values())
