@@ -187,41 +187,93 @@ def task_get():
     data = process_task_data(rows, user_id)
     return jsonify(data=data, next_page=next_page)
 
+def get_task_data_by_ids(ids, user_id):
+    ids = ids.split(',')
+    data = []
+    if len(ids):
+        sql = "SELECT * FROM `tasks` WHERE id IN ({0})".format(','.join(ids))
+        rows = g.db.execute(text(sql)).fetchall()
+        data = process_task_data(rows, user_id)
+    return data
 
 @mod.route('/task/get_update', methods=['POST'])
 def get_update():
     if request.form.has_key('user_id'):
         user_id = request.form['user_id']
-        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
-        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        data1 = process_task_data(rows, user_id)
+        #sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
+        #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+        #data1 = process_task_data(rows, user_id)
 
-        sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
-        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
+        #sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
+        #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
 
-        data2 = process_task_data(rows, user_id)
-        data = data1 + data2 
+        #data2 = process_task_data(rows, user_id)
+        #data = data1 + data2 
+        
+        #获取安排给我的新记录
+        sql = "SELECT GROUP_CONCAT(task_id) AS task_id FROM task_submit WHERE is_syn=:is_syn AND user_id=:user_id" 
+        row = g.db.execute(text(sql), user_id=user_id, is_syn=0).first()
+        data_submit = get_task_data_by_ids(row.task_id, user_id) 
 
+        #获取我安排的新的记录的回复数
+        def get_submit_update(field):
+            sql = "SELECT GROUP_CONCAT(task_id) AS task_id FROM task_submit WHERE is_syn=:is_syn AND user_id=:user_id AND"
+            if field == 'is_comment': 
+                sql += " is_comment=:is_comment"
+            elif field == 'is_status':
+                sql += ' is_status=:is_status'
+            data = []
+            row = g.db.execute(text(sql), user_id=user_id, is_syn=1, is_comment=0, is_status=0).first()
+            if row.task_id:
+                ids = row.task_id.split(',')
+                if len(ids):
+                    sql = "SELECT id,"
+                    if field == 'is_comment':
+                        sql += " comment_count "
+                    elif field == 'is_status':
+                        sql += ' status'
+                    sql += " FROM `tasks` WHERE id IN ({0})".format(','.join(ids))
+                    rows = g.db.execute(text(sql)).fetchall()
+                    data = [dict(zip(row.keys(), row)) for row in rows]  
+            return data
+
+        data_comment = get_submit_update('is_comment')
+        data_status = get_submit_update('is_status')
+        
         sql = "SELECT GROUP_CONCAT(id) AS delete_ids FROM tasks WHERE is_del = '1' AND flag='0'  AND user_id=:user_id"
         result = g.db.execute(text(sql), user_id=user_id).first()
         delete_ids = []
         if result.has_key('delete_ids') and result['delete_ids']:
             delete_ids = result['delete_ids'].split(',')
 
-        #sql =  "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
-        #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        #data3 = process_task_data(rows, user_id)
-        
-        return jsonify(error=0, data=data, delete_ids=delete_ids)
+        return jsonify(error=0, data_submit=data_submit, delete_ids=delete_ids, data_comment=data_comment, data_status=data_status)
 
 @mod.route('/task/update_by_ids', methods=['POST'])
 def update_by_ids():
+    user_id = request.form['user_id']
+    if request.form.has_key('data_submit') and len(request.form['data_submit']):
+        ids = request.form['data_submit'].split(',')
+        sql = "UPDATE `task_submit` SET is_syn='1' WHERE user_id=:user_id AND task_id IN ({0})".format(','.join(ids))
+        g.db.execute(text(sql), user_id=user_id) 
+    
+    if request.form.has_key('data_comment') and len(request.form['data_comment']):
+        ids = request.form['data_comment'].split(',')
+        sql = "UPDATE `task_submit` SET is_comment='1' WHERE user_id=:user_id AND task_id IN ({0})".format(','.join(ids))
+        g.db.execute(text(sql), user_id=user_id) 
+
+    if request.form.has_key('data_status') and len(request.form['data_status']):
+        ids = request.form['data_status'].split(',')
+        sql = "UPDATE `task_submit` SET is_status='1' WHERE user_id=:user_id AND task_id IN ({0})".format(','.join(ids))
+        g.db.execute(text(sql), user_id=user_id) 
+        
+    '''
     if request.form.has_key('ids') and len(request.form['ids']):
         ids = request.form['ids'].split(',')
         sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
         g.db.execute(text(sql))
         return jsonify(error=0)
-    return jsonify(error=1)
+    '''
+    return jsonify(error=0)
 
 @mod.route('/task/update', methods=['POST'])
 def task_update():
@@ -329,6 +381,7 @@ def comment_create():
                     g.db.execute(text(sql), task_id=task_id, unread=1)
 
             if row.submit_user_id:
+                g.db.execute(text("UPDATE task_submit SET is_comment=:is_comment WHERE task_id=:task_id"), task_id=task_id, is_comment=0)
                 submit_user_id = row.submit_user_id.split(',')
                 submit_user_id.append(str(row.user_id))
                 submit_user_id = [user_id2 for user_id2 in submit_user_id if user_id2 != str(user_id) ]

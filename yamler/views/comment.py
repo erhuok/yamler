@@ -37,6 +37,7 @@ def create(task_id):
             }))
             if res.lastrowid:
                 g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
+
                 to_user_id = [] 
                 submit_user_id = []
                 #通知提醒
@@ -48,6 +49,7 @@ def create(task_id):
                     g.db.execute(text(sql), task_id=task_id, unread=1)
 
                 if row.submit_user_id:
+                    g.db.execute(text("UPDATE task_submit SET is_comment=:is_comment WHERE task_id=:task_id"), task_id=task_id, is_comment=0)
                     submit_user_id = row.submit_user_id.split(',')
                     submit_user_id.append(str(row.user_id))
                     submit_user_id = [user_id for user_id in submit_user_id if user_id != str(g.user.id) ]
