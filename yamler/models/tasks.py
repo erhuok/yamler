@@ -238,7 +238,7 @@ class TaskSubmit(Model):
         if delete_ids:
             for user_id in delete_ids:
                 if user_id > 0:
-                    g.db.execute(text("DELETE FROM `task_submit` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
+                    g.db.execute(text("UPDATE `task_submit` SET is_del=:is_del WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id, is_del=1)
 
 tasks = Table('tasks', metadata, autoload=True)
 task_comments = Table('task_comments', metadata, autoload=True)
