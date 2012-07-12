@@ -213,8 +213,8 @@ def get_update():
         #data = data1 + data2 
         
         #获取安排给我的新记录
-        sql = "SELECT GROUP_CONCAT(task_id) AS task_id FROM task_submit WHERE is_syn=:is_syn AND user_id=:user_id" 
-        row = g.db.execute(text(sql), user_id=user_id, is_syn=0).first()
+        sql = "SELECT GROUP_CONCAT(task_id) AS task_id FROM task_submit WHERE is_syn=:is_syn AND user_id=:user_id AND is_del=:is_del" 
+        row = g.db.execute(text(sql), user_id=user_id, is_syn=0, is_del=0).first()
         data_submit = get_task_data_by_ids(row.task_id, user_id) 
 
         #获取我安排的新的记录的回复数
@@ -242,13 +242,20 @@ def get_update():
         data_comment = get_submit_update('is_comment')
         data_status = get_submit_update('is_status')
         
-        sql = "SELECT GROUP_CONCAT(id) AS delete_ids FROM tasks WHERE is_del = '1' AND flag='0'  AND user_id=:user_id"
-        result = g.db.execute(text(sql), user_id=user_id).first()
+        #sql = "SELECT GROUP_CONCAT(id) AS delete_ids FROM tasks WHERE is_del = '1' AND flag='0'  AND user_id=:user_id"
+        sql = "SELECT GROUP_CONCAT(task_id) AS delete_ids FROM task_submit WHERE is_del=:is_del AND user_id=:user_id"
+        result = g.db.execute(text(sql), user_id=user_id, is_del=1).first()
         delete_ids = []
         if result.has_key('delete_ids') and result['delete_ids']:
             delete_ids = result['delete_ids'].split(',')
 
-        return jsonify(error=0, data=data, data_submit=data_submit, delete_ids=delete_ids, data_comment=data_comment, data_status=data_status)
+        return jsonify(error=0, 
+                       data=data, 
+                       data_submit=data_submit,  
+                       data_comment=data_comment, 
+                       data_status=data_status,
+                       delete_ids=delete_ids,
+                      )
 
 @mod.route('/task/update_by_ids', methods=['POST'])
 def update_by_ids():
@@ -270,8 +277,9 @@ def update_by_ids():
         
     if request.form.has_key('data') and len(request.form['data']):
         ids = request.form['data'].split(',')
-        sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
-        g.db.execute(text(sql))
+        #sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
+        sql = "UPDATE `task_submit` SET is_del=:is_del WHERE id IN ({0})".format(','.join(ids))
+        g.db.execute(text(sql), is_del=2)
 
     return jsonify(error=0)
 
@@ -325,6 +333,7 @@ def task_delete():
         row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=request.form['id']).first()
         if row and row.user_id == int(request.form['user_id']):
             g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='1' WHERE id=:id"),is_del=1,id=request.form['id'])
+            g.db.execute(text("UPDATE task_submit SET is_del=:is_del WHERE task_id=:id"),is_del=1,id=request.form['id'])
             return jsonify(error=0, code='success', message='删除成功', id=row.id)
     return jsonify(error=1, code='failed', message='删除失败')
 
