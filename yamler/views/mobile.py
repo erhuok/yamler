@@ -277,7 +277,11 @@ def update_by_ids():
         
     if request.form.has_key('data') and len(request.form['data']):
         ids = request.form['data'].split(',')
-        #sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
+        sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
+        g.db.execute(text(sql), user_id=user_id)
+    
+    if request.form.has_key('delete_ids') and len(request.form['delete_ids']):
+        ids = request.form['delete_ids'].split(',')
         sql = "UPDATE `task_submit` SET is_del=:is_del WHERE user_id=:user_id ANd task_id IN ({0})".format(','.join(ids))
         g.db.execute(text(sql), is_del=2, user_id=user_id)
 
