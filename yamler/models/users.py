@@ -45,32 +45,34 @@ class User(Model):
 
   
 
-class UserRemind(Model):
-    __tablename__ = 'users_remind'
+
+class UserNotice(Model):
+    __tablename__ = 'user_notices'
     id = Column(Integer, primary_key=True)
-    submit_count = Column(Integer, default=0)
-    share_count = Column(Integer, default=0)
+    user_id = Column(Integer)
+    task_id = Column(Integer)
+    unread = Column(Integer)
+    message = Column(String(255))
+
+    created_at = Column(DateTime,default=datetime.datetime.now())
+    updated_at = Column(DateTime,default=datetime.datetime.now())
+
+    def __init__(self, user_id=None, task_id=None, unread=None, message=None):
+        self.user_id = user_id
+        self.task_id = task_id
+        self.unread = unread
+        self.message = message
     
-    def __init__(self, submit_count=None, share_count=None):
-        self.submit_count = submit_count
-        self.share_count = share_count
-    
-    def update_submit(self, submit_user_id):
-        if submit_user_id:
-            sql = 'INSERT INTO users_remind(user_id, submit_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE submit_count=submit_count+1'
-            for user_id in submit_user_id:
-                if user_id:
-                    g.db.execute(text(sql), user_id=user_id)
-    
-    def update_share(self, share_user_id):
-        if share_user_id:
-            sql = 'INSERT INTO users_remind(user_id, share_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE share_count=share_count+1'
-            for user_id in share_user_id:
-                if user_id: 
-                    g.db.execute(text(sql), user_id=user_id)
+    def process(self, user_id, task_id, message):
+        #通知
+        sql = "INSERT INTO user_notices SET user_id=:user_id, task_id=:task_id, message=:message, created_at=:created_at"
+        g.db.execute(text(sql), user_id=user_id, task_id=task_id, created_at=datetime.datetime.now(), message=message)
+            
+        sql = 'INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE total_count=total_count+1'
+        g.db.execute(text(sql), user_id=user_id)
 
 users = Table('users', metadata, autoload=True)
-users_remind = Table('users_remind', metadata, autoload=True)
+user_notices = Table('user_notices', metadata, autoload=True)
 
 class RegistrationForm(Form):
     def check_email_exists(form, field):
@@ -92,3 +94,4 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     username = TextField('邮箱', validators=[validators.required()])
     password = PasswordField('密码', validators=[validators.required()])
+    created_at = Column(DateTime,default=datetime.datetime.now())

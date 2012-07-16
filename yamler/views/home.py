@@ -8,7 +8,7 @@ from yamler.models.companies import companies
 from yamler.models.groups import groups 
 from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit
 from yamler.models.boards import Board, boards
-from yamler.models.users import UserRemind 
+from yamler.models.users import UserNotice 
 from sqlalchemy.sql import select, text
 from yamler.utils import required_login, get_remind, convert_time, datetimeformat 
 import time
@@ -101,6 +101,7 @@ def publish():
         if request.form['to_user_id']:
             to_user_id = request.form['to_user_id'].lstrip(',').split(',')
             TaskShare().insert(task_id=res.lastrowid, share_user_id=to_user_id, realname=g.user.realname, title=request.form['title'])
+
         if request.form['submit_user_id']:
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
             TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id, realname=g.user.realname, title=request.form['title'])

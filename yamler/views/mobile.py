@@ -422,3 +422,23 @@ def share():
     status = request.form['status'] if request.form.has_key('status') else 'all'
     task_data_undone, task_data_complete, user_data, user_rows, user_avatar = Task().get_share_data(user_id=user_id, created_at=created_at, status=status)
     return jsonify(user_data=user_data, user_rows=user_rows, task_data_undone=task_data_undone, task_data_complete=task_data_complete, user_avatar=user_avatar)
+
+
+#用户通知页面
+@mod.route('/notice/get', methods=['POST'])
+def notice_get():
+    user_id = int(request.form['user_id']) 
+    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread FROM user_notices WHERE user_id=:user_id AND unread=:unread ORDER BY id DESC"), user_id=user_id, unread=0).fetchall() 
+    data = [dict(zip(row.keys(), row)) for row in rows]  
+    return jsonify(data=data)
+
+@mod.route('/notice/update', methods=['POST'])
+def notice_update():
+    user_id = int(request.form['user_id']) 
+    ids = request.form['ids']
+    if user_id and ids:
+        ids = ids.split(',')
+        sql = " UPDATE user_notices SET unread=:unread WHERE user_id=:user_id AND id IN ({0})".format(','.join(ids)) 
+        g.db.execute(text(sql), user_id=user_id, unread=1)
+        return jsonify(error=0)
+    return jsonify(error=1)

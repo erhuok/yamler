@@ -2,7 +2,7 @@
 from flask import Blueprint,request,render_template,session, g,jsonify
 from sqlalchemy.sql import select, text 
 from yamler.models.tasks import tasks, TaskShare, TaskSubmit
-from yamler.models.users import users, UserRemind
+from yamler.models.users import users 
 from datetime import datetime
 import json
 
@@ -34,7 +34,6 @@ def update(id):
             ids = row.submit_user_id.split(',')
             sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
             g.db.execute(text(sql), task_id=id)
-
         return jsonify(error=0)
     if request.form.has_key('unread'):
         g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=id, unread=request.form['unread'])
