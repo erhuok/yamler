@@ -111,6 +111,9 @@ def process_task_data(rows, user_id):
         new_row['priority'] = row['priority']
         new_row['share_users'] = None
         new_row['submit_users'] = None
+        new_row['to_user_id'] = row['to_user_id']
+        new_row['submit_user_id'] = row['submit_user_id']
+        new_row['notify_time'] = row['notify_time']
         #手机端的时间
         new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
@@ -156,7 +159,7 @@ def task_get():
     start_time = convert_time(created_at) if created_at else '' 
     page = int(request.form['page'])  if request.form.has_key('page') else 1 
 
-    limit = 100
+    limit = 500
     skip = (page-1) * limit
     next_page = 't='+str(t)+'&status='+str(status)+'&page='+str(page+1)+'&created_at='+str(created_at) 
     #只看我自己的
