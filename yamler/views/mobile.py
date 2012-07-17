@@ -207,90 +207,13 @@ def get_task_data_by_ids(ids, user_id):
 @mod.route('/task/get_update', methods=['POST'])
 def get_update():
     if request.form.has_key('user_id'):
-        user_id = request.form['user_id']
-        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
-        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        data = process_task_data(rows, user_id)
-
-        #sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
-        #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-
-        #data2 = process_task_data(rows, user_id)
-        #data = data1 + data2 
-        
-        #获取安排给我的新记录
-        sql = "SELECT GROUP_CONCAT(task_id) AS task_id FROM task_submit WHERE is_syn=:is_syn AND user_id=:user_id AND is_del=:is_del" 
-        row = g.db.execute(text(sql), user_id=user_id, is_syn=0, is_del=0).first()
-        data_submit = get_task_data_by_ids(row.task_id, user_id) 
-
-        #获取我安排的新的记录的回复数
-        def get_submit_update(field):
-            sql = "SELECT GROUP_CONCAT(task_id) AS task_id FROM task_submit WHERE is_syn=:is_syn AND user_id=:user_id AND"
-            if field == 'is_comment': 
-                sql += " is_comment=:is_comment"
-            elif field == 'is_status':
-                sql += ' is_status=:is_status'
-            data = []
-            row = g.db.execute(text(sql), user_id=user_id, is_syn=1, is_comment=0, is_status=0).first()
-            if row.task_id:
-                ids = row.task_id.split(',')
-                if len(ids):
-                    sql = "SELECT id,"
-                    if field == 'is_comment':
-                        sql += " comment_count "
-                    elif field == 'is_status':
-                        sql += ' status'
-                    sql += " FROM `tasks` WHERE id IN ({0})".format(','.join(ids))
-                    rows = g.db.execute(text(sql)).fetchall()
-                    data = [dict(zip(row.keys(), row)) for row in rows]  
-            return data
-
-        data_comment = get_submit_update('is_comment')
-        data_status = get_submit_update('is_status')
-        
-        #sql = "SELECT GROUP_CONCAT(id) AS delete_ids FROM tasks WHERE is_del = '1' AND flag='0'  AND user_id=:user_id"
-        sql = "SELECT GROUP_CONCAT(task_id) AS delete_ids FROM task_submit WHERE is_del=:is_del AND user_id=:user_id"
-        result = g.db.execute(text(sql), user_id=user_id, is_del=1).first()
-        delete_ids = []
-        if result.has_key('delete_ids') and result['delete_ids']:
-            delete_ids = result['delete_ids'].split(',')
-
-        return jsonify(error=0, 
-                       data=data, 
-                       data_submit=data_submit,  
-                       data_comment=data_comment, 
-                       data_status=data_status,
-                       delete_ids=delete_ids,
-                      )
+        sql = "SELECT user_id, total_count FROM users_remind WHERE user_id=:user_id" 
+        row = g.db.execute(text(sql), user_id=request.form['user_id']).first()
+        return jsonify(error=0,data=dict(row))
 
 @mod.route('/task/update_by_ids', methods=['POST'])
 def update_by_ids():
     user_id = request.form['user_id']
-    if request.form.has_key('data_submit') and len(request.form['data_submit']):
-        ids = request.form['data_submit'].split(',')
-        sql = "UPDATE `task_submit` SET is_syn='1' WHERE user_id=:user_id AND task_id IN ({0})".format(','.join(ids))
-        g.db.execute(text(sql), user_id=user_id) 
-    
-    if request.form.has_key('data_comment') and len(request.form['data_comment']):
-        ids = request.form['data_comment'].split(',')
-        sql = "UPDATE `task_submit` SET is_comment='1' WHERE user_id=:user_id AND task_id IN ({0})".format(','.join(ids))
-        g.db.execute(text(sql), user_id=user_id) 
-
-    if request.form.has_key('data_status') and len(request.form['data_status']):
-        ids = request.form['data_status'].split(',')
-        sql = "UPDATE `task_submit` SET is_status='1' WHERE user_id=:user_id AND task_id IN ({0})".format(','.join(ids))
-        g.db.execute(text(sql), user_id=user_id) 
-        
-    if request.form.has_key('data') and len(request.form['data']):
-        ids = request.form['data'].split(',')
-        sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
-        g.db.execute(text(sql), user_id=user_id)
-    
-    if request.form.has_key('delete_ids') and len(request.form['delete_ids']):
-        ids = request.form['delete_ids'].split(',')
-        sql = "UPDATE `task_submit` SET is_del=:is_del WHERE user_id=:user_id ANd task_id IN ({0})".format(','.join(ids))
-        g.db.execute(text(sql), is_del=2, user_id=user_id)
-
     return jsonify(error=0)
 
 @mod.route('/task/update', methods=['POST'])
@@ -440,19 +363,33 @@ def share():
 @mod.route('/notice/get', methods=['POST'])
 def notice_get():
     user_id = int(request.form['user_id']) 
-    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread FROM user_notices WHERE user_id=:user_id AND unread=:unread ORDER BY id DESC"), user_id=user_id, unread=0).fetchall() 
-    data = [dict(zip(row.keys(), row)) for row in rows]  
-    return jsonify(data=data)
+    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread FROM user_notices WHERE user_id=:user_id AND unread=:unread ORDER BY id DESC"), user_id=user_id, unread=1).fetchall() 
+    data_notice = [dict(zip(row.keys(), row)) for row in rows]  
+    
+    rows = g.db.execute(text("SELECT id, user_id, task_id, data, is_syn FROM task_update_data WHERE user_id=:user_id ORDER BY ID ASC"), user_id=user_id).fetchall()
+    data_update = [dict(zip(row.keys(), row)) for row in rows ]
+
+    return jsonify(data_notice=data_notice, data_update=data_update)
 
 @mod.route('/notice/update', methods=['POST'])
 def notice_update():
     user_id = int(request.form['user_id']) 
-    ids = request.form['ids']
-    if user_id and ids:
-        ids = ids.split(',')
-        sql = " UPDATE user_notices SET unread=:unread WHERE user_id=:user_id AND id IN ({0})".format(','.join(ids)) 
-        res = g.db.execute(text(sql), user_id=user_id, unread=1)
-        num = len(ids)
-        g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-:num"), user_id=user_id, num=num)
+    data_notice_ids = request.form['data_notice_ids'] if request.form.has_key('data_notice_ids') else []
+    data_update_ids = request.form['data_update_ids'] if request.form.has_key('data_update_ids') else []
+    if user_id:
+        if data_notice_ids:
+            data_notice_ids = data_notice_ids.split(',')
+            if len(data_notice_ids):
+                sql = " UPDATE user_notices SET unread=:unread WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_notice_ids)) 
+                res = g.db.execute(text(sql), user_id=user_id, unread=0)
+                num = len(data_notice_ids)
+                g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-:num"), user_id=user_id, num=num)
+
+        if data_update_ids:
+            data_update_ids = data_update_ids.split(',')
+            if len(data_update_ids):
+                sql = " UPDATE task_update_data SET is_syn=:is_syn WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_update_ids)) 
+                res = g.db.execute(text(sql), is_syn=1, user_id=user_id)
+
         return jsonify(error=0)
     return jsonify(error=1)
