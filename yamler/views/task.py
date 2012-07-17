@@ -51,7 +51,7 @@ def update(id):
 
 @mod.route('/update_share/<int:id>', methods=['POST', 'GET'])
 def share(id):
-    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id, flag='0' WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 

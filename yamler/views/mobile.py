@@ -363,7 +363,7 @@ def share():
 @mod.route('/notice/get', methods=['POST'])
 def notice_get():
     user_id = int(request.form['user_id']) 
-    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread FROM user_notices WHERE user_id=:user_id AND unread=:unread ORDER BY id DESC"), user_id=user_id, unread=1).fetchall() 
+    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread FROM user_notices WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY id DESC"), user_id=user_id, is_syn=0).fetchall() 
     data_notice = [dict(zip(row.keys(), row)) for row in rows]  
     
     rows = g.db.execute(text("SELECT id, user_id, task_id, data, is_syn FROM task_update_data WHERE user_id=:user_id ORDER BY ID ASC"), user_id=user_id).fetchall()
@@ -380,8 +380,8 @@ def notice_update():
         if data_notice_ids:
             data_notice_ids = data_notice_ids.split(',')
             if len(data_notice_ids):
-                sql = " UPDATE user_notices SET unread=:unread WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_notice_ids)) 
-                res = g.db.execute(text(sql), user_id=user_id, unread=0)
+                sql = " UPDATE user_notices SET unread=:unread, is_syn=:is_syn WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_notice_ids)) 
+                res = g.db.execute(text(sql), user_id=user_id, unread=0, is_syn=1)
                 num = len(data_notice_ids)
                 g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-:num"), user_id=user_id, num=num)
 
