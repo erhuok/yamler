@@ -2,7 +2,7 @@
 from flask import Blueprint, request, session, jsonify, g
 from yamler.database import db_session
 from yamler.models.users import User, users
-from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit
+from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit, TaskUpdateData
 from yamler.models.companies import Company, companies 
 from yamler.models.user_relations import UserRelation 
 from sqlalchemy.sql import between
@@ -89,6 +89,12 @@ def task_create():
         if request.form.has_key('submit_user_id') and request.form['submit_user_id']:
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
             TaskSubmit().insert(task_id=res.lastrowid, own_id=request.form['user_id'], share_user_id=submit_user_id, realname=user_row.realname, title=request.form['title'])
+        
+        update_ids = list(set(request.form['to_user_id']) | set(request.form['submit_user_id']))
+        update_ids.append(request.form['user_id'])
+        print update_ids
+        if update_ids:
+            TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=dict(request.form))
 
         return jsonify(error=0, code='success', message='添加成功', id=res.lastrowid)
     return jsonify(error=1, code='failed', message='输入数据不合法')
@@ -314,19 +320,25 @@ def task_update():
         
             db_session.commit()
 
-            if task.submit_user_id and request.form.has_key('status'):
-                ids = task.submit_user_id.split(',')
-                sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
-                g.db.execute(text(sql), task_id=task.id)
-
+            #if task.submit_user_id and request.form.has_key('status'):
+            #    ids = task.submit_user_id.split(',')
+            #    sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
+            #    g.db.execute(text(sql), task_id=task.id)
             user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
+
             if request.form.has_key('to_user_id') and request.form['to_user_id']:
                 TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname)
 
             if request.form.has_key('submit_user_id') and request.form['submit_user_id']:
                 TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(request.form['submit_user_id'].split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname)
-
-
+            
+            if not request.form.has_key('to_user_id') or not request.form.has_key('submit_user_id'):
+                update_ids = list(set(task.to_user_id) | set(task.submit_user_id))
+                update_ids.append(task.user_id)
+                data = dict(request.form)
+                del data['id']
+                TaskUpdateData().insert(user_ids=update_ids, task_id=task.id, data=data)
+            
             return jsonify(error=0, code='success', message='修改成功', id=task.id)
     
     return jsonify(error=1, code='failed', message='修改失败')
@@ -439,6 +451,8 @@ def notice_update():
     if user_id and ids:
         ids = ids.split(',')
         sql = " UPDATE user_notices SET unread=:unread WHERE user_id=:user_id AND id IN ({0})".format(','.join(ids)) 
-        g.db.execute(text(sql), user_id=user_id, unread=1)
+        res = g.db.execute(text(sql), user_id=user_id, unread=1)
+        num = len(ids)
+        g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-:num"), user_id=user_id, num=num)
         return jsonify(error=0)
     return jsonify(error=1)

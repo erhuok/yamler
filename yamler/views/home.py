@@ -6,7 +6,7 @@ from yamler.database import db_session
 from yamler import app
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
-from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit
+from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit, TaskUpdateData
 from yamler.models.boards import Board, boards
 from yamler.models.users import UserNotice 
 from sqlalchemy.sql import select, text
@@ -53,13 +53,6 @@ def myfeed():
 @required_login
 @get_remind
 def share():
-    '''
-    now = datetime.now()
-    week = int(now.strftime('%w')) - 1
-    start_time = now - timedelta(days=week)
-    start_time = start_time.strftime('%Y-%m-%d')
-    '''
-    
     created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
     status = request.form['status'] if request.form.has_key('status') else ''
     task_data_undone, task_data_complete, user_data, user_rows, user_avatar = Task().get_share_data(user_id=g.user.id, created_at=created_at, status=status)
@@ -86,6 +79,7 @@ def publish():
         created_at = datetime.now()
         to_user_id = request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 
         submit_user_id = request.form['submit_user_id'].lstrip(',') if request.form['submit_user_id'] else '', 
+        data = {'title': request.form['title'],'unread':1, 'user_id':g.user.id, 'to_user_id':to_user_id, 'submit_user_id':submit_user_id}
         res = g.db.execute(tasks.insert().values({
             tasks.c.title: request.form['title'], 
             tasks.c.unread: 1, 
@@ -105,7 +99,12 @@ def publish():
         if request.form['submit_user_id']:
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
             TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id, realname=g.user.realname, title=request.form['title'])
-        
+       
+        update_ids = list(set(request.form['to_user_id']) | set(request.form['submit_user_id']))
+        update_ids.append(g.user.id)
+        if update_ids:
+            TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=data)
+
         return jsonify(title=request.form['title'], 
                        ismine=True, 
                        realname=g.user.realname, 

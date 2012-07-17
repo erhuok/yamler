@@ -8,6 +8,7 @@ from wtforms import Form, TextField, validators
 from sqlalchemy.sql import select, text
 from yamler.utils import iphone_notify, datetimeformat
 from yamler.models.users import UserNotice
+import json
 
 class Task(Model):
     __tablename__ = 'tasks'
@@ -154,6 +155,25 @@ class Task(Model):
 
         return (task_data_undone, task_data_complete, user_data, [dict(zip(res.keys(), res)) for res in user_rows], user_avatar)
                     
+class TaskUpdateData():
+    __tablename__ = 'task_update_data'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    task_id = Column(Integer)
+    data = Column(String(1000))
+    is_syn = Column(Integer)
+    created_at = Column(DateTime, default=datetime.datetime.now()) 
+    updated_at = Column(DateTime,default=datetime.datetime.now()) 
+    
+    def __init__(self, user_id=None, task_id=None):
+        self.task_id = task_id
+        self.user_id = user_id
+
+    def insert(self, user_ids, task_id, data):
+        sql = "INSERT INTO task_update_data SET user_id=:user_id, task_id=:task_id, data=:data, created_at=:created_at"
+        for uid in user_ids:
+            if uid != ',' and int(uid) > 0:
+                g.db.execute(text(sql), user_id=uid, task_id=task_id, data=json.dumps(data), created_at=datetime.datetime.now())
 
 class TaskComment(Model):
     __tablename__ = 'task_comments'
@@ -170,12 +190,15 @@ class TaskComment(Model):
         self.content = content
 
     def insert(self, task_id, user_id, content, realname):
-        row = g.db.execute(text("SELECT id, user_id, submit_user_id, to_user_id FROM tasks WHERE id=:id"),id=task_id).fetchone()
+        row = g.db.execute(text("SELECT id, user_id, submit_user_id, to_user_id, comment_count FROM tasks WHERE id=:id"),id=task_id).fetchone()
         if row:
             created_at = datetime.datetime.now()
             res = g.db.execute(text("INSERT INTO task_comments SET user_id=:user_id, task_id=:task_id, content=:content, created_at=:created_at"), user_id=user_id, task_id=task_id, content=content, created_at=created_at)
             if res.lastrowid:
                 g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
+                update_ids = list(set(row.to_user_id) | set(row.submit_user_id)) 
+                update_ids.append(user_id)
+                TaskUpdateData().insert(user_ids=update_ids, task_id=task_id, data={'comment_count': row.comment_count+1})
 
                 to_user_id = [] 
                 submit_user_id = []
@@ -225,7 +248,7 @@ class TaskShare(Model):
             UserNotice().process(user_id=user_id, task_id=task_id, message=message) 
         iphone_notify(share_user_id, type='share', title=title, realname=realname) 
         
-    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None):
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
         if insert_ids:
@@ -236,7 +259,8 @@ class TaskShare(Model):
 
                     message = realname+'递交给我：' + title
                     UserNotice().process(user_id=user_id, task_id=task_id, message=message)
-
+            if data:
+                TaskUpdateData().insert(user_ids=insert_ids, data=data, task_id=task_id)
             iphone_notify(insert_ids, type='share', title=title, realname=realname)
 
         delete_ids = old_user_id.difference(share_user_id)
@@ -245,6 +269,8 @@ class TaskShare(Model):
                 g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
                 g.db.execute(text("DELETE FROM `user_notices` WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id)
                 g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-1"), user_id=user_id)
+
+            TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
 
 class TaskSubmit(Model):
     __tablename__ = 'task_submit'
@@ -277,7 +303,7 @@ class TaskSubmit(Model):
         iphone_notify(share_user_id, type='submit', title=title, realname=realname)
                 
 
-    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None):
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
         if insert_ids:
@@ -294,6 +320,8 @@ class TaskSubmit(Model):
                 sql = 'INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE total_count=total_count+1'
                 g.db.execute(text(sql), user_id=user_id)
 
+            if data:
+                TaskUpdateData().insert(user_ids=insert_ids, data=data, task_id=task_id)
             iphone_notify(insert_ids, type='submit', title=title, realname=realname)
         
         delete_ids = old_user_id.difference(share_user_id)
@@ -303,6 +331,9 @@ class TaskSubmit(Model):
                     g.db.execute(text("UPDATE `task_submit` SET is_del=:is_del WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id, is_del=1)
                     g.db.execute(text("DELETE FROM `user_notices` WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id)
                     g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-1"), user_id=user_id)
+                    TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
+
+
 
 tasks = Table('tasks', metadata, autoload=True)
 task_comments = Table('task_comments', metadata, autoload=True)

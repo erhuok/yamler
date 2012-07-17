@@ -1,7 +1,7 @@
 # encoding:utf8
 from flask import Blueprint,request,render_template,session, g,jsonify
 from sqlalchemy.sql import select, text 
-from yamler.models.tasks import tasks, TaskShare, TaskSubmit
+from yamler.models.tasks import tasks, TaskShare, TaskSubmit, TaskUpdateData
 from yamler.models.users import users 
 from datetime import datetime
 import json
@@ -24,16 +24,25 @@ def create():
 @mod.route('/update/<int:id>', methods=['POST'])
 def update(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,submit_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
+    update_ids = list(set(row.to_user_id) | set(row.submit_user_id))
+    update_ids.append(row.user_id)
+
     if request.form.has_key('title'):
         g.db.execute(text("UPDATE tasks SET title=:title, flag='0' WHERE id=:id"), id=id, title=request.form['title'])
+        if update_ids:
+            TaskUpdateData().insert(user_ids=update_ids, data={'title':request.form['title']}, task_id=id)
+
         return jsonify(error=0, title=request.form['title'], id=id)
     if request.form.has_key('status'):
         end_time = datetime.now() if request.form['status'] else ''
         g.db.execute(text("UPDATE tasks SET status=:status, end_time=:end_time, flag='0' WHERE id=:id"), id=id, status=request.form['status'], end_time=end_time)
-        if row.submit_user_id:
-            ids = row.submit_user_id.split(',')
-            sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
-            g.db.execute(text(sql), task_id=id)
+        if update_ids:
+            TaskUpdateData().insert(user_ids=update_ids, data={'status':request.form['status']}, task_id=id)
+        #if row.submit_user_id:
+        #    ids = row.submit_user_id.split(',')
+        #    sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
+        #    g.db.execute(text(sql), task_id=id)
+        
         return jsonify(error=0)
     if request.form.has_key('unread'):
         g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=id, unread=request.form['unread'])
@@ -42,16 +51,11 @@ def update(id):
 
 @mod.route('/update_share/<int:id>', methods=['POST', 'GET'])
 def share(id):
-    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id, flag='0' WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
-        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname)
-            #old_to_user_id = set(row.to_user_id)
-            #new_to_user_id = set(to_user_id)
-            #update_user_id = new_to_user_id.difference(old_to_user_id)
-            #if update_user_id:
-                #UserRemind().update_share(update_user_id)
+        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname, data=dict(row))
         return jsonify(error=0) 
     share_users = dict()
     if row.to_user_id:
@@ -72,17 +76,11 @@ def share(id):
     '''
 @mod.route('/update_submit/<int:id>', methods=['POST', 'GET'])
 def submit(id):
-    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,created_at,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         submit_user_id = request.form['submit_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id, flag='0' WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
-        #UserRemind().update_submit(request.form['submit_user_id'].lstrip(',').split(','))
-        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname)
-            #old_to_user_id = set(row.submit_user_id)
-            #new_to_user_id = set(submit_user_id)
-            #update_user_id = new_to_user_id.difference(old_to_user_id)
-            #if update_user_id:
-                #UserRemind().update_submit(update_user_id)
+        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname, data=dict(row))
         return jsonify(error=0) 
     share_users = dict()
     if row.submit_user_id:
@@ -94,13 +92,6 @@ def submit(id):
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
 
     return jsonify(to_user_id=row.submit_user_id, data_users=data_users, share_users_default=share_users.values())
-    '''
-    return render_template('task/update_submit.html', 
-                           row=row, 
-                           share_users_default=json.dumps(share_users.values()),
-                           data_users = json.dumps(data_users),
-                          )
-    '''
 
 @mod.route('/get/<int:id>')
 def get(id):
@@ -127,7 +118,11 @@ def get(id):
 
 @mod.route('/delete/<int:id>')
 def delete(id):
-    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status, submit_user_id FROM tasks WHERE id=:id"), id=id).first()
     if row and row['user_id'] == g.user.id:
         g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=id)
+        update_ids = list(set(row.to_user_id) | set(row.submit_user_id))
+        update_ids.append(row.user_id)
+        if update_ids:
+            TaskUpdateData().insert(user_ids=update_ids, data={'is_del':1}, task_id=id)
         return jsonify(id=id)
