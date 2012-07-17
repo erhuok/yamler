@@ -374,7 +374,7 @@ def notice_get():
     rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread, created_at, updated_at FROM user_notices WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY id DESC"), user_id=user_id, is_syn=0).fetchall() 
     data_notice = []
     for row in rows:
-        new_row = {'id':row.id, 'user_id':row.user_id, 'message':row.message, 'unread':row.unread}
+        new_row = {'id':row.id, 'user_id':row.user_id, 'task_id':row.task_id, 'message':row.message, 'unread':row.unread}
         new_row['created_at'] = row['created_at'].strftime('%Y-%m-%d %T') 
         new_row['updated_at'] = row.updated_at.strftime('%Y-%m-%d %T')
         data_notice.append(dict(new_row))
