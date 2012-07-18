@@ -375,8 +375,8 @@ def notice_get():
     data_notice = []
     for row in rows:
         new_row = {'id':row.id, 'user_id':row.user_id, 'task_id':row.task_id, 'message':row.message, 'unread':row.unread}
-        new_row['created_at'] = row['created_at'].strftime('%Y-%m-%d %T') 
-        new_row['updated_at'] = row.updated_at.strftime('%Y-%m-%d %T')
+        new_row['created_at'] = datetimeformat(row['created_at']) 
+        new_row['updated_at'] = datetimeformat(row['updated_at'])
         data_notice.append(dict(new_row))
         #data_notice.append(dict(row))data_notice = [dict(zip(row.keys(), row)) for row in rows]  
     
@@ -396,7 +396,7 @@ def notice_update():
             if len(data_notice_ids):
                 sql = " UPDATE user_notices SET unread=:unread, is_syn=:is_syn WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_notice_ids)) 
                 res = g.db.execute(text(sql), user_id=user_id, unread=0, is_syn=1)
-                num = len(data_notice_ids)
+                num = int(res.rowcount)
                 g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-:num"), user_id=user_id, num=num)
 
         if data_update_ids:
