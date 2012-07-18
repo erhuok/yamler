@@ -117,13 +117,13 @@ def process_task_data(rows, user_id):
         new_row['share_users'] = None
         new_row['submit_users'] = None
         new_row['to_user_id'] = row['to_user_id']
+        new_row['is_del'] = row['is_del']
         new_row['submit_user_id'] = row['submit_user_id']
-        new_row['notify_time'] = row['notify_time']
         #手机端的时间
         new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
         new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time']  and isinstance(row.created_at, datetime.datetime) else '' 
-        new_row['notify_time'] = row['notify_time']
+        new_row['notify_time'] = row['notify_time'].strftime("%Y-%m-%d %T") if row.notify_time and isinstance(row.notify_time, datetime.datetime) else ''
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
@@ -169,7 +169,7 @@ def task_get():
     next_page = 't='+str(t)+'&status='+str(status)+'&page='+str(page+1)+'&created_at='+str(created_at) 
     #只看我自己的
     if 1 == int(t):
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -177,7 +177,7 @@ def task_get():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     elif 2 == int(t): 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
+        sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -185,13 +185,13 @@ def task_get():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql), submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     else: 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status ' 
         
         if start_time:
             sql += ' AND created_at > :created_at'
-        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
+        sql += " UNION ALL SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
         if status_value != 2:
             sql += ' AND status = :status ' 
         if start_time:
