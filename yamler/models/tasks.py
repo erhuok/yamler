@@ -170,10 +170,11 @@ class TaskUpdateData():
         self.user_id = user_id
 
     def insert(self, user_ids, task_id, data):
-        sql = "INSERT INTO task_update_data SET user_id=:user_id, task_id=:task_id, data=:data, created_at=:created_at"
-        for uid in user_ids:
-            if uid != ',' and int(uid) > 0:
-                g.db.execute(text(sql), user_id=uid, task_id=task_id, data=json.dumps(data), created_at=datetime.datetime.now())
+        if len(user_ids):
+            sql = "INSERT INTO task_update_data SET user_id=:user_id, task_id=:task_id, data=:data, created_at=:created_at"
+            for uid in user_ids:
+                if uid and uid != ',' and int(str(uid)) > 0:
+                    g.db.execute(text(sql), user_id=uid, task_id=task_id, data=json.dumps(data), created_at=datetime.datetime.now())
 
 class TaskComment(Model):
     __tablename__ = 'task_comments'
@@ -251,7 +252,7 @@ class TaskShare(Model):
     def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
-        if insert_ids:
+        if len(insert_ids):
             g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
                 if int(user_id) > 0:
@@ -264,7 +265,7 @@ class TaskShare(Model):
             iphone_notify(insert_ids, type='share', title=title, realname=realname)
 
         delete_ids = old_user_id.difference(share_user_id)
-        if delete_ids:
+        if len(delete_ids):
             for user_id in delete_ids:
                 g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
                 g.db.execute(text("DELETE FROM `user_notices` WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id)
@@ -306,7 +307,7 @@ class TaskSubmit(Model):
     def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
-        if insert_ids:
+        if len(insert_ids):
             g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
                 if int(user_id) > 0:
@@ -325,7 +326,7 @@ class TaskSubmit(Model):
             iphone_notify(insert_ids, type='submit', title=title, realname=realname)
         
         delete_ids = old_user_id.difference(share_user_id)
-        if delete_ids:
+        if len(delete_ids):
             for user_id in delete_ids:
                 if user_id > 0:
                     g.db.execute(text("UPDATE `task_submit` SET is_del=:is_del WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id, is_del=1)

@@ -89,14 +89,19 @@ def task_create():
         if request.form.has_key('submit_user_id') and request.form['submit_user_id']:
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
             TaskSubmit().insert(task_id=res.lastrowid, own_id=request.form['user_id'], share_user_id=submit_user_id, realname=user_row.realname, title=request.form['title'])
-        
-        update_ids = list(set(request.form['to_user_id']) | set(request.form['submit_user_id']))
-        update_ids.append(request.form['user_id'])
-        print update_ids
-        if update_ids:
-            TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=dict(request.form))
 
+        to_user_id = request.form['to_user_id'] if request.form.has_key('to_user_id') else '' 
+        submit_user_id = request.form['submit_user_id'] if request.form.has_key('submit_user_id') else '' 
+        update_ids = list(set(to_user_id) | set(submit_user_id))
+        update_ids.append(request.form['user_id'])
+        if update_ids:
+            row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
+            data = dict(row)
+            data['created_at'] = datetimeformat(row['created_at'])
+            data['updated_at'] = datetimeformat(row['updated_at'])
+            TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=data)
         return jsonify(error=0, code='success', message='添加成功', id=res.lastrowid)
+
     return jsonify(error=1, code='failed', message='输入数据不合法')
 
 def process_task_data(rows, user_id):
@@ -227,43 +232,46 @@ def update_by_ids():
 @mod.route('/task/update', methods=['POST'])
 def task_update():
     if request.method == 'POST' and request.form['id']:
-        task = db_session.query(Task).get(request.form['id']) 
+        task = g.db.execute(text("SELECT * FROM tasks WHERE id=:id"), id=request.form['id']).first()
         old_to_user_id = set(task.to_user_id.split(',')) 
         old_submit_user_id = set(task.submit_user_id.split(',')) 
         if task:
             if request.form.has_key('status') : 
-                task.status = request.form['status']
+                sql = "UPDATE tasks SET status=:status WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['status'])
             if request.form.has_key('title'):
-                task.title = request.form['title']
-            if request.form.has_key('note'):
-                task.note = request.form['note']
+                sql = "UPDATE tasks SET title=:title WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['title'])
             if request.form.has_key('priority'):
-                task.priority = request.form['priority']
+                sql = "UPDATE tasks SET priority=:priority WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['priority'])
             if request.form.has_key('end_time'):
-                task.end_time = request.form['end_time']
+                sql = "UPDATE tasks SET end_time=:end_time WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['end_time'])
             if request.form.has_key('notify_time'):
-                task.notify_time = request.form['notify_time']
+                sql = "UPDATE tasks SET notify_time=:notify_time WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['notify_time'])
             if request.form.has_key('to_user_id'):
-                task.to_user_id = request.form['to_user_id']
+                sql = "UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['to_user_id'])
             if request.form.has_key('submit_user_id'):
-                task.submit_user_id = request.form['submit_user_id']
-            task.flag = '0'
-        
-            db_session.commit()
+                sql = "UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['submit_user_id'])
 
-            #if task.submit_user_id and request.form.has_key('status'):
-            #    ids = task.submit_user_id.split(',')
-            #    sql = "UPDATE `task_submit` SET is_status='0' WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(ids))
-            #    g.db.execute(text(sql), task_id=task.id)
             user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
+            data = []
+            if request.form.has_key('to_user_id') or request.form.has_key('submit_user_id'):
+                data = dict(task)
+                data['created_at'] = datetimeformat(data['created_at'])
+                data['updated_at'] = datetimeformat(data['updated_at'])
+                data['notify_time'] = data['notify_time'].strftime('%Y-%m-%d %T') if task.notify_time and isinstance(task.notify_time, datetime.datetime) else ''
+                data['end_time'] = data['end_time'].strftime('%Y-%m-%d %T') if task.end_time and isinstance(task.end_time, datetime.datetime) else ''
 
             if request.form.has_key('to_user_id') and request.form['to_user_id']:
-                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname)
-
-            if request.form.has_key('submit_user_id') and request.form['submit_user_id']:
-                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(request.form['submit_user_id'].split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname)
-            
-            if not request.form.has_key('to_user_id') or not request.form.has_key('submit_user_id'):
+                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname, data=data)
+            elif request.form.has_key('submit_user_id') and request.form['submit_user_id']:
+                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(request.form['submit_user_id'].split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data)
+            else:
                 update_ids = list(set(task.to_user_id) | set(task.submit_user_id))
                 update_ids.append(task.user_id)
                 data = dict(request.form)

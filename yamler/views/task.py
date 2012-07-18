@@ -51,11 +51,16 @@ def update(id):
 
 @mod.route('/update_share/<int:id>', methods=['POST', 'GET'])
 def share(id):
-    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT * FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id, flag='0' WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
-        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname, data=dict(row))
+        data = dict(row)
+        data['created_at'] = datetimeformat(row.created_at)
+        data['updated_at'] = datetime(row.updated_at)
+        data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
+        data['end_time'] = row.end_time.strftime('%Y-%m-%d %T') if row.end_time and isinstance(row.end_time, datetime) else ''
+        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname, data=data)
         return jsonify(error=0) 
     share_users = dict()
     if row.to_user_id:
@@ -67,20 +72,19 @@ def share(id):
     data_users = [ {'id': company_user.id, 'value': company_user.realname} for company_user in company_users]
 
     return jsonify(share_users_default=share_users.values(), data_users=data_users, to_user_id=row.to_user_id)
-    '''
-    return render_template('task/update_share.html', 
-                           row=row, 
-                           share_users_default=json.dumps(share_users.values()),
-                           data_users = json.dumps(data_users),
-                          )
-    '''
+
 @mod.route('/update_submit/<int:id>', methods=['POST', 'GET'])
 def submit(id):
-    row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,title,end_time,status,submit_user_id FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT * FROM tasks WHERE id=:id"), id=id).first()
     if request.method == 'POST' and row:
         submit_user_id = request.form['submit_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id, flag='0' WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
-        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname, data=dict(row))
+        data = dict(row)
+        data['created_at'] = datetimeformat(row.created_at)
+        data['updated_at'] = datetime(row.updated_at)
+        data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
+        data['end_time'] = row.end_time.strftime('%Y-%m-%d %T') if row.end_time and isinstance(row.end_time, datetime) else ''
+        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname, data=data)
         return jsonify(error=0) 
     share_users = dict()
     if row.submit_user_id:

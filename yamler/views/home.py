@@ -79,7 +79,6 @@ def publish():
         created_at = datetime.now()
         to_user_id = request.form['to_user_id'].lstrip(',') if request.form['to_user_id'] else '', 
         submit_user_id = request.form['submit_user_id'].lstrip(',') if request.form['submit_user_id'] else '', 
-        data = {'title': request.form['title'],'unread':1, 'user_id':g.user.id, 'to_user_id':to_user_id, 'submit_user_id':submit_user_id}
         res = g.db.execute(tasks.insert().values({
             tasks.c.title: request.form['title'], 
             tasks.c.unread: 1, 
@@ -90,7 +89,9 @@ def publish():
         })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
-           
+          
+       
+            
         #id = res.inserted_primary_key[0]
         if request.form['to_user_id']:
             to_user_id = request.form['to_user_id'].lstrip(',').split(',')
@@ -100,9 +101,14 @@ def publish():
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
             TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id, realname=g.user.realname, title=request.form['title'])
        
+
         update_ids = list(set(request.form['to_user_id']) | set(request.form['submit_user_id']))
         update_ids.append(g.user.id)
         if update_ids:
+            row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
+            data = dict(row)
+            data['created_at'] = datetimeformat(row['created_at'])
+            data['updated_at'] = datetimeformat(row['updated_at'])
             TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=data)
 
         return jsonify(title=request.form['title'], 
