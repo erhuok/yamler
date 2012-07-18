@@ -144,7 +144,9 @@ def process_task_data(rows, user_id):
         #安排给我的
         else:
             new_row['ismine'] = False 
-            new_row['realname'] = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first().realname
+            user_res = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first()
+            if user_res:
+                new_row['realname'] = user_res.realname
 
         data.append(new_row)
     return data
