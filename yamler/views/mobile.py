@@ -200,7 +200,7 @@ def task_get():
         rows = g.db.execute(text(sql),user_id=user_id, submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     data = process_task_data(rows, user_id)
 
-    sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND user_id <> :user_id"
+    sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND user_id <> :user_id"
     rows = g.db.execute(text(sql), user_id=user_id, to_user_id=user_id)
     data_tome = process_task_data(rows, user_id)
 
