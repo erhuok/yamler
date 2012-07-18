@@ -97,6 +97,7 @@ def task_create():
         if update_ids:
             row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
             data = dict(row)
+            data['mobile_time'] = int(time.mktime(row.created_at.timetuple())) 
             data['created_at'] = datetimeformat(row['created_at'])
             data['updated_at'] = datetimeformat(row['updated_at'])
             TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=data)
@@ -120,7 +121,7 @@ def process_task_data(rows, user_id):
         new_row['is_del'] = row['is_del']
         new_row['submit_user_id'] = row['submit_user_id']
         #手机端的时间
-        new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
+        new_row['mobile_time'] = int(time.mktime(row.created_at.timetuple())) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
         new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time']  and isinstance(row.created_at, datetime.datetime) else '' 
         new_row['notify_time'] = row['notify_time'].strftime("%Y-%m-%d %T") if row.notify_time and isinstance(row.notify_time, datetime.datetime) else ''

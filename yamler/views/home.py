@@ -89,8 +89,6 @@ def publish():
         })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
-          
-       
             
         #id = res.inserted_primary_key[0]
         if request.form['to_user_id']:
@@ -107,6 +105,7 @@ def publish():
         if update_ids:
             row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
             data = dict(row)
+            data['mobile_time'] = int(time.mktime(row.created_at.timetuple())) 
             data['created_at'] = datetimeformat(row['created_at'])
             data['updated_at'] = datetimeformat(row['updated_at'])
             TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=data)
