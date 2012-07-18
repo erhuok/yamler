@@ -379,7 +379,7 @@ def notice_get():
         data_notice.append(dict(new_row))
         #data_notice.append(dict(row))data_notice = [dict(zip(row.keys(), row)) for row in rows]  
     
-    rows = g.db.execute(text("SELECT id, user_id, task_id, data, is_syn FROM task_update_data WHERE user_id=:user_id ORDER BY ID ASC"), user_id=user_id).fetchall()
+    rows = g.db.execute(text("SELECT id, user_id, task_id, data, is_syn FROM task_update_data WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY ID ASC"), user_id=user_id, is_syn=0).fetchall()
     data_update = [dict(zip(row.keys(), row)) for row in rows ]
 
     return jsonify(data_update=data_update, data_notice=data_notice)
