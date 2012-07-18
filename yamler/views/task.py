@@ -5,6 +5,7 @@ from yamler.models.tasks import tasks, TaskShare, TaskSubmit, TaskUpdateData
 from yamler.models.users import users 
 from datetime import datetime
 import json
+from yamler.utils import datetimeformat
 
 mod = Blueprint('task', __name__, url_prefix='/task')
 
@@ -57,7 +58,7 @@ def share(id):
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id, flag='0' WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
         data = dict(row)
         data['created_at'] = datetimeformat(row.created_at)
-        data['updated_at'] = datetime(row.updated_at)
+        data['updated_at'] = datetimeformat(row.updated_at)
         data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
         data['end_time'] = row.end_time.strftime('%Y-%m-%d %T') if row.end_time and isinstance(row.end_time, datetime) else ''
         TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname, data=data)
@@ -81,7 +82,7 @@ def submit(id):
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id, flag='0' WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
         data = dict(row)
         data['created_at'] = datetimeformat(row.created_at)
-        data['updated_at'] = datetime(row.updated_at)
+        data['updated_at'] = datetimeformat(row.updated_at)
         data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
         data['end_time'] = row.end_time.strftime('%Y-%m-%d %T') if row.end_time and isinstance(row.end_time, datetime) else ''
         TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname, data=data)
