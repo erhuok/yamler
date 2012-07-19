@@ -328,7 +328,8 @@ def company_get():
 def user_get():
     if request.method == 'POST':
         if request.form.has_key('company_id'):
-            rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id'], is_active==1))).fetchall()
+            #rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id'], is_active==1))).fetchall()
+            rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=request.form['company_id'], is_active=1).fetchall()
             data = [dict(zip(row.keys(), row)) for row in rows]  
             return jsonify(error=0, data=data)
     return jsonify(error=1)
