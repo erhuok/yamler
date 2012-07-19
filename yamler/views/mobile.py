@@ -315,7 +315,7 @@ def company_get():
     fields = [companies.c.id, companies.c.user_id, companies.c.name, companies.c.scale, companies.c.contact_name, companies.c.telephone, companies.c.address, companies.c.postcode, companies.c.website]
     if request.method == 'POST':
         if request.form.has_key('company_id'):
-            row = g.db.execute(select(fields, and_(companies.c.id==request.form['company_id'], is_active==1))).fetchone()
+            row = g.db.execute(select(fields, and_(companies.c.id==request.form['company_id']))).fetchone()
             data = dict(zip(row.keys(), row))
             return jsonify(error=0, data=data)
 
@@ -328,7 +328,7 @@ def company_get():
 def user_get():
     if request.method == 'POST':
         if request.form.has_key('company_id'):
-            rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id']))).fetchall()
+            rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id'], is_active==1))).fetchall()
             data = [dict(zip(row.keys(), row)) for row in rows]  
             return jsonify(error=0, data=data)
     return jsonify(error=1)
