@@ -220,10 +220,9 @@ class TaskComment(Model):
                     #g.db.execute(text(sql), task_id=task_id, unread=1)
                 notify_user_id = list(set(to_user_id) | set(submit_user_id))
                 if notify_user_id:
-                    message = realname+'回复给我：'+content
                     for uid in notify_user_id:
                         if int(uid) != int(user_id):
-                            UserNotice().process(user_id=uid, task_id=task_id, message=message)
+                            UserNotice().process(user_id=uid, task_id=task_id, message=content, title="来自"+realname+"的回复")
                     iphone_notify(notify_user_id, type="comment", realname=realname, title=content)
 
                 return res.lastrowid
@@ -246,8 +245,7 @@ class TaskShare(Model):
             res = g.db.execute(text("SELECT id FROM task_share WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id).fetchone()
             if res is None:
                 g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
-            message = realname+'递交给我：'+title
-            UserNotice().process(user_id=user_id, task_id=task_id, message=message) 
+            UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'递交给我') 
         iphone_notify(share_user_id, type='share', title=title, realname=realname) 
         
     def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
@@ -259,8 +257,7 @@ class TaskShare(Model):
                 if int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
 
-                    message = realname+'递交给我：' + title
-                    UserNotice().process(user_id=user_id, task_id=task_id, message=message)
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"递交给我")
             if data:
                 TaskUpdateData().insert(user_ids=insert_ids, data=data, task_id=task_id)
             iphone_notify(insert_ids, type='share', title=title, realname=realname)
@@ -293,14 +290,7 @@ class TaskSubmit(Model):
                 res = g.db.execute(text("SELECT id FROM task_submit WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id).fetchone()
                 if res is None:
                     g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
-
-                #通知
-                sql = "INSERT INTO user_notices SET user_id=:user_id, task_id=:task_id, message=:message, created_at=:created_at"
-                message = realname+'安排给我：' + title
-                g.db.execute(text(sql), user_id=user_id, task_id=task_id, created_at=datetime.datetime.now(), message=message)
-                
-                sql = 'INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE total_count=total_count+1'
-                g.db.execute(text(sql), user_id=user_id)
+                UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"安排给我")
 
         iphone_notify(share_user_id, type='submit', title=title, realname=realname)
                 
@@ -313,14 +303,7 @@ class TaskSubmit(Model):
             for user_id in insert_ids:
                 if int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
-
-                #通知
-                sql = "INSERT INTO user_notices SET user_id=:user_id, task_id=:task_id, message=:message, created_at=:created_at"
-                message = realname+'安排给我：' + title
-                g.db.execute(text(sql), user_id=user_id, task_id=task_id, created_at=datetime.datetime.now(), message=message)
-                
-                sql = 'INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE total_count=total_count+1'
-                g.db.execute(text(sql), user_id=user_id)
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"安排给我")
 
             if data:
                 TaskUpdateData().insert(user_ids=insert_ids, data=data, task_id=task_id)

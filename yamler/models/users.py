@@ -63,10 +63,10 @@ class UserNotice(Model):
         self.unread = unread
         self.message = message
     
-    def process(self, user_id, task_id, message):
+    def process(self, user_id, task_id, message, title):
         #通知
-        sql = "INSERT INTO user_notices SET user_id=:user_id, task_id=:task_id, message=:message, created_at=:created_at"
-        g.db.execute(text(sql), user_id=user_id, task_id=task_id, created_at=datetime.datetime.now(), message=message)
+        sql = "INSERT INTO user_notices SET user_id=:user_id, task_id=:task_id, message=:message, created_at=:created_at, title=:title"
+        g.db.execute(text(sql), user_id=user_id, task_id=task_id, created_at=datetime.datetime.now(), message=message, title=title)
             
         sql = 'INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE total_count=total_count+1'
         g.db.execute(text(sql), user_id=user_id)

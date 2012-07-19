@@ -239,6 +239,7 @@ def task_update():
         old_to_user_id = set(task.to_user_id.split(',')) 
         old_submit_user_id = set(task.submit_user_id.split(',')) 
         update_ids = list(set(task.to_user_id) | set(task.submit_user_id))
+        update_ids.remove(',')
         update_ids.append(task.user_id)
         user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
         my_user = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
@@ -247,11 +248,10 @@ def task_update():
                 sql = "UPDATE tasks SET status=:status WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, status=request.form['status'])
                 if str(request.form['status']) == '1':
-                    message = my_user.realname + '完成了此任务:' + task.title 
                     if len(update_ids):
                         for notice_user_id in update_ids:
                             if str(request.form['user_id']) != str(notice_user_id):
-                                UserNotice().process(user_id=notice_user_id, task_id=task.id, message=message)
+                                UserNotice().process(user_id=notice_user_id, task_id=task.id, message=task.title, title=my_user.realname+"完成了")
             if request.form.has_key('title'):
                 sql = "UPDATE tasks SET title=:title WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, status=request.form['title'])
@@ -274,10 +274,9 @@ def task_update():
                 sql = "UPDATE tasks SET is_del=:is_del WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, is_del=1)
                 if len(update_ids):
-                    message = my_user.realname + '删除了此任务:' + task.title  
                     for notice_user_id in update_ids:
                         if str(request.form['user_id']) != str(notice_user_id):
-                            UserNotice().process(user_id=notice_user_id, task_id=task.id, message=message)
+                            UserNotice().process(user_id=notice_user_id, task_id=task.id, message=task.title, title=my_user.realname+"删除了")
 
             data = []
             if request.form.has_key('to_user_id') or request.form.has_key('submit_user_id'):
@@ -369,10 +368,10 @@ def share():
 @mod.route('/notice/get', methods=['POST'])
 def notice_get():
     user_id = int(request.form['user_id']) 
-    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread, created_at, updated_at FROM user_notices WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY id DESC"), user_id=user_id, is_syn=0).fetchall() 
+    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread, created_at, updated_at, title FROM user_notices WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY id DESC"), user_id=user_id, is_syn=0).fetchall() 
     data_notice = []
     for row in rows:
-        new_row = {'id':row.id, 'user_id':row.user_id, 'task_id':row.task_id, 'message':row.message, 'unread':row.unread}
+        new_row = {'id':row.id, 'user_id':row.user_id, 'task_id':row.task_id, 'message':row.message, 'title':row.title, 'unread':row.unread}
         new_row['created_at'] = datetimeformat(row['created_at']) 
         new_row['updated_at'] = datetimeformat(row['updated_at'])
         data_notice.append(dict(new_row))
