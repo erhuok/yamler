@@ -260,6 +260,9 @@ def task_update():
             if request.form.has_key('submit_user_id'):
                 sql = "UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, status=request.form['submit_user_id'])
+            if request.form.has_key('is_del'):
+                sql = "UPDATE tasks SET is_del=:is_del WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, is_del=request.form['is_del'])
 
             user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
             data = []
