@@ -2,7 +2,7 @@
 from flask import Blueprint, request, session, jsonify, g
 from yamler.database import db_session
 from yamler.models.users import User, users
-from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit, TaskUpdateData
+from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit, TaskUpdateData, TaskComment
 from yamler.models.companies import Company, companies 
 from yamler.models.user_relations import UserRelation 
 from sqlalchemy.sql import between
@@ -338,37 +338,9 @@ def comment_create():
     if request.method == 'POST' and request.form.has_key('task_id') and request.form.has_key('content') and request.form.has_key('user_id'):
         task_id = request.form['task_id']
         user_id = request.form['user_id']
-        row = g.db.execute(text("SELECT id, user_id, submit_user_id, to_user_id FROM tasks WHERE id=:id"),id=task_id).fetchone()
-
-        res = g.db.execute(text("INSERT INTO task_comments (user_id, task_id, content, created_at) VALUES (:user_id, :task_id, :content, :created_at)"),user_id=request.form['user_id'], task_id=request.form['task_id'], content=request.form['content'], created_at=datetime.datetime.now())
-        if res.lastrowid:
-            g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
-            to_user_id = [] 
-            submit_user_id = []
-            #通知提醒
-            if row.to_user_id:
-                to_user_id = row.to_user_id.split(',')
-                to_user_id.append(str(row.user_id))
-                to_user_id = [ user_id2 for user_id2 in to_user_id if user_id2 != str(user_id) ]
-                if len(to_user_id):
-                    sql = " UPDATE task_share SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(to_user_id)) 
-                    g.db.execute(text(sql), task_id=task_id, unread=1)
-
-            if row.submit_user_id:
-                g.db.execute(text("UPDATE task_submit SET is_comment=:is_comment WHERE task_id=:task_id"), task_id=task_id, is_comment=0)
-                submit_user_id = row.submit_user_id.split(',')
-                submit_user_id.append(str(row.user_id))
-                submit_user_id = [user_id2 for user_id2 in submit_user_id if user_id2 != str(user_id) ]
-                if len(submit_user_id):
-                    sql = " UPDATE task_submit SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(submit_user_id)) 
-                    g.db.execute(text(sql), task_id=task_id, unread=1)
-            
-            notify_user_id = list(set(to_user_id) | set(submit_user_id))
-            if notify_user_id:
-                user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
-                iphone_notify(notify_user_id, type="comment", realname=user_row.realname, title=request.form['content'])
-
-        return jsonify(error=0, id=res.lastrowid) 
+        user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=user_id).fetchone()
+        insert_id = TaskComment().insert(user_id=user_id, task_id=task_id, content=request.form['content'], realname=user_row.realname)
+        return jsonify(error=0, id=insert_id) 
 
 @mod.route('/task/share', methods=['GET', 'POST'])
 def share():

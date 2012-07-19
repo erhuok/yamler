@@ -226,6 +226,7 @@ class TaskComment(Model):
                             UserNotice().process(user_id=uid, task_id=task_id, message=message)
                     iphone_notify(notify_user_id, type="comment", realname=realname, title=content)
 
+                return res.lastrowid
 
 class TaskShare(Model):
     __tablename__ = 'task_share'
