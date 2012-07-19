@@ -315,7 +315,7 @@ def company_get():
     fields = [companies.c.id, companies.c.user_id, companies.c.name, companies.c.scale, companies.c.contact_name, companies.c.telephone, companies.c.address, companies.c.postcode, companies.c.website]
     if request.method == 'POST':
         if request.form.has_key('company_id'):
-            row = g.db.execute(select(fields, and_(companies.c.id==request.form['company_id']))).fetchone()
+            row = g.db.execute(select(fields, and_(companies.c.id==request.form['company_id'], is_active==1))).fetchone()
             data = dict(zip(row.keys(), row))
             return jsonify(error=0, data=data)
 
