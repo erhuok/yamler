@@ -129,10 +129,11 @@ def delete(id):
         g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=id)
         update_ids = list(set(row.to_user_id) | set(row.submit_user_id))
         if update_ids:
+            update_ids.append(row.user_id)
             for uid in update_ids:
                 message = g.user.realname + '删除了此任务:' + row.title
-                UserNotice().process(user_id=uid, task_id=id, message=message)
-            update_ids.append(row.user_id)
+                if int(uid) != g.user.id: 
+                    UserNotice().process(user_id=uid, task_id=id, message=message)
             TaskUpdateData().insert(user_ids=update_ids, data={'is_del':1}, task_id=id)
 
         return jsonify(id=id)

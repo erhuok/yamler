@@ -234,21 +234,24 @@ def update_by_ids():
 
 @mod.route('/task/update', methods=['POST'])
 def task_update():
-    if request.method == 'POST' and request.form['id']:
+    if request.method == 'POST' and request.form['id'] and request.form['user_id']:
         task = g.db.execute(text("SELECT * FROM tasks WHERE id=:id"), id=request.form['id']).first()
         old_to_user_id = set(task.to_user_id.split(',')) 
         old_submit_user_id = set(task.submit_user_id.split(',')) 
         update_ids = list(set(task.to_user_id) | set(task.submit_user_id))
+        update_ids.append(task.user_id)
         user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
+        my_user = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
         if task:
             if request.form.has_key('status') : 
                 sql = "UPDATE tasks SET status=:status WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, status=request.form['status'])
                 if str(request.form['status']) == '1':
-                    message = user_row.realname + '完成了此任务:' + task.title 
+                    message = my_user.realname + '完成了此任务:' + task.title 
                     if len(update_ids):
                         for notice_user_id in update_ids:
-                            UserNotice().process(user_id=notice_user_id, task_id=task.id, message=message)
+                            if str(request.form['user_id']) != str(notice_user_id):
+                                UserNotice().process(user_id=notice_user_id, task_id=task.id, message=message)
             if request.form.has_key('title'):
                 sql = "UPDATE tasks SET title=:title WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, status=request.form['title'])
@@ -271,9 +274,10 @@ def task_update():
                 sql = "UPDATE tasks SET is_del=:is_del WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, is_del=request.form['is_del'])
                 if len(update_ids):
-                    message = user_row.realname + '删除了此任务:' + task.title  
+                    message = my_user.realname + '删除了此任务:' + task.title  
                     for notice_user_id in update_ids:
-                        UserNotice().process(user_id=notice_user_id, task_id=task.id, message=message)
+                        if str(request.form['user_id']) != str(notice_user_id):
+                            UserNotice().process(user_id=notice_user_id, task_id=task.id, message=message)
 
             data = []
             if request.form.has_key('to_user_id') or request.form.has_key('submit_user_id'):
@@ -288,7 +292,6 @@ def task_update():
             elif request.form.has_key('submit_user_id') and request.form['submit_user_id']:
                 TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(request.form['submit_user_id'].split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data)
             else:
-                update_ids.append(task.user_id)
                 data = dict(request.form)
                 del data['id']
                 TaskUpdateData().insert(user_ids=update_ids, task_id=task.id, data=data)
