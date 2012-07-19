@@ -272,7 +272,7 @@ def task_update():
                 g.db.execute(text(sql), id=task.id, status=request.form['submit_user_id'])
             if request.form.has_key('is_del'):
                 sql = "UPDATE tasks SET is_del=:is_del WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, is_del=request.form['is_del'])
+                g.db.execute(text(sql), id=task.id, is_del=1)
                 if len(update_ids):
                     message = my_user.realname + '删除了此任务:' + task.title  
                     for notice_user_id in update_ids:
