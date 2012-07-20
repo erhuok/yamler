@@ -197,7 +197,7 @@ class TaskComment(Model):
             res = g.db.execute(text("INSERT INTO task_comments SET user_id=:user_id, task_id=:task_id, content=:content, created_at=:created_at"), user_id=user_id, task_id=task_id, content=content, created_at=created_at)
             if res.lastrowid:
                 g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
-                update_ids = list(set(row.to_user_id) | set(row.submit_user_id)) 
+                update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(','))) 
                 update_ids.append(user_id)
                 TaskUpdateData().insert(user_ids=update_ids, task_id=task_id, data={'comment_count': row.comment_count+1})
 

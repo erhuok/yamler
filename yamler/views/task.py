@@ -12,12 +12,13 @@ mod = Blueprint('task', __name__, url_prefix='/task')
 @mod.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST' and request.form.has_key('title'):
-        res = g.db.execute(tasks.insert().values({tasks.c.title: request.form['title'], 
-                                                  tasks.c.user_id: g.user.id,
-                                                  tasks.c.created_at: datetime.now(), 
-                                                  tasks.c.status: int(request.form['status']),
-                                                  tasks.c.board_id: int(request.form['board_id']),
-                                                 })) 
+        res = g.db.execute(tasks.insert().values({
+            tasks.c.title: request.form['title'], 
+            tasks.c.user_id: g.user.id, 
+            tasks.c.created_at: datetime.now(), 
+            tasks.c.status: int(request.form['status']),
+            tasks.c.board_id: int(request.form['board_id']), 
+        })) 
         return jsonify(error=0, title=request.form['title'], realname=g.user.realname, id=res.inserted_primary_key)
     return jsonify(error=1, msg="没有内容")
 
@@ -25,10 +26,8 @@ def create():
 @mod.route('/update/<int:id>', methods=['POST'])
 def update(id):
     row = g.db.execute(text("SELECT id,board_id,user_id,to_user_id,submit_user_id,title,end_time,status FROM tasks WHERE id=:id"), id=id).first()
-    update_ids = list(set(row.to_user_id) | set(row.submit_user_id))
-    update_ids.remove(',')
+    update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')))
     update_ids.append(row.user_id)
-    print update_ids
 
     if request.form.has_key('title'):
         g.db.execute(text("UPDATE tasks SET title=:title, flag='0' WHERE id=:id"), id=id, title=request.form['title'])
@@ -128,8 +127,7 @@ def delete(id):
     row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status, submit_user_id FROM tasks WHERE id=:id"), id=id).first()
     if row and row['user_id'] == g.user.id:
         g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=id)
-        update_ids = list(set(row.to_user_id) | set(row.submit_user_id))
-        update_ids.remove(',')
+        update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')))
         if update_ids:
             update_ids.append(row.user_id)
             for uid in update_ids:
