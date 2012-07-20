@@ -93,7 +93,6 @@ def task_create():
         to_user_id = request.form['to_user_id'] if request.form.has_key('to_user_id') else '' 
         submit_user_id = request.form['submit_user_id'] if request.form.has_key('submit_user_id') else '' 
         update_ids = list(set(to_user_id.split(',')) | set(submit_user_id.split(',')))
-        update_ids.remove('')
         update_ids.append(request.form['user_id'])
         if update_ids:
             row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
@@ -240,8 +239,6 @@ def task_update():
         old_to_user_id = set(task.to_user_id.split(',')) 
         old_submit_user_id = set(task.submit_user_id.split(',')) 
         update_ids = list(set(task.to_user_id.split(',')) | set(task.submit_user_id.split(',')))
-        update_ids.remove('')
-        update_ids.remove(',')
         update_ids.append(task.user_id)
         user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
         my_user = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
