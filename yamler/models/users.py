@@ -43,8 +43,46 @@ class User(Model):
                      )
         return result
 
-  
+    def register(self):
+        pass
 
+
+class UserInvite(Model):
+    __tablename__ = 'user_invites'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    invite_user_id = Column(Integer)
+
+    created_at = Column(DateTime,default=datetime.datetime.now())
+    updated_at = Column(DateTime,default=datetime.datetime.now())
+
+    def __init__(self, user_id=None, invite_user_id=None, user_name=None, invite_user_name=None):
+        self.user_id = user_id
+        self.invite_user_id = invite_user_id
+    
+    def getbyid(self, user_id):
+        data_user_ids = []
+        sql = "SELECT user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"
+        row1 = g.db.execute(text(sql), user_id=user_id).first()
+        #向上
+        if row1.invite_user_id:
+            data_user_ids.append(row1.invite_user_id)
+            row0 = g.db.execute(text("SELECT user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"), user_id=row.invite_user_id).first()
+            if row0.user_id:
+                data_user_ids.append(row0.user_id)
+        
+        #第一层
+        row2 = g.db.execute(text("SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id=:invite_user_id"), invite_user_id=user_id).first()
+        #第二层
+        if row2.user_id:
+            data_user_ids.append(row2.user_id)
+            sql = "SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id IN ({0})".format(','.join(row2.user_id.split(',')))
+            row3 = g.db.execute(text(sql)).first()
+            data_user_ids.append(row3.user_id)
+        
+        if len(data_user_ids):
+            sql = "SELECT id, user_id, realname FROM user WHERE id IN ({0})".format(','.join(data_user_ids))
+            return g.db.execute(text(sql)).fetchall()
 
 class UserNotice(Model):
     __tablename__ = 'user_notices'

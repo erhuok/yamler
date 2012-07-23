@@ -41,12 +41,14 @@ def register():
     form = RegistrationForm(request.form)
     if request.method=='POST' and form.validate():
         company_id = ''
+
         if request.args.has_key('key'):
             key = request.args.get('key')
             id = base64.decodestring(key)
             if id:
                 row = g.db.execute(text("SELECT id FROM companies WHERE id=:id"), id=id).fetchone()
                 if row: company_id = id
+        
         user=User(form.username.data, 
                   form.password.data, 
                   is_active=1,
@@ -59,13 +61,18 @@ def register():
             return redirect(url_for('user.register'))
         db_session.add(user)
         db_session.commit()
+        
         session['user_id'] = user.id 
         flash('Thanks for registering')
-
         if request.args.get('key'):
             return redirect(url_for('home.account'))
 
         return redirect(url_for('company.create'))
+
+    invite_user_id = request.args.get('uid')
+    row = g.db.execute(text("SELECT id FROM user_invites WHERE user_id=:user_id AND invite_user_id=:invite_user_id"), user_id=2, invite_user_id=invite_user_id).first() 
+    if row is None:
+        g.db.execute(text("INSERT INTO user_invites SET user_id=:user_id, invite_user_id=:invite_user_id, created_at=:created_at"), user_id=6, invite_user_id=invite_user_id, created_at=datetime.now()) 
     return render_template('user/register.html', form=form)
 
 @mod.route('/active', methods=['GET', 'POST'])

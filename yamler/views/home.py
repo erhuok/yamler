@@ -100,7 +100,7 @@ def publish():
             TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id, realname=g.user.realname, title=request.form['title'])
        
 
-        update_ids = list(set(request.form['to_user_id']) | set(request.form['submit_user_id']))
+        update_ids = list(set(request.form['to_user_id'].split(',')) | set(request.form['submit_user_id'].split(',')))
         update_ids.append(g.user.id)
         if update_ids:
             row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
@@ -201,3 +201,8 @@ def getMyFeed():
 
         data.append(new_row)
     return jsonify(data=data, next_page=next_page)
+
+
+@mod.route('/me')
+def me():
+    return render_template('home/me.html')
