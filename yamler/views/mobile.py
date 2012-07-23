@@ -246,11 +246,13 @@ def task_update():
             if request.form.has_key('status') : 
                 sql = "UPDATE tasks SET status=:status WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, status=request.form['status'])
+                '''
                 if str(request.form['status']) == '1':
                     if len(update_ids):
                         for notice_user_id in update_ids:
                             if str(request.form['user_id']) != str(notice_user_id):
                                 UserNotice().process(user_id=notice_user_id, task_id=task.id, message=task.title, title=my_user.realname+"完成了")
+                '''
             if request.form.has_key('title'):
                 sql = "UPDATE tasks SET title=:title WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, status=request.form['title'])
