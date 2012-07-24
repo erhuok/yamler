@@ -256,22 +256,22 @@ def task_update():
                 '''
             if request.form.has_key('title'):
                 sql = "UPDATE tasks SET title=:title WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, status=request.form['title'])
+                g.db.execute(text(sql), id=task.id, title=request.form['title'])
             if request.form.has_key('priority'):
                 sql = "UPDATE tasks SET priority=:priority WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, status=request.form['priority'])
+                g.db.execute(text(sql), id=task.id, priority=request.form['priority'])
             if request.form.has_key('end_time'):
                 sql = "UPDATE tasks SET end_time=:end_time WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, status=request.form['end_time'])
+                g.db.execute(text(sql), id=task.id, end_time=request.form['end_time'])
             if request.form.has_key('notify_time'):
                 sql = "UPDATE tasks SET notify_time=:notify_time WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, status=request.form['notify_time'])
+                g.db.execute(text(sql), id=task.id, notify_time=request.form['notify_time'])
             if request.form.has_key('to_user_id'):
                 sql = "UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, status=request.form['to_user_id'])
+                g.db.execute(text(sql), id=task.id, to_user_id=request.form['to_user_id'])
             if request.form.has_key('submit_user_id'):
                 sql = "UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, status=request.form['submit_user_id'])
+                g.db.execute(text(sql), id=task.id, submit_user_id=request.form['submit_user_id'])
             if request.form.has_key('is_del'):
                 sql = "UPDATE tasks SET is_del=:is_del WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, is_del=1)
