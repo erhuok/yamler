@@ -22,10 +22,10 @@ while (i<len(sys.argv)):
         type = sys.argv[i]
     i += 1
 
-pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+pool = redis.ConnectionPool(host='10.241.12.130', port=6379, db=0)
 redis = redis.Redis(connection_pool=pool)
 
-conn = MySQLdb.connect(host='127.0.0.1',user='root',passwd='data',db='yamler_development',charset='utf8',sql_mode="NO_ENGINE_SUBSTITUTION") 
+conn = MySQLdb.connect(host='127.0.0.1',user='souduanzu',passwd='hifly@2012',db='yamler_product',charset='utf8',sql_mode="NO_ENGINE_SUBSTITUTION") 
 cursor = conn.cursor(MySQLdb.cursors.DictCursor)
 
 def morning():
