@@ -369,7 +369,7 @@ def share():
 @mod.route('/notice/get', methods=['POST'])
 def notice_get():
     user_id = int(request.form['user_id']) 
-    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread, created_at, updated_at, title FROM user_notices WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY id DESC"), user_id=user_id, is_syn=0).fetchall() 
+    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread, created_at, updated_at, title FROM user_notices WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY id ASC"), user_id=user_id, is_syn=0).fetchall() 
     data_notice = []
     for row in rows:
         new_row = {'id':row.id, 'user_id':row.user_id, 'task_id':row.task_id, 'message':row.message, 'title':row.title, 'unread':row.unread}
