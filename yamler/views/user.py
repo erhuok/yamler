@@ -56,17 +56,19 @@ def register():
         db_session.commit()
         
         session['user_id'] = user.id 
-        flash('Thanks for registering')
-        
+
         if request.args.has_key('key'):
             invite_user_id = base64.decodestring(key)
+            invite_user = g.db.execute(text("SELECT id, company_id FROM users WHERE id=:id"), id=invite_user_id).first()
+            if invite_user and invite_user.company_id:
+                g.db.execute(text("UPDATE users SET company_id=:company_id WHERE id=:id"), id=user.id, company_id=invite_user.company_id)
+
             row = g.db.execute(text("SELECT id, level, user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"), user_id=invite_user_id).first() 
             if row:
                 level = int(row.level) + 1
                 g.db.execute(text("INSERT INTO user_invites SET user_id=:user_id, invite_user_id=:invite_user_id, level=:level, created_at=:created_at"), user_id=user.id, invite_user_id=invite_user_id, level=level, created_at=datetime.now()) 
                 return redirect(url_for('home.account'))
     return render_template('user/register.html', form=form)
-
 
 @mod.route('/active', methods=['GET', 'POST'])
 def active():

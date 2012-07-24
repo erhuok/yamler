@@ -55,10 +55,11 @@ def register():
         else:
             db_session.add(user)
             db_session.commit()
-            if request.form.has_key('company_name'):
-                row = g.db.execute(select([companies.c.id], and_(companies.c.name==request.form['company_name']))).fetchone()
-                company_id = g.db.execute(companies.insert(), name=request.form['company_name'], user_id=user.id).inserted_primary_key[0] if row is None else row['id']
-                g.db.execute(users.update().values({users.c.company_id: company_id, users.c.is_active: 1}).where(users.c.id==user.id))
+
+            #if request.form.has_key('company_name'):
+            #    row = g.db.execute(select([companies.c.id], and_(companies.c.name==request.form['company_name']))).fetchone()
+            #    company_id = g.db.execute(companies.insert(), name=request.form['company_name'], user_id=user.id).inserted_primary_key[0] if row is None else row['id']
+            g.db.execute(users.update().values({users.c.company_id: user.id, users.c.is_active: 1}).where(users.c.id==user.id))
             url = 'http://'+request.host + '/i/' + base64.encodestring(str(g.company.id)) 
             return jsonify(error=0, code='success', message='成功注册', user_id = user.id, company_id=user.company_id, url=url, realname=user.realname)
 
