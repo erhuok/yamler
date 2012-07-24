@@ -59,7 +59,7 @@ def register():
                 row = g.db.execute(select([companies.c.id], and_(companies.c.name==request.form['company_name']))).fetchone()
                 company_id = g.db.execute(companies.insert(), name=request.form['company_name'], user_id=user.id).inserted_primary_key[0] if row is None else row['id']
                 g.db.execute(users.update().values({users.c.company_id: company_id, users.c.is_active: 1}).where(users.c.id==user.id))
-            url = 'http://'+request.host + '/i/' + base64.encodestring(str(user.company_id)) 
+            url = 'http://'+request.host + '/i/' + base64.encodestring(str(user.id)) 
             return jsonify(error=0, code='success', message='成功注册', user_id = user.id, company_id=user.company_id, url=url, realname=user.realname)
 
     return jsonify(error=1, code = 'no_username_or_password', message='没有输入用户名或密码')
@@ -327,9 +327,10 @@ def company_get():
 @mod.route('/user/get', methods=['POST'])
 def user_get():
     if request.method == 'POST':
-        if request.form.has_key('company_id'):
+        if request.form.has_key('company_id') and request.form.has_key('user_id'):
             #rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id'], is_active==1))).fetchall()
-            rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=request.form['company_id'], is_active=1).fetchall()
+            #rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=request.form['company_id'], is_active=1).fetchall()
+            rows = UserNotice().getbyid(request.form['user_i:'])
             data = [dict(zip(row.keys(), row)) for row in rows]  
             return jsonify(error=0, data=data)
     return jsonify(error=1)

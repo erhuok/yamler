@@ -133,7 +133,7 @@ def delete(id):
             update_ids.append(row.user_id)
             for uid in update_ids:
                 message = g.user.realname + '删除了此任务:' + row.title
-                if int(uid) != g.user.id: 
+                if uid and int(uid) != g.user.id: 
                     UserNotice().process(user_id=uid, task_id=id, message=row.title, title=g.user.realname+"删除了")
             TaskUpdateData().insert(user_ids=update_ids, data={'is_del':1}, task_id=id)
 

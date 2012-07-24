@@ -62,26 +62,35 @@ class UserInvite(Model):
     
     def getbyid(self, user_id):
         data_user_ids = []
-        sql = "SELECT user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"
-        row1 = g.db.execute(text(sql), user_id=user_id).first()
-        #向上
-        if row1.invite_user_id:
-            data_user_ids.append(row1.invite_user_id)
-            row0 = g.db.execute(text("SELECT user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"), user_id=row.invite_user_id).first()
-            if row0.user_id:
-                data_user_ids.append(row0.user_id)
-        
-        #第一层
-        row2 = g.db.execute(text("SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id=:invite_user_id"), invite_user_id=user_id).first()
-        #第二层
-        if row2.user_id:
-            data_user_ids.append(row2.user_id)
-            sql = "SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id IN ({0})".format(','.join(row2.user_id.split(',')))
-            row3 = g.db.execute(text(sql)).first()
-            data_user_ids.append(row3.user_id)
-        
+        sql = "SELECT user_id, invite_user_id, level FROM user_invites WHERE user_id=:user_id"
+        row = g.db.execute(text(sql), user_id=user_id).first()
+
+        if row and int(row.level) == 0:
+            row1 = g.db.execute(text("SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id=:invite_user_id"), invite_user_id=user_id).first()
+            if row1.user_id:
+                row1_user_id = row1.user_id.split(',') 
+                sql = "SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id IN ({0})".format(','.join(row1_user_id)) 
+                row2 = g.db.execute(text(sql)).first()
+                row2_user_id = row2.user_id.split(',') if  row2.user_id else []
+                data_user_ids = list(set(row1_user_id) | set(row2_user_id))
+    
+        if row and int(row.level) == 1:
+            row0_user_id = [str(row.invite_user_id)] 
+            sql = "SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id=:invite_user_id"
+            row2 = g.db.execute(text(sql), invite_user_id=row.user_id).first()
+            row2_user_id = row2.user_id.split(',') if row2.user_id else []
+            data_user_ids = list(set(row0_user_id) | set(row2_user_id))
+
+        if row and int(row.level) == 2:
+            row1_user_id = [str(row.invite_user_id)]
+            row2 = g.db.execute(text("SELECT GROUP_CONCAT(user_id) AS user_id FROM user_invites WHERE invite_user_id=:invite_user_id"), invite_user_id=row.invite_user_id).first()
+            row2_user_id = row2.user_id.split(',') if row2.user_id else []
+            row0 = g.db.execute(text("SELECT invite_user_id FROM user_invites WHERE user_id=:user_id"), user_id=row.invite_user_id).first()
+            row0_user_id = [str(row0.invite_user_id)] if row0.invite_user_id else []
+            data_user_ids = list(set(row1_user_id) | set(row2_user_id) | set(row0_user_id))
+
         if len(data_user_ids):
-            sql = "SELECT id, user_id, realname FROM user WHERE id IN ({0})".format(','.join(data_user_ids))
+            sql = "SELECT id, realname, avatar FROM users WHERE id IN ({0})".format(','.join(data_user_ids))
             return g.db.execute(text(sql)).fetchall()
 
 class UserNotice(Model):
