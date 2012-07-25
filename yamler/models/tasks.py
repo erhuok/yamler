@@ -174,7 +174,7 @@ class TaskUpdateData():
             sql = "INSERT INTO task_update_data SET user_id=:user_id, task_id=:task_id, data=:data, created_at=:created_at"
             for uid in user_ids:
                 if uid and uid != ',' and int(str(uid)) > 0:
-                    g.db.execute(text(sql), user_id=uid, task_id=task_id, data=json.dumps(data), created_at=datetime.datetime.now())
+                    g.db.execute(text(sql), user_id=uid, task_id=task_id, data=json.dumps(data, ensure_ascii=False), created_at=datetime.datetime.now())
 
 class TaskComment(Model):
     __tablename__ = 'task_comments'
