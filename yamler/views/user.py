@@ -67,7 +67,16 @@ def register():
             if row:
                 level = int(row.level) + 1
                 g.db.execute(text("INSERT INTO user_invites SET user_id=:user_id, invite_user_id=:invite_user_id, level=:level, created_at=:created_at"), user_id=user.id, invite_user_id=invite_user_id, level=level, created_at=datetime.now()) 
-                return redirect(url_for('home.account'))
+            #联系人列表
+            contact = g.db.execute(text("SELECT id, user_id, contact_user_id FROM user_contacts WHERE user_id=:user_id"), user_id=invite_user_id).first()
+            if contact:
+                old_contact_user_id = contact.contact_user_id.split(',')
+                contact_user_id = list(set(old_contact_user_id) | set([str(user.id)])) 
+                g.db.execute(text("UPDATE user_contacts SET contact_user_id=:contact_user_id WHERE user_id=:user_id"), contact_user_id=','.join(contact_user_id), user_id=invite_user_id) 
+            else:
+                g.db.execute(text("INSERT INTO user_contacts SET contact_user_id=:contact_user_id, user_id=:user_id"), user_id=invite_user_id, contact_user_id=user.id)
+
+            return redirect(url_for('home.account'))
     return render_template('user/register.html', form=form)
 
 @mod.route('/active', methods=['GET', 'POST'])

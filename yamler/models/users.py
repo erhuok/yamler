@@ -118,6 +118,20 @@ class UserNotice(Model):
         sql = 'INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 1) ON DUPLICATE KEY UPDATE total_count=total_count+1'
         g.db.execute(text(sql), user_id=user_id)
 
+class UserContact(Model):
+    __tablename__ = 'user_contacts'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    contact_user_id = Column(String(255))
+
+    created_at = Column(DateTime,default=datetime.datetime.now())
+    updated_at = Column(DateTime,default=datetime.datetime.now())
+
+    def __init__(self, user_id=None, contact_user_id=None):
+        self.user_id = user_id
+        self.contact_user_id = contact_user_id
+    
+
 users = Table('users', metadata, autoload=True)
 user_notices = Table('user_notices', metadata, autoload=True)
 
