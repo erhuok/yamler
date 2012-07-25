@@ -144,12 +144,12 @@ class UserContact(Model):
         contact_rows = dict()
         if contact and contact.contact_user_id:
             contact_user_id = contact.contact_user_id.split(',')
-            sql = "SELECT id, realname, avatar, company_id, telephone, is_active, username FROM users WHERE id IN ({0})".format(','.join(contact_user_id))
+            sql = "SELECT id, realname, avatar, company_id, telephone, is_active, username FROM users WHERE is_active=:is_active AND id IN ({0})".format(','.join(contact_user_id))
             sql += " ORDER BY FIELD (`id`,{0})".format(','.join(contact_user_id))
-            contact_rows = g.db.execute(text(sql)).fetchall()
+            contact_rows = g.db.execute(text(sql), is_active=1).fetchall()
             contact_data = [dict(zip(row.keys(), row)) for row in contact_rows]  
 
-        rows = g.db.execute(text("SELECT id, realname, avatar, company_id, telephone, is_active, username FROM users WHERE company_id=:company_id"), company_id=user.company_id).fetchall()  
+        rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=request.form['company_id'], is_active=1).fetchall()
         data = [dict(zip(row.keys(), row)) for row in rows]  
 
         return (data, contact_data)
