@@ -63,10 +63,10 @@ def register():
             if invite_user and invite_user.company_id:
                 g.db.execute(text("UPDATE users SET company_id=:company_id WHERE id=:id"), id=user.id, company_id=invite_user.company_id)
 
-            row = g.db.execute(text("SELECT id, level, user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"), user_id=invite_user_id).first() 
-            if row:
-                level = int(row.level) + 1
-                g.db.execute(text("INSERT INTO user_invites SET user_id=:user_id, invite_user_id=:invite_user_id, level=:level, created_at=:created_at"), user_id=user.id, invite_user_id=invite_user_id, level=level, created_at=datetime.now()) 
+            #row = g.db.execute(text("SELECT id, level, user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"), user_id=invite_user_id).first() 
+            #if row:
+            #    level = int(row.level) + 1
+            g.db.execute(text("INSERT INTO user_invites SET user_id=:user_id, invite_user_id=:invite_user_id, created_at=:created_at"), user_id=user.id, invite_user_id=invite_user_id, created_at=datetime.now()) 
             #联系人列表
             contact = g.db.execute(text("SELECT id, user_id, contact_user_id FROM user_contacts WHERE user_id=:user_id"), user_id=invite_user_id).first()
             if contact:
@@ -74,7 +74,7 @@ def register():
                 contact_user_id = list(set(old_contact_user_id) | set([str(user.id)])) 
                 g.db.execute(text("UPDATE user_contacts SET contact_user_id=:contact_user_id WHERE user_id=:user_id"), contact_user_id=','.join(contact_user_id), user_id=invite_user_id) 
             else:
-                g.db.execute(text("INSERT INTO user_contacts SET contact_user_id=:contact_user_id, user_id=:user_id"), user_id=invite_user_id, contact_user_id=user.id)
+                g.db.execute(text("INSERT INTO user_contacts SET contact_user_id=:contact_user_id, user_id=:user_id, created_at=:created_at"), user_id=invite_user_id, contact_user_id=user.id,created_at=datetime.now())
 
             return redirect(url_for('home.account'))
     return render_template('user/register.html', form=form)
