@@ -1,7 +1,7 @@
 # encoding:utf-8
 from flask import Blueprint, request, session, jsonify, g
 from yamler.database import db_session
-from yamler.models.users import User, users, UserNotice
+from yamler.models.users import User, users, UserNotice, UserContact
 from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit, TaskUpdateData, TaskComment
 from yamler.models.companies import Company, companies 
 from yamler.models.user_relations import UserRelation 
@@ -328,12 +328,14 @@ def company_get():
 @mod.route('/user/get', methods=['POST'])
 def user_get():
     if request.method == 'POST':
-        if request.form.has_key('company_id'):
+        #if request.form.has_key('company_id'):
+        if request.form.has_key('user_id'):
             #rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id'], is_active==1))).fetchall()
-            rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=request.form['company_id'], is_active=1).fetchall()
+            #rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=request.form['company_id'], is_active=1).fetchall()
             #rows = UserNotice().getbyid(request.form['user_i:'])
-            data = [dict(zip(row.keys(), row)) for row in rows]  
-            return jsonify(error=0, data=data)
+            data, contact_data = UserContact().get(user_id=request.form['user_id'])
+            #data = [dict(zip(row.keys(), row)) for row in rows]  
+            return jsonify(error=0, data=data, contact_data=contact_data)
     return jsonify(error=1)
 
 
@@ -405,5 +407,12 @@ def notice_update():
                 sql = " UPDATE task_update_data SET is_syn=:is_syn WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_update_ids)) 
                 res = g.db.execute(text(sql), is_syn=1, user_id=user_id)
 
+        return jsonify(error=0)
+    return jsonify(error=1)
+
+@mod.route('/contact/update', methods=['POST'])
+def contact_update():
+    if request.form.has_key('user_id') and request.form.has_key('contact_user_id'):
+        UserContact().process(user_id=request.form['user_id'], contact_user_id=request.form['contact_user_id'])
         return jsonify(error=0)
     return jsonify(error=1)

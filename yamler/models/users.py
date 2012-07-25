@@ -131,6 +131,28 @@ class UserContact(Model):
         self.user_id = user_id
         self.contact_user_id = contact_user_id
     
+    def process(self, user_id, contact_user_id):
+        contact = g.db.execute(text("SELECT id, user_id, contact_user_id FROM user_contacts WHERE user_id=:user_id"), user_id=user_id).first()
+        if contact:
+            g.db.execute(text("UPDATE user_contacts SET contact_user_id=:contact_user_id WHERE user_id=:user_id"), contact_user_id=contact_user_id, user_id=user_id) 
+        else:
+            g.db.execute(text("INSERT INTO user_contacts SET contact_user_id=:contact_user_id, user_id=:user_id, created_at=:created_at"), user_id=user_id, contact_user_id=contact_user_id,created_at=datetime.datetime.now())
+
+    def  get(self, user_id):
+        user = g.db.execute(text("SELECT id, company_id FROM users WHERE id=:id"), id=user_id).first()
+        contact = g.db.execute(text("SELECT user_id, contact_user_id FROM user_contacts WHERE user_id=:user_id"), user_id=user_id).first()
+        contact_rows = dict()
+        if contact and contact.contact_user_id:
+            contact_user_id = contact.contact_user_id.split(',')
+            sql = "SELECT id, realname, avatar, company_id, telephone, is_active, username FROM users WHERE id IN ({0})".format(','.join(contact_user_id))
+            sql += " ORDER BY FIELD (`id`,{0})".format(','.join(contact_user_id))
+            contact_rows = g.db.execute(text(sql)).fetchall()
+            contact_data = [dict(zip(row.keys(), row)) for row in contact_rows]  
+
+        rows = g.db.execute(text("SELECT id, realname, avatar, company_id, telephone, is_active, username FROM users WHERE company_id=:company_id"), company_id=user.company_id).fetchall()  
+        data = [dict(zip(row.keys(), row)) for row in rows]  
+
+        return (data, contact_data)
 
 users = Table('users', metadata, autoload=True)
 user_notices = Table('user_notices', metadata, autoload=True)

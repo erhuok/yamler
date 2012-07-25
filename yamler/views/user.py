@@ -1,7 +1,7 @@
 # encoding:utf8
 
 from flask import Blueprint,request,render_template,session,flash,redirect,url_for,jsonify, g, make_response 
-from yamler.models.users import User,RegistrationForm,LoginForm, users, UserInvite
+from yamler.models.users import User,RegistrationForm,LoginForm, users, UserInvite, UserContact
 from yamler.database import db_session
 from yamler.utils import request_wants_json, required_login, allowed_images
 from datetime import date, datetime
@@ -81,6 +81,8 @@ def register():
 
 @mod.route('/active', methods=['GET', 'POST'])
 def active():
+    UserContact().get(user_id=1)
+    return 'ok'
     return render_template('user/active.html')
 
 @mod.route('/logout')
