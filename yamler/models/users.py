@@ -141,7 +141,7 @@ class UserContact(Model):
     def  get(self, user_id):
         user = g.db.execute(text("SELECT id, company_id FROM users WHERE id=:id"), id=user_id).first()
         contact = g.db.execute(text("SELECT user_id, contact_user_id FROM user_contacts WHERE user_id=:user_id"), user_id=user_id).first()
-        contact_rows = dict()
+        contact_data = dict()
         if contact and contact.contact_user_id:
             contact_user_id = contact.contact_user_id.split(',')
             sql = "SELECT id, realname, avatar, company_id, telephone, is_active, username FROM users WHERE is_active=:is_active AND id IN ({0})".format(','.join(contact_user_id))
@@ -149,7 +149,7 @@ class UserContact(Model):
             contact_rows = g.db.execute(text(sql), is_active=1).fetchall()
             contact_data = [dict(zip(row.keys(), row)) for row in contact_rows]  
 
-        rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=user.company_id, is_active=1).fetchall()
+        rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active, avatar FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=user.company_id, is_active=1).fetchall()
         data = [dict(zip(row.keys(), row)) for row in rows]  
 
         return (data, contact_data)
