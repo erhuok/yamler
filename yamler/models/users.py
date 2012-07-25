@@ -132,6 +132,7 @@ class UserContact(Model):
         self.contact_user_id = contact_user_id
     
     def process(self, user_id, contact_user_id):
+        contact_user_id = contact_user_id.strip(',')
         contact = g.db.execute(text("SELECT id, user_id, contact_user_id FROM user_contacts WHERE user_id=:user_id"), user_id=user_id).first()
         if contact:
             g.db.execute(text("UPDATE user_contacts SET contact_user_id=:contact_user_id WHERE user_id=:user_id"), contact_user_id=contact_user_id, user_id=user_id) 
