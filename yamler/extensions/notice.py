@@ -32,17 +32,27 @@ def morning():
     cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> ''")
     rows = cursor.fetchall() 
     for row in rows:
-        value = {'iphone_token': row['iphone_token'], 'message': '秘书提醒您：一天工作开始了，先写点你将要做什么吧！'}
+        value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：一天工作开始了，先写点你将要做什么吧！'}
         res = redis.lpush('notify',json.dumps(value))
 
 def evening():
     cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> ''")
     rows = cursor.fetchall() 
     for row in rows:
-        value = {'iphone_token': row['iphone_token'], 'message': '秘书提醒您：快下班了哦，总结下今天的工作吧！'}
+        value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：快下班了哦，总结下今天的工作吧！'}
+        res = redis.lpush('notify',json.dumps(value))
+
+#周一工作计划提醒
+def monday():
+    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> ''")
+    rows = cursor.fetchall() 
+    for row in rows:
+        value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：新的一周开始了，写下本周的工作计划吧！'}
         res = redis.lpush('notify',json.dumps(value))
 
 if type == 'morning':
     morning()
 elif type == 'evening':
     evening()
+elif type == 'monday':
+    monday()
