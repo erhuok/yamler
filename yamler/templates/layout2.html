@@ -5,25 +5,234 @@
 <title>无标题文档</title>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style_20120718new.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style_20120718new.css') }}"/>
-<script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}" type="text/javascript"></script>
-<script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}" type="text/javascript"></script>
-<script type="text/javascript">
+<script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
+
+<script  type="text/javascript">
 $(function(){
+	var show_flag = 1;
+	//点击展开右边
+	$("#dashboard #task-details").hide();
+	$("#list-view").css({width: "100%"});
+	$("#dashboard #task-list").css({width: "100%"});
+	
+	$("#dashboard_tasks_list li.task .task-middle").toggle(function(){
+		$(this).parent().parent().addClass("active");
+		if( $(this).parent().parent().hasClass("active") ){
+			$("#dashboard #task-details").show();
+			$("#dashboard #task-list").css({width: "60%"});
+		}
+		$("#dashboard_tasks_list li.task").not($(this).parent().parent()).removeClass("active");
+	},function(){
+		$(this).parent().parent().addClass("active");
+		$("#dashboard_tasks_list li.task").not($(this).parent().parent()).removeClass("active");
+		if($(this).parent().parent().hasClass("active")){
+			$("#dashboard #task-details").hide();
+			$("#list-view").css({width: "100%"});
+			$("#dashboard #task-list").css({width: "100%"});
+		}
+	});
+
+	
 	function reheight(){
 		var w_height = $(window).height();
+		var d_height = $(document).height();
 		var b_height = w_height-51;
+		var b1_height = d_height-51;
 		$("#wrapper #sidebar").css("height",b_height+"px");
-		$("#task-details-content").css("height",b_height+"px");
+		$("#dashboard #task-details ").css("height",b_height+"px");
+		if(d_height > w_height){
+			$("#wrapper #sidebar").css("height",b1_height+"px");
+			$("#dashboard #task-details").css("height",b1_height+"px");
+			
+		}
 	}
+	function position_f(show_flag){
+		var f_top = $(window).scrollTop();
+		var dash_width = $("#dashboard").width();
+		var dash_40 = dash_width*0.4;
+		var dash_60 = dash_width*0.6;
+		if(f_top > 51){
+			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
+			$("#list-view").css({top: "0"});
+			if(show_flag == 1){
+				$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","z-index":"998","margin-left":"auto",width:dash_40+"px"});
+			}else{
+				//$("#dashboard #task-details").hide();
+				$("#list-view").css({width: "100%"});
+				$("#dashboard #task-list").css({width: "100%"});
+			}
+		}else{
+			$("#wrapper #sidebar").css({position:"static","z-index":"auto"});
+			$("#dashboard #task-details").css({position:"relative" ,"z-index":"auto","margin-left":"60%",width:"40%"});
+		}
+	}
+	
 	$(window).load(function(){
 		reheight();
 	});
 	$(window).resize(function(){
 		reheight();
+		if(show_flag == 1){
+			position_f(show_flag == 1);
+		}else{
+			position_f(show_flag == 0);
+		}
 	}); 
 	$(window).scroll(function(){
 		reheight();
+		if(show_flag == 1){
+			position_f(show_flag == 1);
+		}else{
+			position_f(show_flag == 0);
+		}
 	}); 
+	
+	//添加人员
+	$(".sidebar-invite-people").click(function(){
+		$(".popin_addPeople").show();
+	})
+	
+	$(".people_close").click(function(){
+		$(".popin_addPeople").hide();
+	})
+	
+	//任务完成状态控制
+	$("#dashboard_tasks_list li.task .status").toggle(function(){
+		if( $(this).parent().addClass("undone")){
+			$(this).parent().removeClass("undone");
+			$(this).parent().addClass("done");
+		}
+	},function(){
+		if( $(this).parent().addClass("done")){
+			$(this).parent().removeClass("done");
+			$(this).parent().addClass("undone");
+		}
+	});
+	
+	//排序下拉控制
+	var Sort_clickState = 1;
+	//任务列表菜单显示隐藏
+	$(document).click(function(ev){
+		ev = ev || window.event;
+		var target = ev.target || ev.srcElement;
+		if(target.id !="STL_01" && target.id !="STL_02" && target.id !="STL_03" && target.id !="STL_04" && target.id !="STL_05" && target.id !="STL_06" && target.id !="STL_07" ){
+			$("#sortby_list").hide();
+			Sort_clickState = 1;
+		}
+	});
+	$("#sortby_current").toggle(function(){
+		if( Sort_clickState == 0 ){
+			Sort_clickState = 1;
+			$("#sortby_list").hide();
+		}else{
+			Sort_clickState = 0;
+			$("#sortby_list").show();	
+		}
+	},function(){
+		if( Sort_clickState == 1 ){
+			Sort_clickState = 0;
+			$("#sortby_list").show();	
+		}else{
+			Sort_clickState = 1;
+			$("#sortby_list").hide();	
+		}
+	});
+	
+	
+	//我的面板下拉效果控制
+	var My_clickState = 1;
+	$(document).click(function(My_e){
+		My_e = My_e || window.event;
+		var My_target = My_e.target || My_e.srcElement;
+		if(My_target.class !="account_first" && My_target.class !="account_link" ){
+			$(".account-dropdown").hide();
+			My_clickState = 1;
+		}
+	});
+
+	$(".menu-link").toggle(function(){
+		if( My_clickState == 0 ){
+			My_clickState = 1;
+			$(".account-dropdown").hide();
+		}else{
+			My_clickState = 0;
+			$(".account-dropdown").show();	
+		}
+	},function(){
+		if( My_clickState == 1 ){
+			My_clickState = 0;
+			$(".account-dropdown").show();	
+		}else{
+			My_clickState = 1;
+			$(".account-dropdown").hide();	
+		}
+	});
+	
+	//安排控件
+	var follow_clickState = 1;
+	$(document).click(function(follow_e){
+		follow_e = follow_e || window.event;
+		var follow_target = follow_e.target || follow_e.srcElement;
+		if(follow_target.class !="account_first" && follow_target.class !="account_link" ){
+			$(".popin_taskfollowers").hide();
+			follow_clickState = 1;
+		}
+	});
+	function follow_show(e){
+		var offset_plan = $(e).offset();
+		var plan_left = offset_plan.left-130;
+		var plan_top = offset_plan.top+45;
+		var plan_scrolltop = $(e).scrollTop();
+		$(".popin_taskfollowers").show();
+		$(".popin_taskfollowers").css({top:+(plan_top-plan_scrolltop)+"px",left:+plan_left+"px","z-index":"1000",position:"absolute"});
+	}
+	
+	$(".follow_plan").toggle(function(){
+		if( follow_clickState == 0 ){
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();
+		}else{
+			follow_clickState = 0;
+			follow_show(this);
+		}
+	},function(){
+		if( follow_clickState == 1 ){
+			follow_clickState = 0;
+			follow_show(this);
+		}else{
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();	
+		}
+	});
+	
+	//递交控件
+	$(".follow_hand").toggle(function(){
+		if( follow_clickState == 0 ){
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();
+		}else{
+			follow_clickState = 0;
+			follow_show(this);
+		}
+	},function(){
+		if( follow_clickState == 1 ){
+			follow_clickState = 0;
+			follow_show(this);
+		}else{
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();	
+		}
+	});
+	
+	$(".task_list_more").hover(function(){
+		$(this).addClass("hover");
+	},function(){
+		$(this).removeClass("hover");
+	}).click(function(){
+		$(".test_listBlock").show();
+	})
+	
 });
 </script>
 
@@ -44,22 +253,22 @@ $(function(){
             </a>
             <!--我的面板控件-->
             <div class="account-dropdown" style=" display:none;">
-                <h4 class="first">Preferences</h4>
-                <a class="link" href="javascript:;">My account</a>
-                <a class="link" href="javascript:;">Language options</a>
-                <a class="link" href="javascript:;">Mail to task</a>
-                <a class="link" href="javascript:;">Alerts</a>
-                <a class="link" href="javascript:;">My subscription</a>
-                <a class="link more-pro" href="javascript:;">More Pro Workspaces</a>
-                <h4 class="first">Apps</h4>
-                <a class="link" target="_blank" href="javascript:;">Download iPhone app</a>
-                <a class="link" target="_blank" href="javascript:;">Download Android app</a>
-                <a class="link" target="_blank" href="javascript:;">Download Mac OSX app</a>
-                <a class="link" target="_blank" href="javascript:;">Download Windows app</a>
-                <h4 class="first">Support</h4>
-                <a class="link" href="javascript:UserVoice.showPopupWidget();">Feedback & support</a>
-                <div class="separator"></div>
-                <a class="link logout" href="ajax/users/logout.php">Log out</a>
+                <h4 class="first account_first">Preferences</h4>
+                <a class="link account_link" href="javascript:;">我的任务</a>
+                <a class="link account_link" href="javascript:;">我的管理中心</a>
+                <a class="link account_link" href="javascript:;">添加人员</a>
+                <a class="link account_link" href="javascript:;">管理人员</a>
+                <a class="link account_link" href="javascript:;">My subscription</a>
+                <a class="link account_link more-pro" href="javascript:;">More Pro Workspaces</a>
+                <h4 class="first account_first">Apps</h4>
+                <a class="link account_link" target="_blank" href="javascript:;">Download iPhone app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Android app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Mac OSX app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Windows app</a>
+                <h4 class="first account_first">Support</h4>
+                <a class="link account_link" href="javascript:UserVoice.showPopupWidget();">Feedback & support</a>
+                <div class="separator account_first"></div>
+                <a class="link account_link logout" href="ajax/users/logout.php">Log out</a>
             </div><!--我的面板控件 end-->
             
         </li>
@@ -98,15 +307,15 @@ $(function(){
                 	<!--个人添加块-->
                     <div class="colleagues-in">
                         <div id="dashboard_sidebar_648918_team" class="sidebar-avatar team ">
-                            <img class="icon hover-object" src="{{ url_for('static', filename='home/images/index_img_20120718/icon-team.png') }}..">
+                            <img class="icon hover-object" src="../images/index_img_20120718/icon-team.png">
                         </div>
                         <div id="dashboard_sidebar_648918_avatar_479510" class="sidebar-avatar selected radius-3" canvas="canvas_479510">
-                            <img class="radius-2 transition-effect hover-object"  src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+                            <img class="radius-2 transition-effect hover-object"  src="../images/index_img_20120718/479510-1342579213.jpg">
                         </div>
                         <div id="dashboard_sidebar_invite_648918" class="sidebar-invite-people hover-object" >
                             <a class="sidebar-invite-people"  href="javascript:;">
                                 <i class="icon radius-3 btn btn_green">
-                                    <img border="0" src="{{ url_for('static', filename='home/images/index_img_20120718/add_colleague.png') }}">
+                                    <img border="0" src="../images/index_img_20120718/add_colleague.png">
                                 </i>
                             </a>
                         </div>
@@ -118,7 +327,7 @@ $(function(){
                     <div class="colleagues-divider"></div>
                     <!--用户显示块-->
                     <div id="id_target_user" name="479510">
-                        <img class="target_user_avatar radius-3" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}  ">
+                        <img class="target_user_avatar radius-3" src="../images/index_img_20120718/479510-1342579213.jpg">
                         <b class="user-border radius-3"></b>
                         <div class="name-container">
                             <div class="target-user-name">
@@ -137,6 +346,9 @@ $(function(){
                     <li id="filter_1" class="filter filter_li mytasks selected"  name="1">
                         <i class="drag-handler"></i>
                         <i class="icon filter"></i>
+                        <!--<i class="task-counter radius-10 ellipsis">1</i>-->
+                        <span class="title ellipsis"> 所有任务 </span>
+                        <!--<i class="task-counter radius-10 ellipsis filter-task-nb" title="1">1</i>-->
                     </li>
                     <li id="filter_2" class="filter filter_li recipient"  name="2">
                         <i class="drag-handler"></i>
@@ -144,7 +356,7 @@ $(function(){
                             <i class="icon filter"></i>
                             <span class="title ellipsis"> 我的任务 </span>
                         </div>
-                        <i class="task-counter radius-10 ellipsis filter-task-nb" title="0">0</i>
+                        
                     </li>
                     <li id="filter_3" class="filter filter_li archived"  name="3">
                         <i class="drag-handler"></i>
@@ -152,7 +364,7 @@ $(function(){
                             <i class="icon filter"></i>
                             <span class="title ellipsis">他人任务</span>
                         </div>
-                        <i class="task-counter radius-10 ellipsis filter-task-nb" title="0">0</i>
+                        
                     </li>
                     <li id="filter_4" class="filter filter_li starred"  name="4">
                         <i class="drag-handler"></i>
@@ -160,7 +372,7 @@ $(function(){
                             <i class="icon filter"></i>
                             <span class="title ellipsis">通知 </span>
                         </div>
-                        <i class="task-counter radius-10 ellipsis filter-task-nb" title="1">1</i>
+                        
                     </li>
                     
                 </ul>
@@ -170,24 +382,24 @@ $(function(){
         </div>
     </div>
     <!--左边布局 end-->
-    
-    {% block content %} {% endblock %}
+    {% block content %} {% endblock %} 
+  
     
     
 </div>
 <!--主体块 end-->
 
 <!--递交给和安排给弹窗-->
-<div id="popin_taskfollowers_10549862" class="popin regular radius-4 radius" webdrivername="popin-opened" style="top: 180px; left: 960px; display:none;">
+<div id="popin_taskfollowers_10549862" class="popin regular radius-4 radius popin_taskfollowers" style="top: 180px; left: 960px; display:none;">
     <i class="nipple" style="left: 135px;"></i>
     <div class="popin_header"> 添加安排人员 </div>
     <div id="popin_taskfollowers_10549862_content" class="popin-content">
-        <div class="invite-to-use">
+        <div class="invite-to-use" id="invite-to-use">
         
         您可以选择想安排给谁，这样他就可以看到你写的任务了！
         <a hreg="javascript:;"> 添加人员 </a>
         </div>
-        <ul class="popin-radio-list">
+        <ul class="popin-radio-list" id="popin-radio-list">
             <form id="form-task-followers" onsubmit="return (false);" name="form-task-followers">
                 <input type="hidden" value="10549862" name="id_task">
                 <li>
@@ -233,11 +445,11 @@ $(function(){
 <!--递交给和安排给弹窗 end-->
 
 <!--新加人员弹窗-->
-<div id="popin__0" class="popin blackout radius" webdrivername="popin-opened" style="top: 5px; left: 3px; position: absolute; display:none;">
+<div id="popin__0" class="popin blackout radius popin_addPeople"  style="top: 5px; left: 3px; position: absolute; z-index:1001;">
     <i class="nipple" style="left: 0px;"></i>
     <div class="popin_header"> </div>
     <div id="popin__0_content" class="popin-content">
-        <a class="close-btn" onclick="popin_manager.close();" href="javascript:;">
+        <a class="close-btn people_close" href="javascript:;">
             <i class="close-cross"></i>
             关闭
         </a>
