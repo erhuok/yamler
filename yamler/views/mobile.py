@@ -295,9 +295,14 @@ def task_update():
             elif request.form.has_key('submit_user_id'):
                 TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(submit_user_id.split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data)
             else:
-                data = dict(request.form)
-                del data['id']
+                if request.form.has_key('is_del'):
+                    data = {'is_del':1}
+                if request.form.has_key("status"):
+                    data = {'status': request.form['status']}
+                if request.form.has_key('title'):
+                    data = {'title': request.form['title']}
                 TaskUpdateData().insert(user_ids=update_ids, task_id=task.id, data=data)
+                
             
             return jsonify(error=0, code='success', message='修改成功', id=task.id)
     
