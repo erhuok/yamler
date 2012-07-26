@@ -292,10 +292,10 @@ def task_update():
 
             if request.form.has_key('to_user_id'): 
                 data['to_user_id'] = request.form['to_user_id'].strip(',')
-                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(to_user_id.split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname, data=data)
+                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(to_user_id.split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname, data=data, update_data={'to_user_id':data['to_user_id']})
             elif request.form.has_key('submit_user_id'):
                 data['submit_user_id'] = request.form['submit_user_id'].strip(',')
-                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(submit_user_id.split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data)
+                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(submit_user_id.split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data, update_data={'submit_user_id':data['submit_user_id']})
             else:
                 if request.form.has_key('is_del'):
                     data = {'is_del':1}

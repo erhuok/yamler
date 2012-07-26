@@ -260,7 +260,7 @@ class TaskShare(Model):
             UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'递交给我') 
         iphone_notify(share_user_id, type='share', title=title, realname=realname) 
         
-    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None, update_data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
         insert_ids = [uid for uid in insert_ids if uid]
@@ -282,6 +282,12 @@ class TaskShare(Model):
                     g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
                     UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'取消了递交')
             TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
+
+        if update_data:
+            update_ids = share_user_id.intersection(old_user_id)
+            update_ids = [uid for uid in update_ids if uid]
+            if len(update_ids):
+                TaskUpdateData().insert(user_ids=update_ids, data=update_data, task_id=task_id)
 
 class TaskSubmit(Model):
     __tablename__ = 'task_submit'
@@ -307,7 +313,7 @@ class TaskSubmit(Model):
         iphone_notify(share_user_id, type='submit', title=title, realname=realname)
                 
 
-    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None, update_data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
         insert_ids = [uid for uid in insert_ids if uid]
@@ -330,6 +336,12 @@ class TaskSubmit(Model):
                     g.db.execute(text("DELETE FROM `task_submit` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
                     UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'取消了安排')
             TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
+        
+        if update_data:
+            update_ids = share_user_id.intersection(old_user_id)
+            update_ids = [uid for uid in update_ids if uid]
+            if len(update_ids):
+                TaskUpdateData().insert(user_ids=update_ids, data=update_data, task_id=task_id)
 
 tasks = Table('tasks', metadata, autoload=True)
 task_comments = Table('task_comments', metadata, autoload=True)

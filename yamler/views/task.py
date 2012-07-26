@@ -63,7 +63,7 @@ def share(id):
         data['updated_at'] = datetimeformat(row.updated_at)
         data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
         data['end_time'] = row.end_time.strftime('%Y-%m-%d %T') if row.end_time and isinstance(row.end_time, datetime) else ''
-        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname, data=data)
+        TaskShare().update(old_user_id=set(row.to_user_id.split(',')), share_user_id=set(to_user_id.split(',')), task_id=id, title=row.title, realname=g.user.realname, data=data, update_data={'to_user_id':to_user_id})
         return jsonify(error=0) 
     share_users = dict()
     if row.to_user_id:
@@ -87,7 +87,7 @@ def submit(id):
         data['updated_at'] = datetimeformat(row.updated_at)
         data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
         data['end_time'] = row.end_time.strftime('%Y-%m-%d %T') if row.end_time and isinstance(row.end_time, datetime) else ''
-        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname, data=data)
+        TaskSubmit().update(old_user_id=set(row.submit_user_id.split(',')), share_user_id=set(submit_user_id.split(',')), task_id=id,  title=row.title, realname=g.user.realname, data=data, update_data={'submit_user_id':submit_user_id})
         return jsonify(error=0) 
     share_users = dict()
     if row.submit_user_id:
