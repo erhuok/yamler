@@ -291,8 +291,10 @@ def task_update():
                 data['end_time'] = data['end_time'].strftime('%Y-%m-%d %T') if task.end_time and isinstance(task.end_time, datetime.datetime) else ''
 
             if request.form.has_key('to_user_id'): 
+                data['to_user_id'] = request.form['to_user_id'].strip(',')
                 TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(to_user_id.split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname, data=data)
             elif request.form.has_key('submit_user_id'):
+                data['submit_user_id'] = request.form['submit_user_id'].strip(',')
                 TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(submit_user_id.split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data)
             else:
                 if request.form.has_key('is_del'):
