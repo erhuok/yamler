@@ -236,7 +236,7 @@ def update_by_ids():
 @mod.route('/task/update', methods=['POST'])
 def task_update():
     if request.method == 'POST' and request.form['id'] and request.form['user_id']:
-        task = g.db.execute(text("SELECT * FROM tasks WHERE id=:id"), id=request.form['id']).first()
+        task = g.db.execute(text("SELECT * FROM tasks WHERE `id`=:id"), id=request.form['id']).fetchone()
         old_to_user_id = set(task.to_user_id.split(',')) 
         old_submit_user_id = set(task.submit_user_id.split(',')) 
         update_ids = list(set(task.to_user_id.split(',')) | set(task.submit_user_id.split(',')))
@@ -267,11 +267,13 @@ def task_update():
                 sql = "UPDATE tasks SET notify_time=:notify_time WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, notify_time=request.form['notify_time'])
             if request.form.has_key('to_user_id'):
-                sql = "UPDATE tasks SET to_user_id=:to_user_id WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, to_user_id=request.form['to_user_id'])
+                sql = "UPDATE `tasks` SET `to_user_id` = :to_user_id WHERE `id` =:id"
+                to_user_id = request.form['to_user_id'] if request.form['to_user_id'] else ''
+                g.db.execute(text(sql), id=task.id, to_user_id=to_user_id)
             if request.form.has_key('submit_user_id'):
-                sql = "UPDATE tasks SET submit_user_id=:submit_user_id WHERE id=:id"
-                g.db.execute(text(sql), id=task.id, submit_user_id=request.form['submit_user_id'])
+                sql = "UPDATE `tasks` SET `submit_user_id`=:submit_user_id WHERE `id`=:id"
+                submit_user_id = request.form['submit_user_id'] if request.form['submit_user_id'] else ''
+                g.db.execute(text(sql), id=task.id, submit_user_id=submit_user_id)
             if request.form.has_key('is_del'):
                 sql = "UPDATE tasks SET is_del=:is_del WHERE id=:id"
                 g.db.execute(text(sql), id=task.id, is_del=1)
@@ -288,10 +290,10 @@ def task_update():
                 data['notify_time'] = data['notify_time'].strftime('%Y-%m-%d %T') if task.notify_time and isinstance(task.notify_time, datetime.datetime) else ''
                 data['end_time'] = data['end_time'].strftime('%Y-%m-%d %T') if task.end_time and isinstance(task.end_time, datetime.datetime) else ''
 
-            if request.form.has_key('to_user_id') and request.form['to_user_id']:
-                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname, data=data)
-            elif request.form.has_key('submit_user_id') and request.form['submit_user_id']:
-                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(request.form['submit_user_id'].split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data)
+            if request.form.has_key('to_user_id'): 
+                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(to_user_id.split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname, data=data)
+            elif request.form.has_key('submit_user_id'):
+                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(submit_user_id.split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data)
             else:
                 data = dict(request.form)
                 del data['id']
@@ -304,11 +306,9 @@ def task_update():
 @mod.route('/task/delete', methods=['POST'])
 def task_delete():
     if request.method == 'POST' and request.form['id'] and request.form['user_id']:
-        row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=request.form['id']).first()
-        if row and row.user_id == int(request.form['user_id']):
-            g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='1' WHERE id=:id"),is_del=1,id=request.form['id'])
-            g.db.execute(text("UPDATE task_submit SET is_del=:is_del WHERE task_id=:id"),is_del=1,id=request.form['id'])
-            return jsonify(error=0, code='success', message='删除成功', id=row.id)
+        user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
+        Task().delete(id=request.form['id'], user_id=request.form['user_id'], realname=user_row.realname)
+        return jsonify(error=0, code='success', message='删除成功', id=request.form['id'])
     return jsonify(error=1, code='failed', message='删除失败')
 
 @mod.route('/company/get', methods=['POST'])

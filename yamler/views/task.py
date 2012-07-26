@@ -1,7 +1,7 @@
 # encoding:utf8
 from flask import Blueprint,request,render_template,session, g,jsonify
 from sqlalchemy.sql import select, text 
-from yamler.models.tasks import tasks, TaskShare, TaskSubmit, TaskUpdateData
+from yamler.models.tasks import tasks, TaskShare, TaskSubmit, TaskUpdateData, Task
 from yamler.models.users import users, UserNotice 
 from datetime import datetime
 import json
@@ -125,16 +125,5 @@ def get(id):
 
 @mod.route('/delete/<int:id>')
 def delete(id):
-    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status, submit_user_id FROM tasks WHERE id=:id"), id=id).first()
-    if row and row['user_id'] == g.user.id:
-        g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=id)
-        update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')))
-        if update_ids:
-            update_ids.append(row.user_id)
-            for uid in update_ids:
-                message = g.user.realname + '删除了此任务:' + row.title
-                if uid and int(uid) != g.user.id: 
-                    UserNotice().process(user_id=uid, task_id=id, message=row.title, title=g.user.realname+"删除了")
-            TaskUpdateData().insert(user_ids=update_ids, data={'is_del':1}, task_id=id)
-
-        return jsonify(id=id)
+    Task().delete(id=id, user_id=g.user.id, realname=g.user.realname)
+    return jsonify(id=id)

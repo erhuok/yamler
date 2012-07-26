@@ -50,6 +50,19 @@ class Task(Model):
 
         return result
 
+    def delete(self, id, user_id, realname):
+        row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status, submit_user_id FROM tasks WHERE id=:id"), id=id).first()
+        if row and row['user_id'] == int(user_id):
+            g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=id)
+            update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')) | set([str(row.user_id)]))
+            update_ids = [uid for uid in update_ids if uid]
+            if update_ids:
+                message = realname + '删除了此任务:' + row.title
+                for uid in update_ids:
+                    if uid and int(uid) != user_id: 
+                        UserNotice().process(user_id=uid, task_id=id, message=row.title, title=realname+"删除了")
+                TaskUpdateData().insert(user_ids=update_ids, data={'is_del':1}, task_id=id)
+
     def get_share_data(self, user_id, created_at=None, status=None):
         start_time = ''
         if created_at and created_at != '0':
@@ -197,8 +210,7 @@ class TaskComment(Model):
             res = g.db.execute(text("INSERT INTO task_comments SET user_id=:user_id, task_id=:task_id, content=:content, created_at=:created_at"), user_id=user_id, task_id=task_id, content=content, created_at=created_at)
             if res.lastrowid:
                 g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
-                update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(','))) 
-                update_ids.append(user_id)
+                update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')) | set([str(row.user_id)])) 
                 TaskUpdateData().insert(user_ids=update_ids, task_id=task_id, data={'comment_count': row.comment_count+1})
 
                 to_user_id = [] 
@@ -251,10 +263,10 @@ class TaskShare(Model):
     def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
+        insert_ids = [uid for uid in insert_ids if uid]
         if len(insert_ids):
-            g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
-                if int(user_id) > 0:
+                if user_id and int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
 
                     UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"递交给我")
@@ -263,12 +275,12 @@ class TaskShare(Model):
             iphone_notify(insert_ids, type='share', title=title, realname=realname)
 
         delete_ids = old_user_id.difference(share_user_id)
+        delete_ids = [uid for uid in delete_ids if uid]
         if len(delete_ids):
             for user_id in delete_ids:
-                g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
-                g.db.execute(text("DELETE FROM `user_notices` WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id)
-                g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-1"), user_id=user_id)
-
+                if user_id:
+                    g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'取消了递交')
             TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
 
 class TaskSubmit(Model):
@@ -298,10 +310,11 @@ class TaskSubmit(Model):
     def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
+        insert_ids = [uid for uid in insert_ids if uid]
         if len(insert_ids):
-            g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
+            #g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
-                if int(user_id) > 0:
+                if user_id and int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
                     UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"安排给我")
 
@@ -310,15 +323,13 @@ class TaskSubmit(Model):
             iphone_notify(insert_ids, type='submit', title=title, realname=realname)
         
         delete_ids = old_user_id.difference(share_user_id)
+        delete_ids = [uid for uid in delete_ids if uid]
         if len(delete_ids):
             for user_id in delete_ids:
                 if user_id > 0:
-                    g.db.execute(text("UPDATE `task_submit` SET is_del=:is_del WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id, is_del=1)
-                    g.db.execute(text("DELETE FROM `user_notices` WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id)
-                    g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-1"), user_id=user_id)
-                    TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
-
-
+                    g.db.execute(text("DELETE FROM `task_submit` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'取消了安排')
+            TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
 
 tasks = Table('tasks', metadata, autoload=True)
 task_comments = Table('task_comments', metadata, autoload=True)
