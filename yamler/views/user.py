@@ -58,7 +58,8 @@ def register():
         session['user_id'] = user.id 
 
         if request.args.has_key('key'):
-            invite_user_id = base64.decodestring(key)
+            #invite_user_id = base64.decodestring(key)
+            invite_user_id = key
             invite_user = g.db.execute(text("SELECT id, company_id FROM users WHERE id=:id"), id=invite_user_id).first()
             if invite_user and invite_user.company_id:
                 g.db.execute(text("UPDATE users SET company_id=:company_id WHERE id=:id"), id=user.id, company_id=invite_user.company_id)
@@ -93,7 +94,8 @@ def logout():
     
 @mod.route('/invite')
 def invite():
-    url = 'http://' + request.host + '/i/' + base64.encodestring(str(g.user.id))  
+    #url = 'http://' + request.host + '/i/' + base64.encodestring(str(g.user.id))  
+    url = 'http://' + request.host + '/i/' + str(g.user.id) 
     return render_template('user/invite.html', url=url)
 
 @mod.route('/setting', methods=['GET', 'POST'])

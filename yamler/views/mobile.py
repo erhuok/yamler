@@ -29,7 +29,8 @@ def login():
             else:
                 sql = "UPDATE users SET last_login_time=:last_login_time WHERE id=:id"
                 g.db.execute(text(sql), id=result.id, last_login_time=datetime.datetime.now()) 
-            url = 'http://'+request.host + '/i/' + base64.encodestring(str(result.company_id)) 
+            #url = 'http://'+request.host + '/i/' + base64.encodestring(str(result.company_id)) 
+            url = 'http://'+request.host + '/i/' + str(result.id) 
             return jsonify(error=0, code='success', message='登录成功', user_id = result.id, company_id=result.company_id, url=url, realname=result.realname)
         else:
             return jsonify(error=1, code='username_or_password_error',message='用户名或密码错误',)
@@ -60,7 +61,8 @@ def register():
             #    row = g.db.execute(select([companies.c.id], and_(companies.c.name==request.form['company_name']))).fetchone()
             #    company_id = g.db.execute(companies.insert(), name=request.form['company_name'], user_id=user.id).inserted_primary_key[0] if row is None else row['id']
             g.db.execute(users.update().values({users.c.company_id: user.id, users.c.is_active: 1}).where(users.c.id==user.id))
-            url = 'http://'+request.host + '/i/' + base64.encodestring(str(user.id)) 
+            #url = 'http://'+request.host + '/i/' + base64.encodestring(str(user.id)) 
+            url = 'http://'+request.host + '/i/' + str(user.id) 
             return jsonify(error=0, code='success', message='成功注册', user_id = user.id, url=url, realname=user.realname)
 
     return jsonify(error=1, code = 'no_username_or_password', message='没有输入用户名或密码')
