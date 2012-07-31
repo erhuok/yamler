@@ -157,6 +157,7 @@
         
         <!--右边第二列-->
         <div id="task-details" class="dashboard-panel-effect" display="hide">
+        
         </div>
         <!--右边第二列 end-->
         
@@ -439,7 +440,7 @@ $(function(){
     });
 
  
-	var show_flag = 1;
+	//var show_flag = 1;
 	//点击展开右边
 	$("#dashboard #task-details").hide();
 	$("#list-view").css({width: "100%"});
@@ -450,19 +451,27 @@ $(function(){
     function getDetail(id) {
 		$(".popin_taskfollowers").hide();
         var selected_id = $("#task-details").attr('name');
-        
+		
+        //设置高度
+		var dash_width = $("#dashboard").width();
+		var dash_40 = dash_width*0.45;
+		var dash_60 = dash_width*0.55;
+		
         $("#dashboard_tasks_list li").removeClass('active');
         $("#task_list_"+id).addClass('active');
 
         var display = $("#task-details").attr('display');
         if(id == selected_id && display == 'show') {
             $("#dashboard #task-details").hide();
+			$("#list-view").css({width: "100%"});
             $("#dashboard #task-list").css({width: "100%"});
             $("#task-details").attr('display', 'hide');
         } else {
             $("#dashboard #task-details").show();
-            $("#dashboard #task-list").css({width: "55%"});
+			$("#list-view").css({width: dash_60+"px"});
+            $("#dashboard #task-list").css({width: "100%"});
             $("#task-details").attr('display', 'show');
+			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0", "z-index":"998","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
 
             $.getJSON('/task/get/'+id,function(res) { 
                 var task_detail = $("#task-details");
@@ -824,57 +833,51 @@ $(function(){
 		var d_height = $(document).height();
 		var b_height = w_height-51;
 		var b1_height = d_height-51;
-		$("#wrapper #sidebar").css("height",b_height+"px");
-		$("#dashboard #task-details ").css("height",b_height+"px");
 		if(d_height > w_height){
 			$("#wrapper #sidebar").css("height",b1_height+"px");
 			$("#dashboard #task-details").css("height",b1_height+"px");
-			
+		}else{
+			$("#wrapper #sidebar").css("height",b_height+"px");
+			$("#dashboard #task-details ").css("height",b_height+"px");
 		}
 	}
 	
-	function position_f(show_flag){
+	function position_f(){
 		var f_top = $(window).scrollTop();
 		var dash_width = $("#dashboard").width();
 		var dash_40 = dash_width*0.45;
 		var dash_60 = dash_width*0.55;
 		if(f_top > 51){
+			
 			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
-			$("#list-view").css({top: "0"});
-			if(show_flag == 1){
-				$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","z-index":"998","margin-left":"auto",width:dash_40+"px"});
-			}else{
+			//$("#list-view").css({top: "0"});
+			$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","z-index":"998","margin-left":"auto",width:dash_40+"px","overflow":"hidden"});
+			
 				//$("#dashboard #task-details").hide();
-				$("#list-view").css({width: "100%"});
-				$("#dashboard #task-list").css({width: "100%"});
-			}
+				//$("#list-view").css({width: "100%"});
+				//$("#dashboard #task-list").css({width: "100%"});
+			
 		}else{
-			$("#wrapper #sidebar").css({position:"static","z-index":"auto"});
-			$("#dashboard #task-details").css({position:"relative" ,"z-index":"auto","margin-left":"55%",width:"45%"});
+			$("#wrapper #sidebar").css({position:"static","z-index":"998"});
+			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0", "z-index":"998","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
 		}
 	}
 	
 	$(window).load(function(){
 		reheight();
-		listHeight_scroll();
+		//listHeight_scroll();
 	});
 	$(window).resize(function(){
 		reheight();
-		listHeight_scroll();
-		if(show_flag == 1){
-			position_f(show_flag == 1);
-		}else{
-			position_f(show_flag == 0);
-		}
-	}); 
+		//listHeight_scroll();
+	});
+	
+	//listHeight_scroll();
+	//reheight();
 	$(window).scroll(function(){
 		reheight();
 		listHeight_scroll();
-		if(show_flag == 1){
-			position_f(show_flag == 1);
-		}else{
-			position_f(show_flag == 0);
-		}
+		position_f();
 	});
 	
 	
@@ -893,10 +896,11 @@ $(function(){
     */
 	//任务完成状态控制
 
-	
+	/*
 	//排序下拉控制
 	var Sort_clickState = 1;
 	//任务列表菜单显示隐藏
+	
 	$(document).click(function(ev){
 		ev = ev || window.event;
 		var target = ev.target || ev.srcElement;
@@ -905,6 +909,7 @@ $(function(){
 			Sort_clickState = 1;
 		}
 	});
+	
 	$("#sortby_current").toggle(function(){
 		if( Sort_clickState == 0 ){
 			Sort_clickState = 1;
@@ -925,7 +930,9 @@ $(function(){
 	
 	
 	//我的面板下拉效果控制
+	
 	var My_clickState = 1;
+	
 	$(document).click(function(My_e){
 		My_e = My_e || window.event;
 		var My_target = My_e.target || My_e.srcElement;
@@ -934,6 +941,7 @@ $(function(){
 			My_clickState = 1;
 		}
 	});
+	
 
 	$(".menu-link").toggle(function(){
 		if( My_clickState == 0 ){
@@ -953,8 +961,9 @@ $(function(){
 		}
 	});
 	
+	
 	//安排控件
-    /*
+    
 	var follow_clickState = 1;
 	$(document).click(function(follow_e){
 		follow_e = follow_e || window.event;
