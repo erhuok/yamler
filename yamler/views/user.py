@@ -1,7 +1,7 @@
 # encoding:utf8
 
 from flask import Blueprint,request,render_template,session,flash,redirect,url_for,jsonify, g, make_response 
-from yamler.models.users import User,RegistrationForm,LoginForm, users
+from yamler.models.users import User,RegistrationForm,LoginForm, users, UserInvite, UserContact
 from yamler.database import db_session
 from yamler.utils import request_wants_json, required_login, allowed_images
 from datetime import date, datetime
@@ -39,37 +39,51 @@ def login():
 @mod.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm(request.form)
+    key = request.args.get('key')
     if request.method=='POST' and form.validate():
-        company_id = ''
-        if request.args.has_key('key'):
-            key = request.args.get('key')
-            id = base64.decodestring(key)
-            if id:
-                row = g.db.execute(text("SELECT id FROM companies WHERE id=:id"), id=id).fetchone()
-                if row: company_id = id
         user=User(form.username.data, 
                   form.password.data, 
                   is_active=1,
                   realname = request.form['realname'] if request.form.has_key('realname')   else '',
-                  company_id = company_id,
+                  #company_id = company_id,
                   telephone = request.form['telephone'],
                  )
         result = User.query.filter_by(username=user.username).first()
         if result:
-            return redirect(url_for('user.register'))
+            return redirect(url_for('user.register', key=key))
+      
         db_session.add(user)
         db_session.commit()
+        
         session['user_id'] = user.id 
-        flash('Thanks for registering')
 
-        if request.args.get('key'):
+        if request.args.has_key('key'):
+            #invite_user_id = base64.decodestring(key)
+            invite_user_id = key
+            invite_user = g.db.execute(text("SELECT id, company_id FROM users WHERE id=:id"), id=invite_user_id).first()
+            if invite_user and invite_user.company_id:
+                g.db.execute(text("UPDATE users SET company_id=:company_id WHERE id=:id"), id=user.id, company_id=invite_user.company_id)
+
+            #row = g.db.execute(text("SELECT id, level, user_id, invite_user_id FROM user_invites WHERE user_id=:user_id"), user_id=invite_user_id).first() 
+            #if row:
+            #    level = int(row.level) + 1
+            g.db.execute(text("INSERT INTO user_invites SET user_id=:user_id, invite_user_id=:invite_user_id, created_at=:created_at"), user_id=user.id, invite_user_id=invite_user_id, created_at=datetime.now()) 
+            #联系人列表
+            contact = g.db.execute(text("SELECT id, user_id, contact_user_id FROM user_contacts WHERE user_id=:user_id"), user_id=invite_user_id).first()
+            if contact:
+                old_contact_user_id = contact.contact_user_id.split(',')
+                contact_user_id = list(set(old_contact_user_id) | set([str(user.id)])) 
+                g.db.execute(text("UPDATE user_contacts SET contact_user_id=:contact_user_id WHERE user_id=:user_id"), contact_user_id=','.join(contact_user_id), user_id=invite_user_id) 
+            else:
+                g.db.execute(text("INSERT INTO user_contacts SET contact_user_id=:contact_user_id, user_id=:user_id, created_at=:created_at"), user_id=invite_user_id, contact_user_id=user.id,created_at=datetime.now())
+
             return redirect(url_for('home.account'))
-
-        return redirect(url_for('company.create'))
     return render_template('user/register.html', form=form)
 
 @mod.route('/active', methods=['GET', 'POST'])
 def active():
+    UserContact().get(user_id=1)
+    return 'ok'
     return render_template('user/active.html')
 
 @mod.route('/logout')
@@ -80,8 +94,18 @@ def logout():
     
 @mod.route('/invite')
 def invite():
-    url = request.host + '/i/' + base64.encodestring(str(g.company.id))  
+    #url = 'http://' + request.host + '/i/' + base64.encodestring(str(g.user.id))  
+    url = 'http://' + request.host + '/i/' + str(g.user.id) 
     return render_template('user/invite.html', url=url)
+
+@mod.route('/get/<string:ids>')
+def get(ids):
+    if ids:
+        sql = "SELECT id, realname, avatar FROM users WHERE ID IN ({0})".format(','.join(ids.split(',')))
+        rows = g.db.execute(text(sql)).fetchall()
+        data = [dict(zip(row.keys(), row)) for row in rows]  
+        return jsonify(error=0, data=data)
+
 
 @mod.route('/setting', methods=['GET', 'POST'])
 @required_login

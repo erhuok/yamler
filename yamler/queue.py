@@ -2,6 +2,10 @@
 import redis
 import json
 
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8') 
+
 class Queue(object):
     def __init__(self, key):
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)

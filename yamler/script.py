@@ -41,13 +41,14 @@ def send_iphone_notify():
                 body = str(data['message']) 
                 alert.body(body)
                 message.alert(alert)
-                message.badge(5)
+                message.badge(1)
                 message.sound()
                 wrapper.append(message)
                 wrapper.notify()
                 #notify('justoa', data['iphone_token'], {'aps':{'alert': data['message'], 'sound': 'default'}})
     except:
         pass
+
 
 if type == 'iphone':
     send_iphone_notify()

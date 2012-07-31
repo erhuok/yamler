@@ -1,0 +1,967 @@
+{% extends "layout2.html" %}
+{% block content %}
+  <!--右边大块-->
+    <div id="dashboard" class=" dashboard-panel-effect list">
+    	<!--右边每一列-->
+    	<div id="list-view">
+        	<div id="task-list" class="dashboard-panel-effect">
+            	<!--右边第一列头部-->
+            	<div id="sortby" class="">
+                    <!--<div class="right">
+                        <a class="btn btn_bluegray float_right extra-padding-left" >
+                            <img class="icon" src="../images/index_img_20120718/calendar-icon.png">
+                            Calendar
+                        </a>
+                    </div>-->
+                    <div class="left">
+                        <div id="sortby-container" style="display: inline;" class="active">
+                            <!--
+                            <a id="sortby_current" class="btn btn_bluegray"  href="javascript:;">
+                                <span class="title-sortby">排序:</span>
+                                <span class="title-sortby">请选择方式</span>
+                                <i class="arrow">
+                                    <img alt="arrow" title="arrow" src=" {{ url_for('static', filename='home/images/index_img_20120718/bulk-arrow.png' )}}">
+                                </i>
+                            </a>
+                            -->
+                            <!--任务过滤下拉控件-->
+                            <!--
+                            <ul id="sortby_list" style="display:none;">
+                                <li>
+                                    <a onclick="sortby.load('1');" id="STL_01" href="javascript:;"> Deadline </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('2');" id="STL_02" href="javascript:;"> Manager </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('4');" id="STL_03" href="javascript:;"> Last Changed </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('5');" id="STL_04" href="javascript:;"> Workspace </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('6');" id="STL_05" href="javascript:;"> Priority </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('7');" id="STL_06" href="javascript:;"> Title </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('8');" id="STL_07" href="javascript:;"> Date Created </a>
+                                </li>
+                            </ul>
+                            --> 
+                            <!--任务过滤下拉控件 end-->
+                        </div>
+                        <!--<a class="btn btn_bluegray extra-padding-left" >
+                            <img class="icon" src="../images/index_img_20120718/print-icon.png">
+                            Print
+                        </a>
+                        <a class="btn btn_bluegray extra-padding-left" title="Export the task list currently on your screen to a CSV file" >
+                            <img class="icon" src="../images/index_img_20120718/csv-icon.png">
+                            Export
+                        </a>
+                        <a class="btn btn_bluegray extra-padding-left appmanager-inline-block" >
+                            <img class="icon" src="../images/index_img_20120718/csv-icon.png">
+                            Download PDF
+                        </a>-->
+                    </div>
+                </div><!--右边第一列头部 end-->
+                
+                <!--任务表单区-->
+                <form id="form-add-task" class="add-task transition-effect"  method="POST">
+                    <div class="add-task-ctnr">
+                        <!--<label id="add-task-placeholder"> <span>Type here to create a task...</span> </label> <input id="add-task-field" class="never_focused" type="text" autocomplete="off" name="task_title"/>-->
+                        <textarea id="add-task-field" class="never_focused" type="text" autocomplete="off" name="title" cols="" rows="" ></textarea>
+                        <input type="hidden" name="to_user_id" id="to_user_id"/>
+                        <input type="hidden" name="share_users" id="share_users"/>
+                        <input type="hidden" name="submit_user_id" id="submit_user_id"/>
+                        <input type="hidden" name="submit_users" id="submit_users"/>
+                        <div id="add-task-options" class="task-options transition-effect">
+                            <div class="options-menu-cntr">
+                                <!--
+                                <div class="block">
+                                    <div class="bulk-btn radius-only-left hover-object" >
+                                        <i class="icon assign"></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object" >
+                                        <i class="icon labelit"></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object">
+                                        <i class="icon deadline"></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object" >
+                                        <i class="icon star"></i>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+                            <div class="dashboards-area">
+                                <select name="dashboard-selector"> </select>
+                            </div>
+                            <div class="btn-area">
+                                <input id="add-task-btn" class="btn btn_green" type="button" value="发布">
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </form><!--任务表单区 end-->
+                <!-- <script type="text/javascript"> //task_create.init_placeholder($('add-task-field')); </script> -->
+
+                <!--任务列表展示块-->
+                <div id="task-list-bottom">
+                    <div id="context-title-ctnr" class="displayed"> </div>
+                    <!--<div class="list-separator first"> 今天 </div>-->
+                    <div class="list-separator-border" id="first_task_list"></div>
+                    <ul id="dashboard_tasks_list">
+                        <!--
+                        {% for data in task_data %}
+                        <li id="task_list_01" class="task {% if status %} done {% else %} undone {% endif %} has-notes star_2-0 " title="{{ data.title }}" >
+                            <div class="dnd-handler"></div>
+                            <span id="task_list_{{ data.id }}_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_{{ data.id }}_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                                <img class="radius-3" title="" alt="" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }} ">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle" rel="task_list_{{ data.id }}" name="{{ data.id }}">
+                                    <span class="task-title ellipsis"> {{ data.title }} </span>
+                                    <span class="task-right">
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                {{ data.comment_count }}
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        {% endfor %}
+                    
+                        <div class="list-separator first"> 今天以前 </div>
+                        <div class="list-separator-border"></div>
+                    -->        
+                    </ul>
+
+                    <!--更多任务-->
+                    <div class="task_list_more bor_radius_5">
+                        <a class="btn_more" href="javascript:;" id="get_more_feed" name="" >查看更多</a>
+                    </div>
+
+                </div><!--任务列表展示块 end-->
+                
+            </div>
+        </div><!--右边每一列 end-->
+        
+        <!--右边第二列-->
+        <div id="task-details" class="dashboard-panel-effect" display="hide">
+        </div>
+        <!--右边第二列 end-->
+        
+    </div><!--右边大块 end-->
+
+
+<!--task_list_li-->
+<script id="msgTemplate" type="text/x-jquery-tmpl">
+    <li id="task_list_${id}" class="task  {% raw %} {{if status}} done {{else}} undone {{/if}} {% endraw %} has-notes star_2-0" title="${title}" >
+    <div class="dnd-handler"></div>
+    <!--<span class="anchor" > <i class="box"></i> </span>--> 
+    <span id="task_list_${id}_status" class="status" name="${id}" status="${status}" {% raw %} {{if status}} title="改为未完成" {{else}} title="改为完成" {{/if}} {% endraw %}> </span>
+    <i class="v-separator"></i>
+    <span id="task_list_${id}_stars" class="stars" > </span>
+    <i class="v-separator"></i>
+    <span class="responsible">
+        <img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+    </span>
+    <span class="task-body">
+        <span class="task-middle" name="${id}">
+            <span class="task-title ellipsis" id="title_${id}"> ${title}</span>
+            <span class="task-right">
+                <!--<div class="deadline ellipsis"> <span>Schedule it</span> </div>-->
+                <div class="notes has-notes">
+                    <span class="bubble radius-3">
+                        <span id="comment_count_${id}" title="回复数">${comment_count}</span>
+                        <i class="tail"></i>
+                    </span>
+                </div>
+            </span>
+        </span>
+    </span>
+</li>
+</script>
+
+<script id="task_detail_template" type="text/x-jquery-tmpl">
+    <div id="task-details-content" class="{% raw %} {{if status}} done {{else}} undone {{/if}} {% endraw %} has-notes star_2-0">
+            	<div class="overflow-container">
+                	<!--右边第二列头部-->
+                	<div class="header-task-details">
+                        <ul id="header-btns">
+                            <div class="action-btns-container">
+                                <li class="menu-item delete" >
+                                    <a class="btn btn_bluegray delete_task" href="javascript:;" name="${id}">
+                                        <img class="icon" src="{{ url_for('static', filename='home/images/index_img_20120718/td-header-delete.png') }}">
+                                    </a>
+                                </li>
+                                <!--<li class="menu-item">
+                                    <a class="btn btn_bluegray" href="javascript:;">
+                                        <img class="icon" src="{{ url_for('static', filename='home/images/index_img_20120718/td-header-privacy.png') }}">
+                                        All workspace members
+                                    </a>
+                                </li>
+                                <li id="td-share-button" class="menu-item">
+                                    <a class="btn btn_bluegray" href="javascript:;">
+                                        <img class="icon" src="{{ url_for('static', filename='home/images/index_img_20120718/td-header-share.png') }}">
+                                        Share
+                                    </a>
+                                    <div id="pop-up-share">
+                                        <p> Quick access to this task (accessible by members of this workspace). </p>
+                                        <input class="link-field" type="text" value="http://www.pdtv.me/t10530079p4d239">
+                                    </div>
+                                </li>
+                                <li class="menu-item">
+                                    <a class="btn btn_bluegray" href="javascript:;">
+                                        <img class="icon" src="../images/index_img_20120718/td-header-moveto.png">
+                                        Move to
+                                    </a>
+                                </li>-->
+                                <div class="clear"></div>
+                            </div>
+                            <li class="close">
+                            	<i class="icon"></i>
+                            </li>
+                        </ul>
+                    </div><!--右边第二列头部 end-->
+                    
+                    <!--对应任务块-->
+                    <div class="task-info">
+                        <form method="POST" action="#">
+                            <ul id="status_prio">
+                                <li id="task-details-resume-status" >
+                                    <i class="status"></i>
+                                </li>
+                                <li id="task-details-resume-stars">
+                                    <i class="stars"></i>
+                                </li>
+                            </ul>
+                            <div id="task-details-title-text" >${title}</div>
+                            <textarea id="task-details-title-input" name="task_title">${title}</textarea>
+                        </form>
+                        
+                    </div><!--对应任务块 end-->
+                    
+                    <!--任务安排递交块-->
+                    <div class="info-ctnr">
+                        
+                        <!--安排块-->
+                        <div class="main-actions">
+                            <div class="row-followers radius-3">
+                                <div id="followers-section">
+                                    <div class="followers-count">
+                                        <span id="submit_user_id_count"></span>
+                                        安排给:
+                                    </div>
+
+                                    <ul id="submit_user_id_box"> </ul>
+                                    <div class="followers-avatars">
+                                        <!--    
+                                        <img class="avatar radius-2 transition-effect" title="" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+                                        -->
+                                        <a class="icon radius-3 add-follower-btn btn btn_grey follow_plan" title="" href="javascript:;" id="follow_plan_${id}" name="${submit_user_id}">
+                                            <img border="0" src="{{ url_for('static', filename='home/images/index_img_20120718/add_follower.png') }}">
+                                        </a>
+                                    </div>
+                                </div>
+                            <!--<div id="followers-follow-btn">
+                                <a class="btn_following"  href="javascript:;">
+                                    <span class="following-text">Following</span>
+                                    <span class="unfollow-text">Unfollow</span>
+                                </a>
+                            </div>-->
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                        <div id="contacts-section" class="row contacts radius-3 no_contact ">
+                            <form id="contact-form" method="post" action="#">
+                                <span class="default-row name" >Add a contact</span>
+                                <input id="contact-name-input" class="contact-input name" type="text" readonly="readonly" value="" name="contact-name">
+                                <div id="contact-fields" class="">
+                                    <i class="action remove radius-2"></i>
+                                    <i class="action edit radius-2"></i>
+                                    <i class="action mail radius-2"></i>
+                                    <div class="contact-row email">
+                                        <input id="contact-email-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-email">
+                                    </div>
+                                    <div class="contact-row phone">
+                                        <input id="contact-phone-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-phone">
+                                    </div>
+                                    <div class="contact-row url">
+                                        <input id="contact-url-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-url">
+                                    </div>
+                                    <div class="contact-row note">
+                                        <input id="contact-note-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-note">
+                                    </div>
+                                    <a class="save-btn">Save</a>
+                                    <input class="submit-btn" type="submit" value="">
+                                    <div class="clear"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!--安排块 end-->
+                    
+                    <!--递交块-->
+                    <div class="main-actions">
+                            <div class="row-followers radius-3">
+                                <div id="followers-section">
+                                    <div class="followers-count">
+                                        <span id="to_user_id_count"></span>
+                                        递交给:
+                                    </div>
+
+                                    <ul id="to_user_id_box"> </ul>
+                            
+                                    <div class="followers-avatars">
+                                        <!--
+                                        <img class="avatar radius-2 transition-effect" title="" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+                                        -->
+                                        <a class="icon radius-3 add-follower-btn btn btn_grey follow_hand" title="" href="javascript:;" name="${to_user_id}" id="follow_hand_${id}">
+                                            <img border="0" src="{{ url_for('static', filename='home/images/index_img_20120718/add_follower.png') }}">
+                                        </a>
+                                    </div>
+                                </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                        <div id="contacts-section" class="row contacts radius-3 no_contact ">
+                            <form id="contact-form" method="post" action="#">
+                                <span class="default-row name" >Add a contact</span>
+                                <input id="contact-name-input" class="contact-input name" type="text" readonly="readonly" value="" name="contact-name">
+                                <div id="contact-fields" class="">
+                                    <i class="action remove radius-2"></i>
+                                    <i class="action edit radius-2"></i>
+                                    <i class="action mail radius-2"></i>
+                                    <div class="contact-row email">
+                                        <input id="contact-email-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-email">
+                                    </div>
+                                    <div class="contact-row phone">
+                                        <input id="contact-phone-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-phone">
+                                    </div>
+                                    <div class="contact-row url">
+                                        <input id="contact-url-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-url">
+                                    </div>
+                                    <div class="contact-row note">
+                                        <input id="contact-note-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-note">
+                                    </div>
+                                    <a class="save-btn">Save</a>
+                                    <input class="submit-btn" type="submit" value="">
+                                    <div class="clear"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!--递交块 end-->
+                    
+                    
+                 </div><!--任务安排递交块 end-->
+                 
+                 <!--分离块-->
+                 	<div class="notes-title">
+                        <!--
+                        <h6> 回复列表: </h6>
+                        <a class="full-screen" href="javascript:;">
+                            <img src="../images/index_img_20120718/full-screen.png">
+                            滚动展示
+                        </a>
+                        -->
+                    </div>   
+                 <!--分离块 end-->
+                 
+                 <!--任务回复-->
+                <div id="notes-section-container">
+                    <div id="task-notes-popin-mask"></div>
+                    <div id="task-details-notes">
+                        <a class="close-notes-popin" href="javascript:;"></a>
+                        <div id="title-notes-popin"> </div>
+                        <div id="notes-and-form">
+                            
+                            <!--回复内容列表-->
+                            <ul id="task-details-notes-list"> </ul><!--回复内容列表 end-->	
+                            
+                            <!--回复块-->
+                            <div id="task-details-notes-create">
+                                <form id="task-details-note-create" class="default" enctype="multipart/form-data" action="#" method="POST">
+                                    <fieldset>
+                                        <div class="field">
+                                            <textarea id="task-details-note-create_message" class="text placeholder" autocomplete="off" name="comment_content"></textarea>
+                                        </div>
+                                        <div class="field-options">
+                                            <div class="button-box">
+                                                <input id="task-details-note-create-button" class="btn btn_green radius-2" type="button"  value="回复">
+                                            </div>
+                                        </div>
+                                        <div id="task-details-uploaded" class="ellipsis">
+                                            <div id="task-details-file-uploading-filename" class="filename ellipsis"></div>
+                                            <a class="cancel-file-uploaded" href="javascript:;"></a>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div><!--回复块 end-->
+                        </div>
+                    </div>
+                </div>
+                <!--任务回复 end-->
+                 
+                </div>
+    </div>
+</script>
+
+<script id="comment_template_list" type="text/x-jquery-tmpl">
+ <li id="task-details-note-5193519" class="note owner">
+ <img class="avatar radius-3" title="avatar" alt="avatar" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+            <div class="right-side radius-3">
+                <div class="content">
+                    <p class="comment">
+                    <span class="full_name name">${realname}</span>
+                    </p>
+                    <div class="from_to"> </div>
+                    <span class="message"> ${content}</span>
+                    <p></p>
+                    <div class="info">${created_at} </div>
+                    <div class="delete">
+                        <a href="javascript:;"></a>
+                    </div>
+                </div>
+            </div>
+        </li>
+</script>
+<!--end task_list_li-->
+
+
+<script id="user_id_template" type="text/x-jquery-tmpl">
+    <li>${realname}</li>
+</script>
+
+<script  type="text/javascript">
+ 
+
+$(function(){
+   $.ajaxSetup({ cache: false });
+    function getMyFeed(url) {
+        $.getJSON(url, function(res){
+            $( "#msgTemplate" ).tmpl( res.data ).appendTo( "#dashboard_tasks_list" );
+            $("#get_more_feed").attr('name', res.next_page);
+        });  
+    }
+
+    getMyFeed('/home/getMyFeed');
+
+    //查看更多
+    $("#get_more_feed").click(function() {
+        url2 = $(this).attr('name');
+        getMyFeed(url2);
+    });
+
+ 
+	var show_flag = 1;
+	//点击展开右边
+	$("#dashboard #task-details").hide();
+	$("#list-view").css({width: "100%"});
+    //$("#list-view").attr('name', 'full');
+	$("#dashboard #task-list").css({width: "100%"});
+
+   
+    function getDetail(id) {
+		$(".popin_taskfollowers").hide();
+        var selected_id = $("#task-details").attr('name');
+        $(this).parent().parent().addClass("active");
+        var display = $("#task-details").attr('display');
+        if(id == selected_id && display == 'show') {
+            $("#dashboard #task-details").hide();
+            $("#dashboard #task-list").css({width: "100%"});
+            $("#task-details").attr('display', 'hide');
+        } else {
+            $("#dashboard #task-details").show();
+            $("#dashboard #task-list").css({width: "60%"});
+            $("#task-details").attr('display', 'show');
+
+            $.getJSON('/task/get/'+id,function(res) { 
+                var task_detail = $("#task-details");
+                task_detail.empty();
+                $("#task_detail_template").tmpl(res.row).appendTo(task_detail);
+                if(res.row.to_user_id) {
+                    $("#to_user_id_count").text(res.row.to_user_id.split(',').length);
+                    $.getJSON('/user/get/'+res.row.to_user_id, function(res_user) {
+                        $("#to_user_id_box").empty();
+                        $("#user_id_template").tmpl(res_user.data).appendTo("#to_user_id_box");
+                    });
+                }
+
+                if(res.row.submit_user_id) {
+                    $("#submit_user_id_count").text(res.row.submit_user_id.split(',').length);
+                    $.getJSON('/user/get/'+res.row.submit_user_id, function(res_user) {
+                        $("#submit_user_id_box").empty();
+                        $("#user_id_template").tmpl(res_user.data).appendTo("#submit_user_id_box");
+                    });
+                }
+            });  
+
+            $.getJSON('/comment/get/'+id, function(res) {
+                $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#task-details-notes-list" );
+            }); 
+
+            $("#task-details-note-create-button").die('click'); 
+            //回复
+            $("#task-details-note-create-button").live('click', function() {
+                var task_id = id;
+                var comment_content = $("#task-details-note-create_message").val();
+                if(comment_content) {
+                    var form = $('#task-details-note-create')
+                    $.ajax({
+                        type: "POST",
+                        data: form.serialize(),
+                        url: "/comment/create/"+task_id,
+                        dataType: "json",
+                        success: function(data) {
+                            $( "#comment_template_list" ).tmpl( data ).appendTo( "#task-details-notes-list" );
+                            form.each(function(){ this.reset(); });
+                            var comment_count = parseInt($("#comment_count_"+task_id).text());
+                            $("#comment_count_"+task_id).text(comment_count + 1);
+                        }
+                    }); 
+                }
+        
+            });
+	        
+        } 
+
+        $("#task-details").attr('name', id);
+		$("#dashboard_tasks_list li.task").not($(this).parent().parent()).removeClass("active");
+        //内容修改
+        $("#task-details-title-text").live('click', function() {
+            $(this).hide();
+            var title_textarea = $("#task-details-title-input")
+            title_textarea.show();
+            var old_title = $(this).text();
+            
+            $(title_textarea).focus();
+            title_textarea.blur(function() {
+                var new_title = $(title_textarea).val();
+                if(new_title == old_title) return false;
+                if(new_title) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/task/update/'+id,
+                        dataType: 'json',
+                        data: {"title": new_title},
+                        success: function(res) {
+                            $("#task-details-title-text").text(new_title);
+                            $("#task-details-title-text").show();
+                            $("#title_"+id).text(new_title);
+                            $(title_textarea).hide();
+                        }
+                    });          
+                }
+            });
+            /*
+            var new_title = $("#modify_title_"+id).val();
+            
+            */
+
+        });
+        //关闭
+        $(".close").die('click');
+        $(".close").live('click', function() {
+            $("#dashboard #task-details").hide();
+            $("#dashboard #task-list").css({width: "100%"});
+            $("#task-details").attr('display', 'hide');     
+        }) 
+        //delete
+        $(".delete_task").die('click');
+        $(".delete_task").live('click', function() {
+            if(confirm('确定要删除这条记录')) { 
+                var task_id = $("#task-details").attr('name');
+                if(task_id) {
+                    $.getJSON('/task/delete/'+task_id, function(res) {
+                        $("#task_list_"+task_id).remove();
+                        $("#dashboard #task-details").hide();
+                        $("#dashboard #task-list").css({width: "100%"});
+                        $("#task-details").attr('display', 'hide');
+                    });
+                }
+            }
+        });
+
+        $(".follow_hand").die('click'); 
+        $(".follow_plan").die('click'); 
+
+        $(".follow_plan").live('click', function() {
+            $("#popin_header_task").text('添加安排人员');
+            $("#popin_header_desc_task").text('您选择的安排人员，可以收到您发的信息');
+
+            var task_id = $("#task-details").attr('name');
+            follow_show(this);
+
+            $("#cancel_share").live('click', function() {
+                $(".popin_taskfollowers").hide();
+            });
+
+            $("#save_share").unbind('click'); 
+            $("#cancel_share").unbind('click'); 
+
+            $("#save_share").click(function() {
+                var ids = [];
+                $('input:checked').each(function() {
+                    ids.push(this.value);
+                }); 
+                if(ids.length) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/task/update_submit/"+task_id,
+                        dataType: "json",
+                        data: {'submit_user_id': ids.join(',')},
+                        success: function(res) {
+                            $.getJSON('/user/get/'+ids.join(','), function(res_user) {
+                                $("#submit_user_id_box").empty();
+                                $("#user_id_template").tmpl(res_user.data).appendTo("#submit_user_id_box");
+                            });
+                            $("#follow_plan_"+task_id).attr('name', ids.join(','));
+                            $("#submit_user_id_count").text(ids.length);
+                            $(".popin_taskfollowers").hide();
+                        }
+                    }); 
+                }
+            });
+
+        });
+
+        $(".follow_hand").live('click', function() {
+            $("#popin_header_task").text('添加递交人员');
+            $("#popin_header_desc_task").text('您选择的递交人员，可以看到您递交的信息');
+            var task_id = $("#task-details").attr('name');
+            follow_show(this);
+
+            $("#cancel_share").live('click', function() {
+                $(".popin_taskfollowers").hide();
+            });
+
+            $("#save_share").unbind('click'); 
+            $("#cancel_share").unbind('click'); 
+
+            $("#save_share").click(function() {
+                var ids = [];
+                $('input:checked').each(function() {
+                    ids.push(this.value);
+                }); 
+                if(ids.length) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/task/update_share/"+task_id,
+                        dataType: "json",
+                        data: {'to_user_id': ids.join(',')},
+                        success: function(res) {
+                            $.getJSON('/user/get/'+ids.join(','), function(res_user) {
+                                $("#to_user_id_box").empty();
+                                $("#user_id_template").tmpl(res_user.data).appendTo("#to_user_id_box");
+                            });
+                            $("#to_user_id_count").text(ids.length);
+                            $(".popin_taskfollowers").hide();
+                            $("#follow_hand_"+task_id).attr('name', ids.join(','));
+                        }
+                    }); 
+                }
+            });
+        });	
+    } 
+    
+    $("#dashboard_tasks_list li.task .task-middle").live('click', function() {
+        var id = $(this).attr('name');         
+        getDetail(id); 
+    });
+
+    //完成与未完成状态的切换
+    $("#dashboard_tasks_list li.task .status").die('click');
+    $("#dashboard_tasks_list li.task .status").live('click', function() {
+        var id = $(this).attr('name');      
+        var status = $(this).attr('status');      
+        var status_element = $("#task_list_"+id+"_status")
+        if(status=='1') {
+            data = {'status':0};
+        } else {
+            data = {'status':1};
+        }
+        $.ajax({
+            type: "POST",
+            data: data,
+            url: "/task/update/"+id,
+            dataType: "json",
+            success: function(data) {
+                if(data.error) return false;
+                var list_element = $("#task_list_"+id);
+                if(status=='1') {
+                    list_element.removeClass("done");
+                    list_element.addClass("undone");
+                    status_element.attr('status',0); 
+                    status_element.attr('title','改为完成'); 
+                } else {
+                    list_element.removeClass("undone");
+                    list_element.addClass("done");
+                    status_element.attr('status',1); 
+                    status_element.attr('title','改为未完成'); 
+                }
+            }
+        }); 
+    });
+        
+    //add_task_button提交任务按钮
+    $("#add-task-btn").live('click',function() {
+        var title = $("#add-task-field").val();
+        if(!title) return false;
+        //if(title=='写点你将要做点什么吧') return false;
+        $.ajax({
+            type: 'POST',
+            data: $("#form-add-task").serialize(),
+            url: "/home/publish",   
+            dataType: 'json',
+            success: function(data) {
+                $( "#msgTemplate" ).tmpl( data ).prependTo( "#dashboard_tasks_list" );
+                $('#add-task-field').val('');
+                getDetail(data.id);  
+            }
+        });
+        return false;
+    });
+
+
+    /*
+	$("#dashboard_tasks_list li.task .status").toggle(function(){
+		if( $(this).parent().addClass("undone")){
+			$(this).parent().removeClass("undone");
+			$(this).parent().addClass("done");
+		}
+	},function(){
+		if( $(this).parent().addClass("done")){
+			$(this).parent().removeClass("done");
+			$(this).parent().addClass("undone");
+		}
+	});
+    */
+    /*	
+	$("#dashboard_tasks_list li.task .task-middle").toggle(function(){
+		$(this).parent().parent().addClass("active");
+		if( $(this).parent().parent().hasClass("active") ){
+			$("#dashboard #task-details").show();
+			$("#dashboard #task-list").css({width: "60%"});
+		}
+		$("#dashboard_tasks_list li.task").not($(this).parent().parent()).removeClass("active");
+        var id = $(this).attr('name');
+        $.getJSON('/task/get/'+id,function(res) { 
+            var task_detail = $("#task-details-content")
+            task_detail.empty();
+            $("#task_detail_template").tmpl(res.row).appendTo(task_detail);
+            //$("#list"+id).effect("highlight", {}, 3000);
+        });
+	},function(){
+		$(this).parent().parent().addClass("active");
+		$("#dashboard_tasks_list li.task").not($(this).parent().parent()).removeClass("active");
+		if($(this).parent().parent().hasClass("active")){
+			$("#dashboard #task-details").hide();
+			$("#list-view").css({width: "100%"});
+			$("#dashboard #task-list").css({width: "100%"});
+		}
+	});
+
+    */
+	
+	function reheight(){
+		var w_height = $(window).height();
+		var d_height = $(document).height();
+		var b_height = w_height-51;
+		var b1_height = d_height-51;
+		$("#wrapper #sidebar").css("height",b_height+"px");
+		$("#dashboard #task-details ").css("height",b_height+"px");
+		if(d_height > w_height){
+			$("#wrapper #sidebar").css("height",b1_height+"px");
+			$("#dashboard #task-details").css("height",b1_height+"px");
+			
+		}
+	}
+	function position_f(show_flag){
+		var f_top = $(window).scrollTop();
+		var dash_width = $("#dashboard").width();
+		var dash_40 = dash_width*0.4;
+		var dash_60 = dash_width*0.6;
+		if(f_top > 51){
+			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
+			$("#list-view").css({top: "0"});
+			if(show_flag == 1){
+				$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","z-index":"998","margin-left":"auto",width:dash_40+"px"});
+			}else{
+				//$("#dashboard #task-details").hide();
+				$("#list-view").css({width: "100%"});
+				$("#dashboard #task-list").css({width: "100%"});
+			}
+		}else{
+			$("#wrapper #sidebar").css({position:"static","z-index":"auto"});
+			$("#dashboard #task-details").css({position:"relative" ,"z-index":"auto","margin-left":"60%",width:"40%"});
+		}
+	}
+	
+	$(window).load(function(){
+		reheight();
+	});
+	$(window).resize(function(){
+		reheight();
+		if(show_flag == 1){
+			position_f(show_flag == 1);
+		}else{
+			position_f(show_flag == 0);
+		}
+	}); 
+	$(window).scroll(function(){
+		reheight();
+		if(show_flag == 1){
+			position_f(show_flag == 1);
+		}else{
+			position_f(show_flag == 0);
+		}
+	}); 
+	//添加人员
+    /*
+	        $(".sidebar-invite-people").live('click', function(){
+		        $(".popin_addPeople").show();
+	        })
+	
+	        $(".people_close").live('click', function(){
+		        $(".popin_addPeople").hide();
+	        })
+    */
+	//任务完成状态控制
+
+	
+	//排序下拉控制
+	var Sort_clickState = 1;
+	//任务列表菜单显示隐藏
+	$(document).click(function(ev){
+		ev = ev || window.event;
+		var target = ev.target || ev.srcElement;
+		if(target.id !="STL_01" && target.id !="STL_02" && target.id !="STL_03" && target.id !="STL_04" && target.id !="STL_05" && target.id !="STL_06" && target.id !="STL_07" ){
+			$("#sortby_list").hide();
+			Sort_clickState = 1;
+		}
+	});
+	$("#sortby_current").toggle(function(){
+		if( Sort_clickState == 0 ){
+			Sort_clickState = 1;
+			$("#sortby_list").hide();
+		}else{
+			Sort_clickState = 0;
+			$("#sortby_list").show();	
+		}
+	},function(){
+		if( Sort_clickState == 1 ){
+			Sort_clickState = 0;
+			$("#sortby_list").show();	
+		}else{
+			Sort_clickState = 1;
+			$("#sortby_list").hide();	
+		}
+	});
+	
+	
+	//我的面板下拉效果控制
+	var My_clickState = 1;
+	$(document).click(function(My_e){
+		My_e = My_e || window.event;
+		var My_target = My_e.target || My_e.srcElement;
+		if(My_target.class !="account_first" && My_target.class !="account_link" ){
+			$(".account-dropdown").hide();
+			My_clickState = 1;
+		}
+	});
+
+	$(".menu-link").toggle(function(){
+		if( My_clickState == 0 ){
+			My_clickState = 1;
+			$(".account-dropdown").hide();
+		}else{
+			My_clickState = 0;
+			$(".account-dropdown").show();	
+		}
+	},function(){
+		if( My_clickState == 1 ){
+			My_clickState = 0;
+			$(".account-dropdown").show();	
+		}else{
+			My_clickState = 1;
+			$(".account-dropdown").hide();	
+		}
+	});
+	
+	//安排控件
+    /*
+	var follow_clickState = 1;
+	$(document).click(function(follow_e){
+		follow_e = follow_e || window.event;
+		var follow_target = follow_e.target || follow_e.srcElement;
+		if(follow_target.class !="account_first" && follow_target.class !="account_link" ){
+			$(".popin_taskfollowers").hide();
+			follow_clickState = 1;
+		}
+	});
+    */
+	function follow_show(e){
+		var offset_plan = $(e).offset();
+		var plan_left = offset_plan.left-130;
+		var plan_top = offset_plan.top+45;
+		var plan_scrolltop = $(e).scrollTop();
+		$(".popin_taskfollowers").show();
+		$(".popin_taskfollowers").css({top:+(plan_top-plan_scrolltop)+"px",left:+plan_left+"px","z-index":"1000",position:"absolute"});
+        
+        $(":checkbox").each(function() {
+            $(this).removeAttr("checked");
+        });
+
+        var check_ids = $(e).attr('name');
+        if(check_ids) {
+            check_ids = check_ids.split(','); 
+            $.each(check_ids, function(index, value) { 
+                $("#checkbox_"+value).attr('checked','true');
+            });
+        }
+	}
+	
+    
+   
+
+   
+	//递交控件
+    /*
+	$(".follow_hand").toggle(function(){
+		if( follow_clickState == 0 ){
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();
+		}else{
+			follow_clickState = 0;
+			follow_show(this);
+		}
+	},function(){
+		if( follow_clickState == 1 ){
+			follow_clickState = 0;
+			follow_show(this);
+		}else{
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();	
+		}
+	});
+    */	
+	$(".task_list_more").hover(function(){
+		$(this).addClass("hover");
+	},function(){
+		$(this).removeClass("hover");
+	}).click(function(){
+		$(".test_listBlock").show();
+	})
+	
+});
+</script>
+{% endblock %}

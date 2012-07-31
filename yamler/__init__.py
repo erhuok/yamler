@@ -10,6 +10,7 @@ app.config.from_object('config')
 import datetime 
 import time
 from yamler.database import db_session, engine
+from sqlalchemy.sql import select, text
 
 from yamler.views import home
 from yamler.views import user
@@ -42,7 +43,8 @@ def not_found(error):
 @app.before_request
 def load_current_user():
     g.db = engine.connect()
-    g.user = User.query.filter_by(id=session['user_id']).first() if 'user_id' in session else None
+    #g.user = User.query.filter_by(id=session['user_id']).first() if 'user_id' in session else None
+    g.user = g.db.execute(text("SELECT * FROM users WHERE id=:id"), id=session['user_id']).first() if 'user_id' in session else None
     g.company = Company.query.filter_by(id=g.user.company_id).first() if g.user else None
     #if g.user:
         #task_share_rows = g.db.execute(text("SELECT id, task_id, own_id, user_id, unread FROM task_share WHERE unread=:unread AND user_id=:user_id"), unread=1, user_id=g.user.id).fetchall()

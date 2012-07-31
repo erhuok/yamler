@@ -1,8 +1,8 @@
 # encoding:utf-8
 from flask import Blueprint, request, session, jsonify, g
 from yamler.database import db_session
-from yamler.models.users import User, users
-from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit
+from yamler.models.users import User, users, UserNotice, UserContact
+from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit, TaskUpdateData, TaskComment
 from yamler.models.companies import Company, companies 
 from yamler.models.user_relations import UserRelation 
 from sqlalchemy.sql import between
@@ -29,7 +29,8 @@ def login():
             else:
                 sql = "UPDATE users SET last_login_time=:last_login_time WHERE id=:id"
                 g.db.execute(text(sql), id=result.id, last_login_time=datetime.datetime.now()) 
-            url = 'http://'+request.host + '/i/' + base64.encodestring(str(result.company_id)) 
+            #url = 'http://'+request.host + '/i/' + base64.encodestring(str(result.company_id)) 
+            url = 'http://'+request.host + '/i/' + str(result.id) 
             return jsonify(error=0, code='success', message='登录成功', user_id = result.id, company_id=result.company_id, url=url, realname=result.realname)
         else:
             return jsonify(error=1, code='username_or_password_error',message='用户名或密码错误',)
@@ -45,7 +46,7 @@ def register():
                     password, 
                     realname = request.form['realname'] if request.form.has_key('realname') else '',
                     telephone = request.form['telephone'] if request.form.has_key('telephone') else '',
-                    company_id = request.form['company_id'] if request.form.has_key('company_id') else 0,
+                    #company_id = request.form['company_id'] if request.form.has_key('company_id') else 0,
                     iphone_token = request.form['iphone_token'] if request.form.has_key('iphone_token') else '',
                    )
         result = User.query.filter_by(username = user.username).first() 
@@ -55,12 +56,14 @@ def register():
         else:
             db_session.add(user)
             db_session.commit()
-            if request.form.has_key('company_name'):
-                row = g.db.execute(select([companies.c.id], and_(companies.c.name==request.form['company_name']))).fetchone()
-                company_id = g.db.execute(companies.insert(), name=request.form['company_name'], user_id=user.id).inserted_primary_key[0] if row is None else row['id']
-                g.db.execute(users.update().values({users.c.company_id: company_id, users.c.is_active: 1}).where(users.c.id==user.id))
-            url = 'http://'+request.host + '/i/' + base64.encodestring(str(user.company_id)) 
-            return jsonify(error=0, code='success', message='成功注册', user_id = user.id, company_id=user.company_id, url=url, realname=user.realname)
+
+            #if request.form.has_key('company_name'):
+            #    row = g.db.execute(select([companies.c.id], and_(companies.c.name==request.form['company_name']))).fetchone()
+            #    company_id = g.db.execute(companies.insert(), name=request.form['company_name'], user_id=user.id).inserted_primary_key[0] if row is None else row['id']
+            g.db.execute(users.update().values({users.c.company_id: user.id, users.c.is_active: 1}).where(users.c.id==user.id))
+            #url = 'http://'+request.host + '/i/' + base64.encodestring(str(user.id)) 
+            url = 'http://'+request.host + '/i/' + str(user.id) 
+            return jsonify(error=0, code='success', message='成功注册', user_id = user.id, url=url, realname=user.realname)
 
     return jsonify(error=1, code = 'no_username_or_password', message='没有输入用户名或密码')
 
@@ -90,7 +93,19 @@ def task_create():
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
             TaskSubmit().insert(task_id=res.lastrowid, own_id=request.form['user_id'], share_user_id=submit_user_id, realname=user_row.realname, title=request.form['title'])
 
+        to_user_id = request.form['to_user_id'] if request.form.has_key('to_user_id') else '' 
+        submit_user_id = request.form['submit_user_id'] if request.form.has_key('submit_user_id') else '' 
+        update_ids = list(set(to_user_id.split(',')) | set(submit_user_id.split(',')))
+        update_ids.append(request.form['user_id'])
+        if update_ids:
+            row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
+            data = dict(row)
+            data['mobile_time'] = int(time.mktime(row.created_at.timetuple())) 
+            data['created_at'] = datetimeformat(row['created_at'])
+            data['updated_at'] = datetimeformat(row['updated_at'])
+            TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=data)
         return jsonify(error=0, code='success', message='添加成功', id=res.lastrowid)
+
     return jsonify(error=1, code='failed', message='输入数据不合法')
 
 def process_task_data(rows, user_id):
@@ -105,11 +120,14 @@ def process_task_data(rows, user_id):
         new_row['priority'] = row['priority']
         new_row['share_users'] = None
         new_row['submit_users'] = None
+        new_row['to_user_id'] = row['to_user_id']
+        new_row['is_del'] = row['is_del']
+        new_row['submit_user_id'] = row['submit_user_id']
         #手机端的时间
-        new_row['mobile_time'] = time.mktime(row.created_at.timetuple()) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
+        new_row['mobile_time'] = int(time.mktime(row.created_at.timetuple())) if row.created_at and isinstance(row.created_at, datetime.datetime) else ''
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
         new_row['end_time'] = datetimeformat(row['end_time']) if row['end_time']  and isinstance(row.created_at, datetime.datetime) else '' 
-        new_row['notify_time'] = row['notify_time']
+        new_row['notify_time'] = row['notify_time'].strftime("%Y-%m-%d %T") if row.notify_time and isinstance(row.notify_time, datetime.datetime) else ''
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
@@ -130,7 +148,9 @@ def process_task_data(rows, user_id):
         #安排给我的
         else:
             new_row['ismine'] = False 
-            new_row['realname'] = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first().realname
+            user_res = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first()
+            if user_res:
+                new_row['realname'] = user_res.realname
 
         data.append(new_row)
     return data
@@ -150,12 +170,12 @@ def task_get():
     start_time = convert_time(created_at) if created_at else '' 
     page = int(request.form['page'])  if request.form.has_key('page') else 1 
 
-    limit = 100
+    limit = 500
     skip = (page-1) * limit
     next_page = 't='+str(t)+'&status='+str(status)+'&page='+str(page+1)+'&created_at='+str(created_at) 
     #只看我自己的
     if 1 == int(t):
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -163,7 +183,7 @@ def task_get():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     elif 2 == int(t): 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
+        sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -171,13 +191,13 @@ def task_get():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql), submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     else: 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status ' 
         
         if start_time:
             sql += ' AND created_at > :created_at'
-        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
+        sql += " UNION ALL SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
         if status_value != 2:
             sql += ' AND status = :status ' 
         if start_time:
@@ -185,79 +205,109 @@ def task_get():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=user_id, submit_user_id=user_id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     data = process_task_data(rows, user_id)
-    return jsonify(data=data, next_page=next_page)
 
+    sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:to_user_id,to_user_id) AND user_id <> :user_id"
+    rows = g.db.execute(text(sql), user_id=user_id, to_user_id=user_id)
+    data_tome = process_task_data(rows, user_id)
+
+    return jsonify(data=data, next_page=next_page, data_tome=data_tome)
+
+def get_task_data_by_ids(ids, user_id):
+    data = []
+    if ids:
+        ids = ids.split(',')
+        if len(ids):
+            sql = "SELECT * FROM `tasks` WHERE id IN ({0})".format(','.join(ids))
+            rows = g.db.execute(text(sql)).fetchall()
+            data = process_task_data(rows, user_id)
+
+    return data
 
 @mod.route('/task/get_update', methods=['POST'])
 def get_update():
     if request.form.has_key('user_id'):
-        user_id = request.form['user_id']
-        sql = "SELECT * FROM tasks WHERE user_id=:user_id AND is_del='0' AND flag=:flag"
-        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        data1 = process_task_data(rows, user_id)
-
-        sql = "SELECT * FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,submit_user_id) AND flag=:flag"
-        rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-
-        data2 = process_task_data(rows, user_id)
-        data = data1 + data2 
-
-        sql = "SELECT GROUP_CONCAT(id) AS delete_ids FROM tasks WHERE is_del = '1' AND flag='0'  AND user_id=:user_id"
-        result = g.db.execute(text(sql), user_id=user_id).first()
-        delete_ids = []
-        if result.has_key('delete_ids') and result['delete_ids']:
-            delete_ids = result['delete_ids'].split(',')
-
-        #sql =  "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, priority, notify_time FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:user_id,to_user_id) AND flag=:flag"
-        #rows = g.db.execute(text(sql), user_id=user_id, flag='0').fetchall() 
-        #data3 = process_task_data(rows, user_id)
-        
-        return jsonify(error=0, data=data, delete_ids=delete_ids)
+        sql = "SELECT user_id, total_count FROM users_remind WHERE user_id=:user_id" 
+        row = g.db.execute(text(sql), user_id=request.form['user_id']).first()
+        return jsonify(error=0,data=dict(row))
 
 @mod.route('/task/update_by_ids', methods=['POST'])
 def update_by_ids():
-    if request.form.has_key('ids') and len(request.form['ids']):
-        ids = request.form['ids'].split(',')
-        sql = "UPDATE `tasks` SET flag='1' WHERE id IN ({0})".format(','.join(ids))
-        g.db.execute(text(sql))
-        return jsonify(error=0)
-    return jsonify(error=1)
+    user_id = request.form['user_id']
+    return jsonify(error=0)
 
 @mod.route('/task/update', methods=['POST'])
 def task_update():
-    if request.method == 'POST' and request.form['id']:
-        task = db_session.query(Task).get(request.form['id']) 
+    if request.method == 'POST' and request.form['id'] and request.form['user_id']:
+        task = g.db.execute(text("SELECT * FROM tasks WHERE `id`=:id"), id=request.form['id']).fetchone()
         old_to_user_id = set(task.to_user_id.split(',')) 
         old_submit_user_id = set(task.submit_user_id.split(',')) 
+        update_ids = list(set(task.to_user_id.split(',')) | set(task.submit_user_id.split(',')))
+        update_ids.append(task.user_id)
+        user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
+        my_user = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
         if task:
             if request.form.has_key('status') : 
-                task.status = request.form['status']
+                sql = "UPDATE tasks SET status=:status WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, status=request.form['status'])
+                '''
+                if str(request.form['status']) == '1':
+                    if len(update_ids):
+                        for notice_user_id in update_ids:
+                            if str(request.form['user_id']) != str(notice_user_id):
+                                UserNotice().process(user_id=notice_user_id, task_id=task.id, message=task.title, title=my_user.realname+"完成了")
+                '''
             if request.form.has_key('title'):
-                task.title = request.form['title']
-            if request.form.has_key('note'):
-                task.note = request.form['note']
+                sql = "UPDATE tasks SET title=:title WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, title=request.form['title'])
             if request.form.has_key('priority'):
-                task.priority = request.form['priority']
+                sql = "UPDATE tasks SET priority=:priority WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, priority=request.form['priority'])
             if request.form.has_key('end_time'):
-                task.end_time = request.form['end_time']
+                sql = "UPDATE tasks SET end_time=:end_time WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, end_time=request.form['end_time'])
             if request.form.has_key('notify_time'):
-                task.notify_time = request.form['notify_time']
+                sql = "UPDATE tasks SET notify_time=:notify_time WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, notify_time=request.form['notify_time'])
             if request.form.has_key('to_user_id'):
-                task.to_user_id = request.form['to_user_id']
+                sql = "UPDATE `tasks` SET `to_user_id` = :to_user_id WHERE `id` =:id"
+                to_user_id = request.form['to_user_id'] if request.form['to_user_id'] else ''
+                g.db.execute(text(sql), id=task.id, to_user_id=to_user_id)
             if request.form.has_key('submit_user_id'):
-                task.submit_user_id = request.form['submit_user_id']
-            task.flag = '0'
-        
-            db_session.commit()
+                sql = "UPDATE `tasks` SET `submit_user_id`=:submit_user_id WHERE `id`=:id"
+                submit_user_id = request.form['submit_user_id'] if request.form['submit_user_id'] else ''
+                g.db.execute(text(sql), id=task.id, submit_user_id=submit_user_id)
+            if request.form.has_key('is_del'):
+                sql = "UPDATE tasks SET is_del=:is_del WHERE id=:id"
+                g.db.execute(text(sql), id=task.id, is_del=1)
+                if len(update_ids):
+                    for notice_user_id in update_ids:
+                        if str(request.form['user_id']) != str(notice_user_id):
+                            UserNotice().process(user_id=notice_user_id, task_id=task.id, message=task.title, title=my_user.realname+"删除了")
 
-            user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=task.user_id).fetchone()
-            if request.form.has_key('to_user_id') and request.form['to_user_id']:
-                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(request.form['to_user_id'].split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname)
+            data = []
+            if request.form.has_key('to_user_id') or request.form.has_key('submit_user_id'):
+                data = dict(task)
+                data['created_at'] = datetimeformat(data['created_at'])
+                data['updated_at'] = datetimeformat(data['updated_at'])
+                data['notify_time'] = data['notify_time'].strftime('%Y-%m-%d %T') if task.notify_time and isinstance(task.notify_time, datetime.datetime) else ''
+                data['end_time'] = data['end_time'].strftime('%Y-%m-%d %T') if task.end_time and isinstance(task.end_time, datetime.datetime) else ''
 
-            if request.form.has_key('submit_user_id') and request.form['submit_user_id']:
-                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(request.form['submit_user_id'].split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname)
-
-
+            if request.form.has_key('to_user_id'): 
+                data['to_user_id'] = request.form['to_user_id'].strip(',')
+                TaskShare().update(old_user_id=old_to_user_id, share_user_id=set(to_user_id.split(',')), own_id=task.user_id, task_id=task.id, title=task.title, realname=user_row.realname, data=data, update_data={'to_user_id':data['to_user_id']})
+            elif request.form.has_key('submit_user_id'):
+                data['submit_user_id'] = request.form['submit_user_id'].strip(',')
+                TaskSubmit().update(old_user_id=old_submit_user_id, share_user_id=set(submit_user_id.split(',')), task_id=task.id, own_id=task.id, title=task.title, realname=user_row.realname, data=data, update_data={'submit_user_id':data['submit_user_id']})
+            else:
+                if request.form.has_key('is_del'):
+                    data = {'is_del':1}
+                if request.form.has_key("status"):
+                    data = {'status': request.form['status']}
+                if request.form.has_key('title'):
+                    data = {'title': request.form['title']}
+                TaskUpdateData().insert(user_ids=update_ids, task_id=task.id, data=data)
+                
+            
             return jsonify(error=0, code='success', message='修改成功', id=task.id)
     
     return jsonify(error=1, code='failed', message='修改失败')
@@ -265,10 +315,9 @@ def task_update():
 @mod.route('/task/delete', methods=['POST'])
 def task_delete():
     if request.method == 'POST' and request.form['id'] and request.form['user_id']:
-        row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status FROM tasks WHERE id=:id"), id=request.form['id']).first()
-        if row and row.user_id == int(request.form['user_id']):
-            g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=request.form['id'])
-            return jsonify(error=0, code='success', message='删除成功', id=row.id)
+        user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
+        Task().delete(id=request.form['id'], user_id=request.form['user_id'], realname=user_row.realname)
+        return jsonify(error=0, code='success', message='删除成功', id=request.form['id'])
     return jsonify(error=1, code='failed', message='删除失败')
 
 @mod.route('/company/get', methods=['POST'])
@@ -288,23 +337,26 @@ def company_get():
 @mod.route('/user/get', methods=['POST'])
 def user_get():
     if request.method == 'POST':
-        if request.form.has_key('company_id'):
-            rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id']))).fetchall()
-            data = [dict(zip(row.keys(), row)) for row in rows]  
-            return jsonify(error=0, data=data)
+        #if request.form.has_key('company_id'):
+        if request.form.has_key('user_id'):
+            #rows = g.db.execute(select([users.c.id, users.c.company_id, users.c.username, users.c.realname, users.c.telephone, users.c.is_active], and_(users.c.company_id==request.form['company_id'], is_active==1))).fetchall()
+            #rows = g.db.execute(text('SELECT id, company_id, username, realname, telephone, is_active FROM users WHERE company_id=:company_id AND is_active=:is_active'), company_id=request.form['company_id'], is_active=1).fetchall()
+            #rows = UserNotice().getbyid(request.form['user_i:'])
+            data, contact_data = UserContact().get(user_id=request.form['user_id'])
+            #data = [dict(zip(row.keys(), row)) for row in rows]  
+            return jsonify(error=0, data=data, contact_data=contact_data)
     return jsonify(error=1)
 
 
 @mod.route('/comment/get', methods=['POST'])
 def commit_get():
-    if request.method == 'POST' and request.form.has_key('task_id'):
-        rows = g.db.execute(text("SELECT tc.id, tc.user_id, tc.task_id, u.realname, content, tc.created_at FROM task_comments tc LEFT JOIN users u ON tc.user_id=u.id WHERE task_id=:task_id"), task_id=request.form['task_id']).fetchall() 
+    if request.method == 'POST' and request.form.has_key('task_id') and request.form.has_key('id'):
+        rows = g.db.execute(text("SELECT tc.id, tc.user_id, tc.task_id, u.realname, content, tc.created_at FROM task_comments tc LEFT JOIN users u ON tc.user_id=u.id WHERE task_id=:task_id AND tc.id > :id"), task_id=request.form['task_id'], id=request.form['id']).fetchall() 
         data = []
         for row in rows:
             new_row = {'id': row.id, 'user_id': row.user_id, 'task_id': row.task_id, 'realname': row.realname, 'content': row.content}
             new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
             data.append(new_row)
-        #data = [dict(zip(row.keys(), row)) for row in rows]
         return jsonify(error=0, data=data)
 
 @mod.route('/comment/create', methods=['POST'])
@@ -312,36 +364,9 @@ def comment_create():
     if request.method == 'POST' and request.form.has_key('task_id') and request.form.has_key('content') and request.form.has_key('user_id'):
         task_id = request.form['task_id']
         user_id = request.form['user_id']
-        row = g.db.execute(text("SELECT id, user_id, submit_user_id, to_user_id FROM tasks WHERE id=:id"),id=task_id).fetchone()
-
-        res = g.db.execute(text("INSERT INTO task_comments (user_id, task_id, content, created_at) VALUES (:user_id, :task_id, :content, :created_at)"),user_id=request.form['user_id'], task_id=request.form['task_id'], content=request.form['content'], created_at=datetime.datetime.now())
-        if res.lastrowid:
-            g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
-            to_user_id = [] 
-            submit_user_id = []
-            #通知提醒
-            if row.to_user_id:
-                to_user_id = row.to_user_id.split(',')
-                to_user_id.append(str(row.user_id))
-                to_user_id = [ user_id2 for user_id2 in to_user_id if user_id2 != str(user_id) ]
-                if len(to_user_id):
-                    sql = " UPDATE task_share SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(to_user_id)) 
-                    g.db.execute(text(sql), task_id=task_id, unread=1)
-
-            if row.submit_user_id:
-                submit_user_id = row.submit_user_id.split(',')
-                submit_user_id.append(str(row.user_id))
-                submit_user_id = [user_id2 for user_id2 in submit_user_id if user_id2 != str(user_id) ]
-                if len(submit_user_id):
-                    sql = " UPDATE task_submit SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(submit_user_id)) 
-                    g.db.execute(text(sql), task_id=task_id, unread=1)
-            
-            notify_user_id = list(set(to_user_id) | set(submit_user_id))
-            if notify_user_id:
-                user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=request.form['user_id']).fetchone()
-                iphone_notify(notify_user_id, type="comment", realname=user_row.realname, title=request.form['content'])
-
-        return jsonify(error=0, id=res.lastrowid) 
+        user_row = g.db.execute(text("SELECT id, realname FROM users WHERE id=:id"), id=user_id).fetchone()
+        insert_id = TaskComment().insert(user_id=user_id, task_id=task_id, content=request.form['content'], realname=user_row.realname)
+        return jsonify(error=0, id=insert_id) 
 
 @mod.route('/task/share', methods=['GET', 'POST'])
 def share():
@@ -351,3 +376,52 @@ def share():
     status = request.form['status'] if request.form.has_key('status') else 'all'
     task_data_undone, task_data_complete, user_data, user_rows, user_avatar = Task().get_share_data(user_id=user_id, created_at=created_at, status=status)
     return jsonify(user_data=user_data, user_rows=user_rows, task_data_undone=task_data_undone, task_data_complete=task_data_complete, user_avatar=user_avatar)
+
+
+#用户通知页面
+@mod.route('/notice/get', methods=['POST'])
+def notice_get():
+    user_id = int(request.form['user_id']) 
+    rows = g.db.execute(text("SELECT id, user_id, task_id, message, unread, created_at, updated_at, title FROM user_notices WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY id ASC"), user_id=user_id, is_syn=0).fetchall() 
+    data_notice = []
+    for row in rows:
+        new_row = {'id':row.id, 'user_id':row.user_id, 'task_id':row.task_id, 'message':row.message, 'title':row.title, 'unread':row.unread}
+        new_row['created_at'] = datetimeformat(row['created_at']) 
+        new_row['updated_at'] = datetimeformat(row['updated_at'])
+        data_notice.append(dict(new_row))
+        #data_notice.append(dict(row))data_notice = [dict(zip(row.keys(), row)) for row in rows]  
+    
+    rows = g.db.execute(text("SELECT id, user_id, task_id, data, is_syn FROM task_update_data WHERE user_id=:user_id AND is_syn=:is_syn ORDER BY ID ASC"), user_id=user_id, is_syn=0).fetchall()
+    data_update = [dict(zip(row.keys(), row)) for row in rows ]
+
+    return jsonify(data_update=data_update, data_notice=data_notice)
+
+@mod.route('/notice/update', methods=['POST'])
+def notice_update():
+    user_id = int(request.form['user_id']) 
+    data_notice_ids = request.form['data_notice_ids'] if request.form.has_key('data_notice_ids') else []
+    data_update_ids = request.form['data_update_ids'] if request.form.has_key('data_update_ids') else []
+    if user_id:
+        if data_notice_ids:
+            data_notice_ids = data_notice_ids.split(',')
+            if len(data_notice_ids):
+                sql = " UPDATE user_notices SET unread=:unread, is_syn=:is_syn WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_notice_ids)) 
+                res = g.db.execute(text(sql), user_id=user_id, unread=0, is_syn=1)
+                num = int(res.rowcount)
+                g.db.execute(text("INSERT INTO users_remind(user_id, total_count) VALUES(:user_id, 0) ON DUPLICATE KEY UPDATE total_count=total_count-:num"), user_id=user_id, num=num)
+
+        if data_update_ids:
+            data_update_ids = data_update_ids.split(',')
+            if len(data_update_ids):
+                sql = " UPDATE task_update_data SET is_syn=:is_syn WHERE user_id=:user_id AND id IN ({0})".format(','.join(data_update_ids)) 
+                res = g.db.execute(text(sql), is_syn=1, user_id=user_id)
+
+        return jsonify(error=0)
+    return jsonify(error=1)
+
+@mod.route('/contact/update', methods=['POST'])
+def contact_update():
+    if request.form.has_key('user_id') and request.form.has_key('contact_user_id'):
+        UserContact().process(user_id=request.form['user_id'], contact_user_id=request.form['contact_user_id'])
+        return jsonify(error=0)
+    return jsonify(error=1)

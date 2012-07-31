@@ -7,6 +7,8 @@ from werkzeug import http_date
 from wtforms import Form, TextField, validators
 from sqlalchemy.sql import select, text
 from yamler.utils import iphone_notify, datetimeformat
+from yamler.models.users import UserNotice
+import json
 
 class Task(Model):
     __tablename__ = 'tasks'
@@ -47,6 +49,19 @@ class Task(Model):
             result['end_time'] = '' 
 
         return result
+
+    def delete(self, id, user_id, realname):
+        row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status, submit_user_id FROM tasks WHERE id=:id"), id=id).first()
+        if row and row['user_id'] == int(user_id):
+            g.db.execute(text("UPDATE tasks SET is_del=:is_del, flag='0' WHERE id=:id"),is_del=1,id=id)
+            update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')) | set([str(row.user_id)]))
+            update_ids = [uid for uid in update_ids if uid]
+            if update_ids:
+                message = realname + '删除了此任务:' + row.title
+                for uid in update_ids:
+                    if uid and int(uid) != user_id: 
+                        UserNotice().process(user_id=uid, task_id=id, message=row.title, title=realname+"删除了")
+                TaskUpdateData().insert(user_ids=update_ids, data={'is_del':1}, task_id=id)
 
     def get_share_data(self, user_id, created_at=None, status=None):
         start_time = ''
@@ -153,6 +168,26 @@ class Task(Model):
 
         return (task_data_undone, task_data_complete, user_data, [dict(zip(res.keys(), res)) for res in user_rows], user_avatar)
                     
+class TaskUpdateData():
+    __tablename__ = 'task_update_data'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    task_id = Column(Integer)
+    data = Column(String(1000))
+    is_syn = Column(Integer)
+    created_at = Column(DateTime, default=datetime.datetime.now()) 
+    updated_at = Column(DateTime,default=datetime.datetime.now()) 
+    
+    def __init__(self, user_id=None, task_id=None):
+        self.task_id = task_id
+        self.user_id = user_id
+
+    def insert(self, user_ids, task_id, data):
+        if len(user_ids):
+            sql = "INSERT INTO task_update_data SET user_id=:user_id, task_id=:task_id, data=:data, created_at=:created_at"
+            for uid in user_ids:
+                if uid and uid != ',' and int(str(uid)) > 0:
+                    g.db.execute(text(sql), user_id=uid, task_id=task_id, data=json.dumps(data, ensure_ascii=False), created_at=datetime.datetime.now())
 
 class TaskComment(Model):
     __tablename__ = 'task_comments'
@@ -163,10 +198,46 @@ class TaskComment(Model):
     created_at = Column(DateTime, default=datetime.datetime.now()) 
     updated_at = Column(DateTime,default=datetime.datetime.now()) 
 
-    def __init__(self, user_id, task_id, content):
+    def __init__(self, user_id=None, task_id=None, content=None):
         self.user_id = user_id
         self.task_id = task_id
         self.content = content
+
+    def insert(self, task_id, user_id, content, realname):
+        row = g.db.execute(text("SELECT id, user_id, submit_user_id, to_user_id, comment_count FROM tasks WHERE id=:id"),id=task_id).fetchone()
+        if row:
+            created_at = datetime.datetime.now()
+            res = g.db.execute(text("INSERT INTO task_comments SET user_id=:user_id, task_id=:task_id, content=:content, created_at=:created_at"), user_id=user_id, task_id=task_id, content=content, created_at=created_at)
+            if res.lastrowid:
+                g.db.execute(text("UPDATE tasks SET comment_count = comment_count +1, unread=:unread, flag='0' WHERE id = :id"), id=task_id, unread=1)
+                update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')) | set([str(row.user_id)])) 
+                TaskUpdateData().insert(user_ids=update_ids, task_id=task_id, data={'comment_count': row.comment_count+1})
+
+                to_user_id = [] 
+                submit_user_id = []
+                #通知提醒
+                if row.to_user_id:
+                    to_user_id = row.to_user_id.split(',')
+                    to_user_id.append(str(row.user_id))
+                    to_user_id = [ uid for uid in to_user_id if uid != str(user_id) ]
+                    #sql = " UPDATE task_share SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(to_user_id)) 
+                    #g.db.execute(text(sql), task_id=task_id, unread=1)
+
+                if row.submit_user_id:
+                    #g.db.execute(text("UPDATE task_submit SET is_comment=:is_comment WHERE task_id=:task_id"), task_id=task_id, is_comment=0)
+                    submit_user_id = row.submit_user_id.split(',')
+                    submit_user_id.append(str(row.user_id))
+                    submit_user_id = [ uid for uid in submit_user_id if uid != str(user_id) ]
+                    #sql = " UPDATE task_submit SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(submit_user_id)) 
+                    #g.db.execute(text(sql), task_id=task_id, unread=1)
+                notify_user_id = list(set(to_user_id) | set(submit_user_id))
+                if notify_user_id:
+                    for uid in notify_user_id:
+                        if int(uid) != int(user_id):
+                            UserNotice().process(user_id=uid, task_id=task_id, message=content, title="来自"+realname+"的回复")
+                    iphone_notify(notify_user_id, type="comment", realname=realname, title=content)
+
+                return res.lastrowid
 
 class TaskShare(Model):
     __tablename__ = 'task_share'
@@ -186,22 +257,37 @@ class TaskShare(Model):
             res = g.db.execute(text("SELECT id FROM task_share WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id).fetchone()
             if res is None:
                 g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
+            UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'递交给我') 
         iphone_notify(share_user_id, type='share', title=title, realname=realname) 
         
-    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None):
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None, update_data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
-        if insert_ids:
-            g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
+        insert_ids = [uid for uid in insert_ids if uid]
+        if len(insert_ids):
             for user_id in insert_ids:
-                if int(user_id) > 0:
+                if user_id and int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_share SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
+
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"递交给我")
+            if data:
+                TaskUpdateData().insert(user_ids=insert_ids, data=data, task_id=task_id)
             iphone_notify(insert_ids, type='share', title=title, realname=realname)
 
         delete_ids = old_user_id.difference(share_user_id)
-        if delete_ids:
+        delete_ids = [uid for uid in delete_ids if uid]
+        if len(delete_ids):
             for user_id in delete_ids:
-                g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
+                if user_id:
+                    g.db.execute(text("DELETE FROM `task_share` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'取消了递交')
+            TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
+
+        if update_data:
+            update_ids = share_user_id.intersection(old_user_id)
+            update_ids = [uid for uid in update_ids if uid]
+            if len(update_ids):
+                TaskUpdateData().insert(user_ids=update_ids, data=update_data, task_id=task_id)
 
 class TaskSubmit(Model):
     __tablename__ = 'task_submit'
@@ -222,23 +308,40 @@ class TaskSubmit(Model):
                 res = g.db.execute(text("SELECT id FROM task_submit WHERE user_id=:user_id AND task_id=:task_id"), user_id=user_id, task_id=task_id).fetchone()
                 if res is None:
                     g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
-        iphone_notify(share_user_id, type='submit', title=title, realname=realname)
+                UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"安排给我")
 
-    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None):
+        iphone_notify(share_user_id, type='submit', title=title, realname=realname)
+                
+
+    def update(self, share_user_id, old_user_id, task_id, own_id=None, title=None, realname=None, data=None, update_data=None):
         own_id = own_id if own_id else g.user.id
         insert_ids = share_user_id.difference(old_user_id)
-        if insert_ids:
-            g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
+        insert_ids = [uid for uid in insert_ids if uid]
+        if len(insert_ids):
+            #g.db.execute(text("UPDATE tasks SET unread=:unread WHERE id=:id"), id=task_id) 
             for user_id in insert_ids:
-                if int(user_id) > 0:
+                if user_id and int(user_id) > 0:
                     g.db.execute(text("INSERT INTO task_submit SET user_id=:user_id, own_id=:own_id, task_id=:task_id, unread=:unread, created_at=:created_at"), task_id=task_id, user_id=user_id, own_id=own_id, unread=1, created_at=datetime.datetime.now() )        
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+"安排给我")
+
+            if data:
+                TaskUpdateData().insert(user_ids=insert_ids, data=data, task_id=task_id)
             iphone_notify(insert_ids, type='submit', title=title, realname=realname)
         
         delete_ids = old_user_id.difference(share_user_id)
-        if delete_ids:
+        delete_ids = [uid for uid in delete_ids if uid]
+        if len(delete_ids):
             for user_id in delete_ids:
                 if user_id > 0:
                     g.db.execute(text("DELETE FROM `task_submit` WHERE user_id=:user_id AND task_id=:task_id"), task_id=task_id, user_id=user_id)
+                    UserNotice().process(user_id=user_id, task_id=task_id, message=title, title=realname+'取消了安排')
+            TaskUpdateData().insert(user_ids=delete_ids, data={'is_del':1}, task_id=task_id)
+        
+        if update_data:
+            update_ids = share_user_id.intersection(old_user_id)
+            update_ids = [uid for uid in update_ids if uid]
+            if len(update_ids):
+                TaskUpdateData().insert(user_ids=update_ids, data=update_data, task_id=task_id)
 
 tasks = Table('tasks', metadata, autoload=True)
 task_comments = Table('task_comments', metadata, autoload=True)

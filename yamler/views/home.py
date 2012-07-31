@@ -6,9 +6,9 @@ from yamler.database import db_session
 from yamler import app
 from yamler.models.companies import companies
 from yamler.models.groups import groups 
-from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit
+from yamler.models.tasks import Task, tasks, task_comments, TaskShare, TaskSubmit, TaskUpdateData
 from yamler.models.boards import Board, boards
-from yamler.models.users import UserRemind 
+from yamler.models.users import UserNotice, UserContact 
 from sqlalchemy.sql import select, text
 from yamler.utils import required_login, get_remind, convert_time, datetimeformat 
 import time
@@ -53,13 +53,6 @@ def myfeed():
 @required_login
 @get_remind
 def share():
-    '''
-    now = datetime.now()
-    week = int(now.strftime('%w')) - 1
-    start_time = now - timedelta(days=week)
-    start_time = start_time.strftime('%Y-%m-%d')
-    '''
-    
     created_at = request.form['created_at'] if request.form.has_key('created_at') else 2
     status = request.form['status'] if request.form.has_key('status') else ''
     task_data_undone, task_data_complete, user_data, user_rows, user_avatar = Task().get_share_data(user_id=g.user.id, created_at=created_at, status=status)
@@ -96,15 +89,27 @@ def publish():
         })) 
         share_users = [ {'realname': row } for row in request.form['share_users'].lstrip(',').split(',') if row] 
         submit_users = [ {'realname': row } for row in request.form['submit_users'].lstrip(',').split(',') if row] 
-           
+            
         #id = res.inserted_primary_key[0]
         if request.form['to_user_id']:
             to_user_id = request.form['to_user_id'].lstrip(',').split(',')
             TaskShare().insert(task_id=res.lastrowid, share_user_id=to_user_id, realname=g.user.realname, title=request.form['title'])
+
         if request.form['submit_user_id']:
             submit_user_id = request.form['submit_user_id'].lstrip(',').split(',')
             TaskSubmit().insert(task_id=res.lastrowid, share_user_id=submit_user_id, realname=g.user.realname, title=request.form['title'])
-        
+       
+
+        update_ids = list(set(request.form['to_user_id'].split(',')) | set(request.form['submit_user_id'].split(',')))
+        update_ids.append(g.user.id)
+        if update_ids:
+            row = g.db.execute(text('SELECT * FROM tasks WHERE id=:id'), id=res.lastrowid).first()
+            data = dict(row)
+            data['mobile_time'] = int(time.mktime(row.created_at.timetuple())) 
+            data['created_at'] = datetimeformat(row['created_at'])
+            data['updated_at'] = datetimeformat(row['updated_at'])
+            TaskUpdateData().insert(user_ids=update_ids, task_id=res.lastrowid, data=data)
+
         return jsonify(title=request.form['title'], 
                        ismine=True, 
                        realname=g.user.realname, 
@@ -112,6 +117,7 @@ def publish():
                        share_users=share_users, 
                        submit_users=submit_users,
                        created_at = datetimeformat(created_at),
+                       comment_count = 0,
                       )
 
 @mod.route('/getMyFeed', methods=['GET', 'POST'])
@@ -172,6 +178,7 @@ def getMyFeed():
         if row.user_id != g.user.id:
             new_row['unread'] = row['unread']
         new_row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else '' 
+        '''
         if row['to_user_id']:
             user_ids = row['to_user_id'].lstrip(',').split(',')
             #user_sql = "SELECT GROUP_CONCAT( realname ) AS share_users FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
@@ -184,7 +191,7 @@ def getMyFeed():
             user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
             result = g.db.execute(text(user_sql)).fetchall()
             new_row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]  
-
+        '''
         #我自己的
         if row['user_id'] == g.user.id:
             new_row['realname'] = '我' 
@@ -193,6 +200,18 @@ def getMyFeed():
         else:
             new_row['ismine'] =  0 
             new_row['realname'] = g.db.execute(text("SELECT id, realname FROM `users` WHERE id=:id"), id=row['user_id']).first().realname
-
         data.append(new_row)
     return jsonify(data=data, next_page=next_page)
+
+
+@mod.route('/me')
+def me():
+    data, contact_data = UserContact().get(user_id=g.user.id)
+    '''
+    sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE user_id=:user_id AND is_del='0' AND created_at>:created_at"
+    sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) AND created_at>:created_at"
+    sql += " ORDER BY status ASC, created_at DESC"
+    task_rows = g.db.execute(text(sql),user_id=g.user.id, submit_user_id=g.user.id, created_at=date.today()).fetchall()
+    task_data = [dict(zip(res.keys(), res)) for res in task_rows]  
+    '''
+    return render_template('home/me.html', data=data, contact_data=contact_data)
