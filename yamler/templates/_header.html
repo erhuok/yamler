@@ -1,74 +1,57 @@
+<!--头部-->
 <div id="header">
-    <a class="header-btn head_logo" href="{{ url_for('home.account') }}">
-    	<span class="app-icon logo">&nbsp;</span>
-    </a>
-    
-    <div id="header-search">
-        <!--
-        <form>
-            <label for="search-text">Global Search</label>
-            <input id="search-text" type="text" spellcheck="false" autocorrect="off" autocomplete="off">
-            <input id="search-submit" type="submit" value="Search">
-            <a class="header-btn header-search js-search-submit" href="#">
-            <span class="app-icon light search-icon"></span>
+    <a class="logo" href="{{ url_for('home.me') }}"><img class="back_logo" src="{{ url_for('static', filename='home/images/index_img/logo_img.png') }}"/></a>
+    <ul class="menu">
+    	<li class="menu-item account radius-4 transition-effect">
+            <a class="menu-link" href="{{ url_for('home.me') }}">
+                <div class="avatar radius-2">
+                    <img src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+                </div>
+                我的面板
+                <i class="arrow"></i>
             </a>
-        </form>
-        -->
-    </div>
-    <div class="header-user">
-        <a class="header-btn header-notifications js-open-header-notifications-menu" href="{{ url_for('home.account') }}">
-        	<span class="app-icon light notification-icon"></span>
-            <span class="header-btn-text">我的工作日志列表</span>
+            <!--我的面板控件-->
+            <div class="account-dropdown" style=" display:none;">
+                <!--
+                <h4 class="first account_first">Preferences</h4>
+                <a class="link account_link" href="javascript:;">我的任务</a>
+                <a class="link account_link" href="javascript:;">我的管理中心</a>
+                <a class="link account_link" href="javascript:;">添加人员</a>
+                <a class="link account_link" href="javascript:;">管理人员</a>
+                <a class="link account_link" href="javascript:;">My subscription</a>
+                <a class="link account_link more-pro" href="javascript:;">More Pro Workspaces</a>
+                <h4 class="first account_first">Apps</h4>
+                <a class="link account_link" target="_blank" href="javascript:;">Download iPhone app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Android app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Mac OSX app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Windows app</a>
+                <h4 class="first account_first">Support</h4>
+                <a class="link account_link" href="javascript:UserVoice.showPopupWidget();">Feedback & support</a>
+                -->
+                <div class="separator account_first"></div>
+                <a class="link account_link logout" href="{{ url_for('user.logout') }}">退出</a>
+            </div><!--我的面板控件 end-->
+            
+        </li>
+        <a href="">
+            <li class="menu-item radius-4 transition-effect">
+            	<i class="icon settings"></i>
+            </li>
         </a>
-
-        {% if g.task_submit_count %}
-            <a class="header-btn header-about" title="Information" href="#">
-                <span class="count js-unread-announcements" style="">{{ g.task_submit_count }}</span>
-            </a>
-        {% endif %}
-
-        <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('home.share') }}">
-        	<span class="app-icon light board-icon"></span>
-			<span class="header-btn-text">递交给我的工作日志</span>
-          
-        </a>
-        {% if g.task_share_count %}
-            <a class="header-btn header-about" title="Information" href="#">
-                <span class="count js-unread-announcements" style="">{{ g.task_share_count }}</span>
-            </a>
-        {% endif %}
-
-        <a class="header-btn header-boards js-open-header-boards-menu" href="{{ url_for('user.invite') }}">
-        	<span class="app-icon light PlusUser_icon"></span>
-			<span class="header-btn-text">邀请加入</span>
-        </a>
-
-        <a class="header-auth member js-open-header-member-menu install-link" href="javascript:;">
-        	<span class="member-initials" title=""></span>
-            {% if g.user.avatar %}
-                <span><img src="{{ url_for('static', filename='uploads/small/'+g.user.avatar) }}"/></span>
-            {% endif %}
-            <span class="member-initials" title="">{{ g.user.realname }}</span>
-        </a>
-        <ul class="header_slideToggle rounded_bottom_3">
-            <li><a href="{{ url_for('user.setting') }}">设置</a></li>
-            <li class="last"><a href="{{ url_for('user.logout') }}">退出</a></li>
-        </ul>
-    </div>
-    <!--
-    <div>
-        <a class="header-btn header-about" title="Information" href="#">
-            <span class="app-icon light manual-icon"></span>
-            <span class="count js-unread-announcements" style="">1</span>
-        </a>
-    </div>
-    -->
+        
+        
+        <!--搜索块
+        <li class="search">
+            <form id="search-form" class="radius-4 transition-effect" action="/search.php" onsubmit="pdt_loader.set_loading(); if(tools.trim($('search-form-input').value) == '') {return false;}" method="post">
+                <input id="search-form-input" class="search-field placeholder" type="text" name="search_str" onblur="dashboard.onblur_search_field();" onfocus="dashboard.onfocus_search_field();" value="">
+                <script type="text/javascript">
+                	new input_placeholder('search-form-input', 'Search Tasks...');
+                </script>
+                <div class="glass"></div>
+            </form>
+        </li>-->
+        
+        
+    </ul>
 </div>
-
-<script>
-	$(".header-auth.member,.header_slideToggle").hover(function(){
-		$(".header_slideToggle").show();
-	},function(){
-		$(".header_slideToggle").hide();
-	});
-</script>
+<!--头部 end-->

@@ -6,7 +6,10 @@
     {{ render_field(form.username) }}
     {{ render_field(form.password) }}
 </dl>
-<p><input class="primary" type=submit value="登录"></p>
+<p>
+    <input class="primary" type=submit value="登录">
+    <a href="{{ url_for('user.forget_password') }}">忘记密码?</a>
+</p>
 
 </form>
 {% endblock %}

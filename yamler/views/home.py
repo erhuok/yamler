@@ -74,6 +74,7 @@ def mytask():
     return render_template('home/mytask.html', task_rows=task_rows, pagename='mytask') 
 
 @mod.route('/publish', methods=['GET', 'POST'])
+@required_login
 def publish():
     if request.method == 'POST' and request.form['title']:
         created_at = datetime.now()
@@ -121,6 +122,7 @@ def publish():
                       )
 
 @mod.route('/getMyFeed', methods=['GET', 'POST'])
+@required_login
 def getMyFeed():
     t = int(request.args.get('t',0))
     default_status = {'complete':1 , 'undone':0 , 'all':2} 
@@ -205,6 +207,7 @@ def getMyFeed():
 
 
 @mod.route('/me')
+@required_login
 def me():
     data, contact_data = UserContact().get(user_id=g.user.id)
     '''

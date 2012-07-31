@@ -1,7 +1,7 @@
 # encoding:utf8
 
 from flask import Blueprint,request,render_template,session,flash,redirect,url_for,jsonify, g, make_response 
-from yamler.models.users import User,RegistrationForm,LoginForm, users, UserInvite, UserContact
+from yamler.models.users import User,RegistrationForm,LoginForm, users, UserInvite, UserContact, ForgetPasswordForm
 from yamler.database import db_session
 from yamler.utils import request_wants_json, required_login, allowed_images
 from datetime import date, datetime
@@ -165,3 +165,10 @@ def get_avatar_url():
             return response
     #filename = 'upload/' + key
     #return url_for("static", filename=filename)
+
+@mod.route('/forget_password', methods=['GET', 'POST'])
+def forget_password():
+    form = ForgetPasswordForm(request.form)
+    if request.method == 'POST' and form.validate():
+
+    return render_template('user/forget_password.html', form=form)

@@ -179,3 +179,10 @@ class LoginForm(Form):
     username = TextField('邮箱', validators=[validators.required()])
     password = PasswordField('密码', validators=[validators.required()])
     created_at = Column(DateTime,default=datetime.datetime.now())
+
+class ForgetPasswordForm(Form):
+    def check_email_exists(form, field):
+        row = g.db.execute(text("SELECT id FROM users WHERE username=:username"), username=field.data).fetchone()   
+        if row is None: 
+            raise ValidationError('对不起,邮箱不存在,请换一个')
+    username = TextField('注册邮箱', [validators.Length(min=4, max=45),validators.required(message="必填"), validators.email(message='请输入正确的邮箱地址'), check_email_exists])
