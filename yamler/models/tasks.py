@@ -219,7 +219,7 @@ class TaskComment(Model):
                 if row.to_user_id:
                     to_user_id = row.to_user_id.split(',')
                     to_user_id.append(str(row.user_id))
-                    to_user_id = [ uid for uid in to_user_id if uid != str(user_id) ]
+                    to_user_id = [ str(uid) for uid in to_user_id if str(uid) != str(user_id) ]
                     #sql = " UPDATE task_share SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(to_user_id)) 
                     #g.db.execute(text(sql), task_id=task_id, unread=1)
 
@@ -227,7 +227,7 @@ class TaskComment(Model):
                     #g.db.execute(text("UPDATE task_submit SET is_comment=:is_comment WHERE task_id=:task_id"), task_id=task_id, is_comment=0)
                     submit_user_id = row.submit_user_id.split(',')
                     submit_user_id.append(str(row.user_id))
-                    submit_user_id = [ uid for uid in submit_user_id if uid != str(user_id) ]
+                    submit_user_id = [ str(uid) for uid in submit_user_id if str(uid) != str(user_id) ]
                     #sql = " UPDATE task_submit SET unread=:unread WHERE task_id=:task_id AND user_id IN ({0})".format(','.join(submit_user_id)) 
                     #g.db.execute(text(sql), task_id=task_id, unread=1)
                 notify_user_id = list(set(to_user_id) | set(submit_user_id))

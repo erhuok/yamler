@@ -21,7 +21,7 @@ def index():
 
 @mod.route('/login',methods=['GET','POST'])
 def login():
-    url = request.args.get('next') if request.args.get('next') else 'home.account'
+    url = request.args.get('next') if request.args.get('next') else 'home.me'
     if g.user:
         return redirect(url_for(url))
     form = LoginForm(request.form)
