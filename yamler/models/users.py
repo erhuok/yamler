@@ -147,7 +147,7 @@ class UserContact(Model):
         if contact and contact.contact_user_id:
             contact_user_id = contact.contact_user_id.split(',')
             sql = "SELECT id, realname, avatar, company_id, telephone, is_active, username FROM users WHERE is_active=:is_active AND id IN ({0})".format(','.join(contact_user_id))
-            sql += " ORDER BY FIELD (`id`,{0})".format(','.join(contact_user_id))
+            #sql += " ORDER BY FIELD (`id`,{0})".format(','.join(contact_user_id))
             contact_rows = g.db.execute(text(sql), is_active=1).fetchall()
             contact_data = [dict(zip(row.keys(), row)) for row in contact_rows]  
             if type:
