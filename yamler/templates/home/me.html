@@ -481,7 +481,7 @@ $(function(){
             $("#task-details").attr('display', 'hide');
         } else {
             $("#dashboard #task-details").show();
-            $("#dashboard #task-list").css({width: "60%"});
+            $("#dashboard #task-list").css({width: "55%"});
             $("#task-details").attr('display', 'show');
 
             $.getJSON('/task/get/'+id,function(res) { 
@@ -539,9 +539,15 @@ $(function(){
         //内容修改
         $("#task-details-title-text").live('click', function() {
             $(this).hide();
+			
+			
             var title_textarea = $("#task-details-title-input")
             title_textarea.show();
             var old_title = $(this).text();
+			
+			//修改任务框控制
+			var TDT_text_height = $(this).height();
+			$(this).next().css("height",TDT_text_height+"px");
             
             $(title_textarea).focus();
             title_textarea.blur(function() {
@@ -686,6 +692,7 @@ $(function(){
         var status_element = $("#task_list_"+id+"_status")
         if(status=='1') {
             data = {'status':0};
+			
         } else {
             data = {'status':1};
         }
@@ -711,6 +718,21 @@ $(function(){
             }
         }); 
     });
+	
+	//任务重要状态控制
+	$("#dashboard_tasks_list li.task .stars").toggle(function(){
+		if($(this).parent().hasClass("star_2-0")){
+			$(this).parent().removeClass("star_2-0");
+		}else{
+			$(this).parent().addClass("star_2-0");
+		}
+	},function(){
+		if( !$(this).parent().hasClass("star_2-0")){
+			$(this).parent().addClass("star_2-0");
+		}else{
+			$(this).parent().removeClass("star_2-0");
+		}
+	})
         
     //add_task_button提交任务按钮
     $("#add-task-btn").live('click',function() {
@@ -771,6 +793,15 @@ $(function(){
 	});
 
     */
+	function listHeight_scroll(){
+		var TD_height = $("#task-details").height();
+		var w_height = $(window).height();
+		if(TD_height > w_height){
+			$("#notes-section-container").css({"overflow-y":"scroll",height:(w_height-300)+"px"});
+		}else if(TD_height < w_height){
+			$("#notes-section-container").css({"overflow":"none"});
+		}
+	}
 	
 	function reheight(){
 		var w_height = $(window).height();
@@ -785,11 +816,12 @@ $(function(){
 			
 		}
 	}
+	
 	function position_f(show_flag){
 		var f_top = $(window).scrollTop();
 		var dash_width = $("#dashboard").width();
-		var dash_40 = dash_width*0.4;
-		var dash_60 = dash_width*0.6;
+		var dash_40 = dash_width*0.45;
+		var dash_60 = dash_width*0.55;
 		if(f_top > 51){
 			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
 			$("#list-view").css({top: "0"});
@@ -802,15 +834,17 @@ $(function(){
 			}
 		}else{
 			$("#wrapper #sidebar").css({position:"static","z-index":"auto"});
-			$("#dashboard #task-details").css({position:"relative" ,"z-index":"auto","margin-left":"60%",width:"40%"});
+			$("#dashboard #task-details").css({position:"relative" ,"z-index":"auto","margin-left":"55%",width:"45%"});
 		}
 	}
 	
 	$(window).load(function(){
 		reheight();
+		listHeight_scroll();
 	});
 	$(window).resize(function(){
 		reheight();
+		listHeight_scroll();
 		if(show_flag == 1){
 			position_f(show_flag == 1);
 		}else{
@@ -819,12 +853,18 @@ $(function(){
 	}); 
 	$(window).scroll(function(){
 		reheight();
+		listHeight_scroll();
 		if(show_flag == 1){
 			position_f(show_flag == 1);
 		}else{
 			position_f(show_flag == 0);
 		}
-	}); 
+	});
+	
+	
+	
+	
+	
 	//添加人员
     /*
 	        $(".sidebar-invite-people").live('click', function(){
