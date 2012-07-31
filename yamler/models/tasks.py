@@ -183,7 +183,7 @@ class TaskUpdateData():
         self.user_id = user_id
 
     def insert(self, user_ids, task_id, data):
-        if len(user_ids):
+        if len(user_ids) and data and len(data):
             sql = "INSERT INTO task_update_data SET user_id=:user_id, task_id=:task_id, data=:data, created_at=:created_at"
             for uid in user_ids:
                 if uid and uid != ',' and int(str(uid)) > 0:

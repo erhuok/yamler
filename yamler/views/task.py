@@ -44,9 +44,9 @@ def update(id):
     if request.form.has_key('status'):
         end_time = datetime.now() if request.form['status'] else ''
         g.db.execute(text("UPDATE tasks SET status=:status, end_time=:end_time, flag='0' WHERE id=:id"), id=id, status=request.form['status'], end_time=end_time)
-        '''
         if update_ids:
             TaskUpdateData().insert(user_ids=update_ids, data={'status':request.form['status']}, task_id=id)
+        '''
             for uid in update_ids:
                 if uid and int(uid) != g.user.id:
                     UserNotice().process(user_id=uid, task_id=id, message=row.title, title=g.user.realname+'修改了状态')
