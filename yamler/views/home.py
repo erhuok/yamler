@@ -209,12 +209,5 @@ def getMyFeed():
 @mod.route('/me')
 @required_login
 def me():
-    data, contact_data = UserContact().get(user_id=g.user.id)
-    '''
-    sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE user_id=:user_id AND is_del='0' AND created_at>:created_at"
-    sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) AND created_at>:created_at"
-    sql += " ORDER BY status ASC, created_at DESC"
-    task_rows = g.db.execute(text(sql),user_id=g.user.id, submit_user_id=g.user.id, created_at=date.today()).fetchall()
-    task_data = [dict(zip(res.keys(), res)) for res in task_rows]  
-    '''
+    data, contact_data = UserContact().get(user_id=g.user.id, type=True)
     return render_template('home/me.html', data=data, contact_data=contact_data)

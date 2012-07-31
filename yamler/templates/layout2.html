@@ -4,7 +4,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style_20120718new.css') }}"/>
-<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/head_style_20120718new.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style_20120718new.css') }}"/>
 <script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
@@ -179,6 +178,17 @@
         <ul class="popin-radio-list" id="popin-radio-list">
             <form id="form-task-followers" onsubmit="return (false);" name="form-task-followers">
                 <input type="hidden" value="10549862" name="id_task">
+                {% for row in contact_data %}
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}">
+                            <span class="avatar">
+                                <!--<img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">-->
+                            </span>
+                        <span> {{ row.realname }} </span>
+                    </label>
+                </li>
+                {% endfor %}
                 {% for row in data %}
                 <li>
                     <label>
