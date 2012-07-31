@@ -137,7 +137,7 @@ def getMyFeed():
     next_page = '/home/getMyFeed?t='+str(t)+'&status='+str(status)+'&page='+str(page+1)+'&created_at='+str(created_at) 
     #只看我自己的
     if 1 == int(t):
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id,unread FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id,unread,priority FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -145,7 +145,7 @@ def getMyFeed():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql),user_id=g.user.id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     elif 2 == int(t): 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread,priority FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id)"
         if status_value != 2:
             sql += ' AND status = :status' 
         if start_time:
@@ -153,13 +153,13 @@ def getMyFeed():
         sql += " ORDER BY status ASC, created_at DESC LIMIT :skip, :limit"
         rows = g.db.execute(text(sql), submit_user_id=g.user.id, skip=skip, limit=limit, status=str(status_value), created_at=start_time).fetchall()
     else: 
-        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE user_id=:user_id AND is_del='0'"
+        sql = "SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread,priority FROM tasks WHERE user_id=:user_id AND is_del='0'"
         if status_value != 2:
             sql += ' AND status = :status ' 
         
         if start_time:
             sql += ' AND created_at > :created_at'
-        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
+        sql += " UNION ALL SELECT id,user_id,to_user_id,title,created_at,end_time,status,comment_count,submit_user_id, unread, priority FROM tasks WHERE is_del='0' AND  FIND_IN_SET(:submit_user_id,submit_user_id) "
         if status_value != 2:
             sql += ' AND status = :status ' 
         if start_time:
@@ -175,6 +175,7 @@ def getMyFeed():
         new_row['user_id'] = row['user_id'] 
         new_row['title'] = row['title'] 
         new_row['status'] = row['status'] 
+        new_row['priority'] = row['priority'] 
         new_row['share_users'] = []
         new_row['submit_users'] = [] 
         if row.user_id != g.user.id:

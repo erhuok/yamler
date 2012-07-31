@@ -29,6 +29,12 @@ def update(id):
     update_ids = list(set(row.to_user_id.split(',')) | set(row.submit_user_id.split(',')))
     update_ids.append(row.user_id)
 
+    if request.form.has_key('priority'):
+        g.db.execute(text("UPDATE tasks SET priority=:priority, flag='0' WHERE id=:id"), id=id, priority=request.form['priority'])
+        if update_ids:
+            TaskUpdateData().insert(user_ids=update_ids, data={'priority':request.form['priority']}, task_id=id)
+        return jsonify(error=0, priority=request.form['priority'], id=id)
+
     if request.form.has_key('title'):
         g.db.execute(text("UPDATE tasks SET title=:title, flag='0' WHERE id=:id"), id=id, title=request.form['title'])
         if update_ids:
