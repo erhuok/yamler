@@ -98,6 +98,15 @@ def invite():
     url = 'http://' + request.host + '/i/' + str(g.user.id) 
     return render_template('user/invite.html', url=url)
 
+@mod.route('/get/<string:ids>')
+def get(ids):
+    if ids:
+        sql = "SELECT id, realname, avatar FROM users WHERE ID IN ({0})".format(','.join(ids.split(',')))
+        rows = g.db.execute(text(sql)).fetchall()
+        data = [dict(zip(row.keys(), row)) for row in rows]  
+        return jsonify(error=0, data=data)
+
+
 @mod.route('/setting', methods=['GET', 'POST'])
 @required_login
 def setting():

@@ -14,10 +14,10 @@
 <body>
 <!--头部-->
 <div id="header">
-    <a class="logo"><img class="back_logo" src="{{ url_for('static', filename='home/images/index_img/logo_img.png') }}"/></a>
+    <a class="logo" href="{{ url_for('home.me') }}"><img class="back_logo" src="{{ url_for('static', filename='home/images/index_img/logo_img.png') }}"/></a>
     <ul class="menu">
     	<li class="menu-item account radius-4 transition-effect">
-        	<a class="menu-link" href="javascript:;">
+            <a class="menu-link" href="{{ url_for('home.me') }}">
                 <div class="avatar radius-2">
                     <img src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
                 </div>
@@ -26,6 +26,7 @@
             </a>
             <!--我的面板控件-->
             <div class="account-dropdown" style=" display:none;">
+                <!--
                 <h4 class="first account_first">Preferences</h4>
                 <a class="link account_link" href="javascript:;">我的任务</a>
                 <a class="link account_link" href="javascript:;">我的管理中心</a>
@@ -40,8 +41,9 @@
                 <a class="link account_link" target="_blank" href="javascript:;">Download Windows app</a>
                 <h4 class="first account_first">Support</h4>
                 <a class="link account_link" href="javascript:UserVoice.showPopupWidget();">Feedback & support</a>
+                -->
                 <div class="separator account_first"></div>
-                <a class="link account_link logout" href="ajax/users/logout.php">Log out</a>
+                <a class="link account_link logout" href="{{ url_for('user.logout') }}">退出</a>
             </div><!--我的面板控件 end-->
             
         </li>
@@ -83,28 +85,28 @@
                             <img class="icon hover-object" src="../images/index_img_20120718/icon-team.png">
                         </div>
                         <div id="dashboard_sidebar_648918_avatar_479510" class="sidebar-avatar selected radius-3" canvas="canvas_479510">
-                            <img class="radius-2 transition-effect hover-object"  src="../images/index_img_20120718/479510-1342579213.jpg">
+                            <img class="radius-2 transition-effect hover-object"  src=" {{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
                         </div>
                         <div id="dashboard_sidebar_invite_648918" class="sidebar-invite-people hover-object" >
                             <a class="sidebar-invite-people"  href="javascript:;">
                                 <i class="icon radius-3 btn btn_green">
-                                    <img border="0" src="../images/index_img_20120718/add_colleague.png">
+                                    <img border="0" src="{{ url_for('static',filename='home/images/index_img_20120718/add_colleague.png') }}">
                                 </i>
                             </a>
                         </div>
                         <a class="sidebar-invite-people" href="javascript:;">
-                            <span class="invite-help">添加人员</span>
+                            <span class="invite-help">邀请同事</span>
                         </a>
                         <div class="clear"></div>
                     </div><!--个人添加块 end-->
                     <div class="colleagues-divider"></div>
                     <!--用户显示块-->
                     <div id="id_target_user" name="479510">
-                        <img class="target_user_avatar radius-3" src="../images/index_img_20120718/479510-1342579213.jpg">
+                        <img class="target_user_avatar radius-3" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
                         <b class="user-border radius-3"></b>
                         <div class="name-container">
                             <div class="target-user-name">
-                                <span>谭少华</span>
+                                <span>{{ g.user.realname }}</span>
                             </div>
                         </div>
                         <div class="clear"></div>
@@ -116,28 +118,30 @@
             
             <div id="filter-section">
                 <ul id="filter_list_in" style="position: relative;">
-                    <li id="filter_1" class="filter filter_li mytasks selected"  name="1">
+                    <li id="filter_1" class="filter filter_li mytasks "  name="1">
                         <i class="drag-handler"></i>
                         <i class="icon filter"></i>
                         <!--<i class="task-counter radius-10 ellipsis">1</i>-->
-                        <span class="title ellipsis"> 所有任务 </span>
+                        <span class="title ellipsis"> </span>
                         <!--<i class="task-counter radius-10 ellipsis filter-task-nb" title="1">1</i>-->
                     </li>
-                    <li id="filter_2" class="filter filter_li recipient"  name="2">
+                    <li id="filter_2" class="filter filter_li recipient selected"  name="2">
+                    <a href="{{ url_for('home.me') }}">
                         <i class="drag-handler"></i>
                         <div class="leftMenu_link">
                             <i class="icon filter"></i>
-                            <span class="title ellipsis"> 我的任务 </span>
+                            <span class="title ellipsis"> 我的工作 </span>
                         </div>
-                        
+                    </a>  
                     </li>
                     <li id="filter_3" class="filter filter_li archived"  name="3">
+                    <a href="{{ url_for('home.share') }}">
                         <i class="drag-handler"></i>
                         <div class="leftMenu_link">
                             <i class="icon filter"></i>
-                            <span class="title ellipsis">他人任务</span>
+                            <span class="title ellipsis">递交给我</span>
                         </div>
-                        
+                    </a>    
                     </li>
                     <li id="filter_4" class="filter filter_li starred"  name="4">
                         <i class="drag-handler"></i>
@@ -165,16 +169,27 @@
 <!--递交给和安排给弹窗-->
 <div id="popin_taskfollowers_10549862" class="popin regular radius-4 radius popin_taskfollowers" style="top: 180px; left: 960px; display:none;">
     <i class="nipple" style="left: 135px;"></i>
-    <div class="popin_header"> 添加安排人员 </div>
+    <div class="popin_header" id="popin_header_task"> 添加人员 </div>
     <div id="popin_taskfollowers_10549862_content" class="popin-content">
-        <div class="invite-to-use" id="invite-to-use">
-        
+        <div class="invite-to-use" id="popin_header_desc_task">
         您可以选择想安排给谁，这样他就可以看到你写的任务了！
-        <a hreg="javascript:;"> 添加人员 </a>
+        <!--<a hreg="javascript:;"> 添加人员 </a>-->
         </div>
         <ul class="popin-radio-list" id="popin-radio-list">
             <form id="form-task-followers" onsubmit="return (false);" name="form-task-followers">
                 <input type="hidden" value="10549862" name="id_task">
+                {% for row in data %}
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}">
+                            <span class="avatar">
+                                <!--<img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">-->
+                            </span>
+                        <span> {{ row.realname }} </span>
+                    </label>
+                </li>
+                {% endfor %}
+                <!--
                 <li>
                     <label>
                         <input class="radio" type="checkbox" value="479510" name="id_followers[]" disabled="disabled" checked="checked">
@@ -193,15 +208,7 @@
                         <span> 谭少华 </span>
                     </label>
                 </li>
-                <li>
-                    <label>
-                        <input class="radio" type="checkbox" value="479510" name="id_followers[]" disabled="disabled" checked="checked">
-                            <span class="avatar">
-                                <img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">
-                            </span>
-                        <span> 谭少华 </span>
-                    </label>
-                </li>
+                -->
             </form>
         </ul>
         <div class="clear"></div>
@@ -210,8 +217,8 @@
         <div class="help-link">
             <a target="_blank" href="javascript:;">  </a>
         </div>
-        <a class="btn btn_green" webdrivername="popin-btn-save" href="javascript:;"> 保存 </a>
-        <a class="btn btn_grey" href="javascript:;"> 取消 </a>
+        <a class="btn btn_green" webdrivername="popin-btn-save" href="javascript:;" id="save_share"> 保存 </a>
+        <a class="btn btn_grey" href="javascript:;" id="cancel_share"> 取消 </a>
         <div class="clear"></div>
     </div>
 </div>

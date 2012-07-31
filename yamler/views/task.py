@@ -107,7 +107,7 @@ def get(id):
     row['share_users'] = []
     row['submit_users'] = []   
     row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') 
-
+    '''
     if row and row.has_key('to_user_id') and row['to_user_id']:
         user_ids = row['to_user_id'].lstrip(',').split(',')
         user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
@@ -119,7 +119,7 @@ def get(id):
         user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
         result = g.db.execute(text(user_sql)).fetchall()
         row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]   
-
+    '''
     return jsonify(row=row)
 
 
