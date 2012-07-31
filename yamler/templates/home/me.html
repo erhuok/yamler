@@ -193,7 +193,7 @@
 </script>
 
 <script id="task_detail_template" type="text/x-jquery-tmpl">
-    <div id="task-details-content" class="{% raw %} {{if status}} done {{else}} undone {{/if}} {% endraw %} has-notes {% raw %} {{if status}} star_2-0 {{/if}} {% endraw %} ">
+    <div id="task-details-content" class="{% raw %} {{if status}} done {{else}} undone {{/if}} {% endraw %} has-notes {% raw %} {{if priority}} star_2-0 {{/if}} {% endraw %} ">
             	<div class="overflow-container">
                 	<!--右边第二列头部-->
                 	<div class="header-task-details">
@@ -687,11 +687,16 @@ $(function(){
                 if(status=='1') {
                     list_element.removeClass("done");
                     list_element.addClass("undone");
+                    $("#task-details-content").removeClass('done');
+                    $("#task-details-content").addClass('undone');
                     status_element.attr('status',0); 
                     status_element.attr('title','改为完成'); 
                 } else {
                     list_element.removeClass("undone");
                     list_element.addClass("done");
+                    $("#task-details-content").removeClass('undone');
+                    $("#task-details-content").addClass('done');
+
                     status_element.attr('status',1); 
                     status_element.attr('title','改为未完成'); 
                 }
@@ -720,9 +725,11 @@ $(function(){
                 var list_element = $("#task_list_"+id);
                 if(priority=='1') {
                     list_element.removeClass("star_2-0");
+                    $("#task-details-content").removeClass('star_2-0');
                     status_element.attr('priority',0); 
                 } else {
                     list_element.addClass("star_2-0");
+                    $("#task-details-content").addClass('star_2-0');
                     status_element.attr('priority',1); 
                 }
             }

@@ -108,7 +108,7 @@ def submit(id):
 
 @mod.route('/get/<int:id>')
 def get(id):
-    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status,comment_count,submit_user_id,created_at FROM tasks WHERE id=:id"), id=id).first()
+    row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status,comment_count,submit_user_id,created_at,priority FROM tasks WHERE id=:id"), id=id).first()
     row = dict(row)
     row['share_users'] = []
     row['submit_users'] = []   
