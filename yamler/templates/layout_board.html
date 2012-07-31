@@ -5,18 +5,12 @@
 <title>微OA-日志</title>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style_20120718new.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/head_style_20120718new.css') }}"/>
-<!-- 
-<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style.css') }}"/> 
-<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/head_style.css') }}"/>
--->
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/content_style.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='css/ui/jquery.ui.all.css') }}"/>
 <script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/ui/jquery.ui.all.min.js') }}"></script>
-<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style_20120718new.css') }}"/>
-<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style_20120718new.css') }}"/>
 <!-- Add fancyBox main JS and CSS files -->
 <script type="text/javascript" src="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='js/libs/fancybox/jquery.fancybox.css') }}" media="screen" />
@@ -129,12 +123,11 @@
 		
 		function re_height(){
 			var w_height = $(window).height();
-			var b_height = w_height-(78+26);
+			var b_height = w_height-(88+26);
 			var w_width = $(window).width();
 			var con_width = w_width-184;
 			var list_count = $(".list").length;
 			var list_countWidth = 350*list_count;
-			//var listblock_height = $(".list");
 
 			if(list_countWidth > con_width){
 				$(".list-area-wrapper").css({height:"100%",width:(con_width-14)+"px"})
@@ -170,7 +163,7 @@
 			var ws_height = $(window).height();
 			var w_width = $(window).width();
 			var con_width = w_width-184;
-			var bo_height = ws_height-(78+26)+ws_top;
+			var bo_height = ws_height-(88+26)+ws_top;
 			var list_count = $(".list").length;
 			var list_countWidth = 350*list_count;
 			if(list_countWidth > con_width){
@@ -194,6 +187,7 @@
 
 <body class="page-index firefox firefox-12 windows extra-large-window full-content">
 {% include '_header.html' %}
+
 <!--主体区-->
 <div id="content">
 	
