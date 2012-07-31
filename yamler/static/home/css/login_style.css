@@ -5,7 +5,7 @@
 .account-page #surface { margin: 0 auto; max-width: 540px; _width:540px; padding: 15px 10px 50px; position: relative;}
 .account-page .account-header { text-align: left; margin-top:30px; margin-bottom:15px; margin-left:10px;}
 .account-page .account-header a{ width:auto; 
-	height:46px;
+	height:59px;
 	background:url("../images/index_img/login_logo.png") no-repeat 0 center;
 	_background:url("../images/index_img/login_logo.gif") no-repeat 0 center;
 	display: block;
