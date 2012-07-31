@@ -65,6 +65,7 @@ def share(id):
         to_user_id = request.form['to_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET to_user_id=:to_user_id, flag='0' WHERE id=:id"), to_user_id=request.form['to_user_id'].lstrip(','), id=id) 
         data = dict(row)
+        data['to_user_id'] = to_user_id
         data['created_at'] = datetimeformat(row.created_at)
         data['updated_at'] = datetimeformat(row.updated_at)
         data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
@@ -89,6 +90,7 @@ def submit(id):
         submit_user_id = request.form['submit_user_id'].lstrip(',')
         res = g.db.execute(text("UPDATE tasks SET submit_user_id=:submit_user_id, flag='0' WHERE id=:id"), submit_user_id=request.form['submit_user_id'].lstrip(','), id=id) 
         data = dict(row)
+        data['submit_user_id'] = submit_user_id 
         data['created_at'] = datetimeformat(row.created_at)
         data['updated_at'] = datetimeformat(row.updated_at)
         data['notify_time'] = row.notify_time.strftime('%Y-%m-%d %T') if row.notify_time and isinstance(row.notify_time, datetime) else ''
