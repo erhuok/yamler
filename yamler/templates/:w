@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style_20120718new.css') }}"/>
+<link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style_20120718new.css') }}"/>
+<script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
+
+
+</head>
+
+<body>
+<!--头部-->
+<div id="header">
+    <a class="logo"><img class="back_logo" src="{{ url_for('static', filename='home/images/index_img/logo_img.png') }}"/></a>
+    <ul class="menu">
+    	<li class="menu-item account radius-4 transition-effect">
+        	<a class="menu-link" href="javascript:;">
+                <div class="avatar radius-2">
+                    <img src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+                </div>
+                我的面板
+                <i class="arrow"></i>
+            </a>
+            <!--我的面板控件-->
+            <div class="account-dropdown" style=" display:none;">
+                <h4 class="first account_first">Preferences</h4>
+                <a class="link account_link" href="javascript:;">我的任务</a>
+                <a class="link account_link" href="javascript:;">我的管理中心</a>
+                <a class="link account_link" href="javascript:;">添加人员</a>
+                <a class="link account_link" href="javascript:;">管理人员</a>
+                <a class="link account_link" href="javascript:;">My subscription</a>
+                <a class="link account_link more-pro" href="javascript:;">More Pro Workspaces</a>
+                <h4 class="first account_first">Apps</h4>
+                <a class="link account_link" target="_blank" href="javascript:;">Download iPhone app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Android app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Mac OSX app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Windows app</a>
+                <h4 class="first account_first">Support</h4>
+                <a class="link account_link" href="javascript:UserVoice.showPopupWidget();">Feedback & support</a>
+                <div class="separator account_first"></div>
+                <a class="link account_link logout" href="ajax/users/logout.php">Log out</a>
+            </div><!--我的面板控件 end-->
+            
+        </li>
+        <a href="">
+            <li class="menu-item radius-4 transition-effect">
+            	<i class="icon settings"></i>
+            </li>
+        </a>
+        
+        
+        <!--搜索块
+        <li class="search">
+            <form id="search-form" class="radius-4 transition-effect" action="/search.php" onsubmit="pdt_loader.set_loading(); if(tools.trim($('search-form-input').value) == '') {return false;}" method="post">
+                <input id="search-form-input" class="search-field placeholder" type="text" name="search_str" onblur="dashboard.onblur_search_field();" onfocus="dashboard.onfocus_search_field();" value="">
+                <script type="text/javascript">
+                	new input_placeholder('search-form-input', 'Search Tasks...');
+                </script>
+                <div class="glass"></div>
+            </form>
+        </li>-->
+        
+        
+    </ul>
+</div>
+<!--头部 end-->
+
+<!--主体块-->
+<div id="wrapper" class="content">
+	<!--左边布局-->
+	<div id="sidebar">
+    	<a id="sidebar-handler" class="handler sidebar" href="javascript:;"></a>
+        <div id="sidebar_content" class="dashboard-panel-effect">
+        	<!--people块-->
+            <div id="people-section">
+                <div id="sidebar-people-content" class="sidebar-people ">
+                	<!--个人添加块-->
+                    <div class="colleagues-in">
+                        <div id="dashboard_sidebar_648918_team" class="sidebar-avatar team ">
+                            <img class="icon hover-object" src="../images/index_img_20120718/icon-team.png">
+                        </div>
+                        <div id="dashboard_sidebar_648918_avatar_479510" class="sidebar-avatar selected radius-3" canvas="canvas_479510">
+                            <img class="radius-2 transition-effect hover-object"  src="../images/index_img_20120718/479510-1342579213.jpg">
+                        </div>
+                        <div id="dashboard_sidebar_invite_648918" class="sidebar-invite-people hover-object" >
+                            <a class="sidebar-invite-people"  href="javascript:;">
+                                <i class="icon radius-3 btn btn_green">
+                                    <img border="0" src="../images/index_img_20120718/add_colleague.png">
+                                </i>
+                            </a>
+                        </div>
+                        <a class="sidebar-invite-people" href="javascript:;">
+                            <span class="invite-help">添加人员</span>
+                        </a>
+                        <div class="clear"></div>
+                    </div><!--个人添加块 end-->
+                    <div class="colleagues-divider"></div>
+                    <!--用户显示块-->
+                    <div id="id_target_user" name="479510">
+                        <img class="target_user_avatar radius-3" src="../images/index_img_20120718/479510-1342579213.jpg">
+                        <b class="user-border radius-3"></b>
+                        <div class="name-container">
+                            <div class="target-user-name">
+                                <span>谭少华</span>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div><!--用户显示块 end-->
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!--people块 end-->
+            
+            <div id="filter-section">
+                <ul id="filter_list_in" style="position: relative;">
+                    <li id="filter_1" class="filter filter_li mytasks selected"  name="1">
+                        <i class="drag-handler"></i>
+                        <i class="icon filter"></i>
+                        <!--<i class="task-counter radius-10 ellipsis">1</i>-->
+                        <span class="title ellipsis"> 所有任务 </span>
+                        <!--<i class="task-counter radius-10 ellipsis filter-task-nb" title="1">1</i>-->
+                    </li>
+                    <li id="filter_2" class="filter filter_li recipient"  name="2">
+                        <i class="drag-handler"></i>
+                        <div class="leftMenu_link">
+                            <i class="icon filter"></i>
+                            <span class="title ellipsis"> 我的任务 </span>
+                        </div>
+                        
+                    </li>
+                    <li id="filter_3" class="filter filter_li archived"  name="3">
+                        <i class="drag-handler"></i>
+                        <div class="leftMenu_link">
+                            <i class="icon filter"></i>
+                            <span class="title ellipsis">他人任务</span>
+                        </div>
+                        
+                    </li>
+                    <li id="filter_4" class="filter filter_li starred"  name="4">
+                        <i class="drag-handler"></i>
+                        <div class="leftMenu_link">
+                            <i class="icon filter"></i>
+                            <span class="title ellipsis">通知 </span>
+                        </div>
+                        
+                    </li>
+                    
+                </ul>
+            </div>
+            <div id="smartfilters-section"> </div>
+            
+        </div>
+    </div>
+    <!--左边布局 end-->
+    {% block content %} {% endblock %} 
+  
+    
+    
+</div>
+<!--主体块 end-->
+
+<!--递交给和安排给弹窗-->
+<div id="popin_taskfollowers_10549862" class="popin regular radius-4 radius popin_taskfollowers" style="top: 180px; left: 960px; display:none;">
+    <i class="nipple" style="left: 135px;"></i>
+    <div class="popin_header"> 添加安排人员 </div>
+    <div id="popin_taskfollowers_10549862_content" class="popin-content">
+        <div class="invite-to-use" id="invite-to-use">
+        
+        您可以选择想安排给谁，这样他就可以看到你写的任务了！
+        <a hreg="javascript:;"> 添加人员 </a>
+        </div>
+        <ul class="popin-radio-list" id="popin-radio-list">
+            <form id="form-task-followers" onsubmit="return (false);" name="form-task-followers">
+                <input type="hidden" value="10549862" name="id_task">
+                {% for row in data %}
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" checked="checked">
+                            <span class="avatar">
+                                <!--<img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">-->
+                            </span>
+                        <span> {{ row.realname }} </span>
+                    </label>
+                </li>
+                {% endfor %}
+                <!--
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="479510" name="id_followers[]" disabled="disabled" checked="checked">
+                            <span class="avatar">
+                                <img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                        <span> 谭少华 </span>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="479510" name="id_followers[]" disabled="disabled" checked="checked">
+                            <span class="avatar">
+                                <img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                        <span> 谭少华 </span>
+                    </label>
+                </li>
+                -->
+            </form>
+        </ul>
+        <div class="clear"></div>
+    </div>
+    <div class="popin-btns">
+        <div class="help-link">
+            <a target="_blank" href="javascript:;">  </a>
+        </div>
+        <a class="btn btn_green" webdrivername="popin-btn-save" href="javascript:;"> 保存 </a>
+        <a class="btn btn_grey" href="javascript:;"> 取消 </a>
+        <div class="clear"></div>
+    </div>
+</div>
+<!--递交给和安排给弹窗 end-->
+
+<!--新加人员弹窗-->
+<div id="popin__0" class="popin blackout radius popin_addPeople"  style="top: 5px; left: 3px; position: absolute; z-index:1001;display:none;">
+    <i class="nipple" style="left: 0px;"></i>
+    <div class="popin_header"> </div>
+    <div id="popin__0_content" class="popin-content">
+        <a class="close-btn people_close" href="javascript:;">
+            <i class="close-cross"></i>
+            关闭
+        </a>
+        <div class="content">
+            <h2>
+                添加人员到
+                <strong>我的工作组</strong>
+            </h2>
+            <form class="form-invite" onsubmit="invitation_invite.on_submit(this); return (false);" method="post" action="#">
+                <div class="row">
+                    <label>Email(s)</label>
+                    <div class="field">
+                        <input id="form-invite-email-input" class="appended radius-3" type="text" value="" name="email" autocomplete="off">
+                        <div class="clear"></div>
+                        <p class="help"> 在这里填写添加人员的电子邮箱地址 </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <label>内容</label>
+                    <div class="field">
+                        <textarea class="large radius-3" name="message"></textarea>
+                        <p class="help"> 添加人员描述 </p>
+                    </div>
+                </div>
+                <input type="hidden" value="648918" name="id_dashboard">
+                <div class="action-btns">
+                    <input class="btn btn_green" type="submit" value="添加人员">
+                    <div class="more">
+                        <strong>Unlimited (Free trial)</strong>
+                        在这个工作区的中邀请剩余的人员. 想了解更多有关功能请关注我们?
+                        <a href="javascript:;">最新动态</a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </form>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="popin-btns">
+        <div class="help-link"> </div>
+        <div class="clear"></div>
+    </div>
+</div>
+<!--新加人员弹窗 end-->
+
+</body>
+</html>
