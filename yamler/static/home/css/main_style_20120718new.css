@@ -3868,7 +3868,7 @@ form.add-task {
    overflow: hidden;
    border: 1px solid #C4CDE4;
    box-shadow: inset 0px 1px 0px rgba(33,33,33, 0.1);
-   position: relative;         
+   /*position: relative;  */       
 }
 
 #dashboard.list .add-task-ctnr { 
@@ -3892,8 +3892,8 @@ form.add-task {
 
 #add-task-field {      
    margin: 0;
-   position: absolute;
-   z-index: 2;
+   /*position: absolute;
+   z-index: 2;*/
    width: 98%;
    padding: 5px 1%;   
    color: #666;
@@ -3919,7 +3919,7 @@ form.add-task {
 }
 
 #form-add-task .task-options {
-   margin: 50px 0px 0px 0px;
+  /* margin: 50px 0px 0px 0px;*/
    position: relative;
    height: 31px;       
    background: #f0f2f4;
@@ -3929,22 +3929,24 @@ form.add-task {
 
 #form-add-task .task-options .bulk-btn i.icon,
 #form-add-task .task-options .tr-btn i.icon {
-    width: 18px;
+    /*width: 18px;
+	background-image: url(../images/index_img_20120718/icon-task-options.png);
+	background-repeat: no-repeat;
+	*/
     height: 18px;    
-    background-image: url(../images/index_img_20120718/icon-task-options.png);
-    background-repeat: no-repeat;
     display: block;
     margin-top: 3px;
+	font-weight:bold;
 }
 
 
-#form-add-task .task-options .bulk-btn i.icon.assign {
+/*#form-add-task .task-options .bulk-btn i.icon.assign {
     background-position: 0px 0px;
 }
 
 #form-add-task .task-options .bulk-btn i.icon.labelit {
     background-position: -18px 0px;
-}
+}*/
 
 #form-add-task .task-options .bulk-btn i.icon.deadline{
     background-position: -36px 0px;
@@ -11411,6 +11413,17 @@ body.docpreview
 }
 
 /**************************新增加样式*************************************/
+#share_users_name,#submit_users_name{
+	width:98%;
+	background-color:#fdf9ee;
+	padding:5px 1%;
+	min-height:15px;
+	_height:15px;
+	border-top:1px dashed #ddd;
+	display:none;
+}
+#share_users_name{ }
+#submit_users_name{}
 .task_list_more{
 	background-color: #ECEFF2;
     background-image: -moz-linear-gradient(center top , #FDFDFD, #ECEFF2);

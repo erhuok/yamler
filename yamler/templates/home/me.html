@@ -72,8 +72,8 @@
                     <div class="add-task-ctnr">
                         <!--<label id="add-task-placeholder"> <span>Type here to create a task...</span> </label> <input id="add-task-field" class="never_focused" type="text" autocomplete="off" name="task_title"/>-->
                         <textarea id="add-task-field" class="never_focused" type="text" autocomplete="off" name="title" cols="" rows="" ></textarea>
-                        <p id="share_users_name"></p>
-                        <p id="submit_users_name"></p>
+                        <div id="share_users_name"></div>
+                        <div id="submit_users_name"></div>
                         <input type="hidden" name="to_user_id" id="to_user_id"/>
                         <input type="hidden" name="share_users" id="share_users"/>
                         <input type="hidden" name="submit_user_id" id="submit_user_id"/>
@@ -81,12 +81,13 @@
                         <div id="add-task-options" class="task-options transition-effect">
                             <div class="options-menu-cntr">
                                 <div class="block">
+                                	<div class="bulk-btn no-left-border hover-object">
+                                        <i class="icon labelit share_users" title="递交" name="">递交给</i>
+                                    </div>
                                     <div class="bulk-btn radius-only-left hover-object">
-                                        <i class="icon assign submit_users" title="安排" name=""></i>
+                                        <i class="icon assign submit_users" title="安排" name="">安排给</i>
                                     </div>
-                                    <div class="bulk-btn no-left-border hover-object">
-                                        <i class="icon labelit share_users" title="递交" name=""></i>
-                                    </div>
+                                    
                                     <!--
                                     <div class="bulk-btn no-left-border hover-object">
                                         <i class="icon deadline"></i>
@@ -757,6 +758,7 @@ $(function(){
             if(names.length) {
                 var content = '递交给：'+names.join(',');
                 $("#share_users_name").text(content);
+				$("#share_users_name").show();
             }
             $(".popin_taskfollowers").hide();
         });
@@ -790,6 +792,7 @@ $(function(){
             if(names.length) {
                 var content = '安排给：'+names.join(',');
                 $("#submit_users_name").text(content);
+				$("#submit_users_name").show();
             }
             $(".popin_taskfollowers").hide();
         });
