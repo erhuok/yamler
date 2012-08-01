@@ -723,6 +723,10 @@ $(function(){
             success: function(data) {
                 $( "#msgTemplate" ).tmpl( data ).prependTo( "#dashboard_tasks_list" );
                 $('#add-task-field').val('');
+                $("#to_user_id").val('');
+                $("#submit_user_id").val();
+                $("#submit_users_name").hide();
+                $("#share_users_name").hide();
                 getDetail(data.id);  
             }
         });
