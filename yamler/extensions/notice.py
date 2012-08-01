@@ -75,7 +75,8 @@ def task_status():
         cursor.execute(sql)
         result = cursor.fetchone()
         if result and result['status_count'] > 3:
-            value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：您还有三个未完成的工作等待您的处理！'}
+            message = '云秘书提醒您：您还有%s个未完成的工作等待您的处理！' %  str(result['status_count']) 
+            value = {'iphone_token': row['iphone_token'], 'message': message }
             res = redis.lpush('notify',json.dumps(value))
 
 
