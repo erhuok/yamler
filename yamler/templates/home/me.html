@@ -348,6 +348,19 @@
 </script>
 
 <script type="text/javascript" defer>
+	
+    
+$(function(){
+   $.ajaxSetup({ cache: false });
+    function getMyFeed(url) {
+        $.getJSON(url, function(res){
+            $( "#msgTemplate" ).tmpl( res.data ).appendTo( "#dashboard_tasks_list" );
+            $("#get_more_feed").attr('name', res.next_page);
+        });  
+    }
+
+    getMyFeed('/home/getMyFeed');
+	
 	//浏览器版本
 	window["MzBrowser"]={};
 	(function(){
@@ -360,17 +373,6 @@
 		if("undefined"!=typeof(re)&&re.test(ua))
 			MzBrowser.version = parseFloat(RegExp.$2);
 	})(); 
-    
-$(function(){
-   $.ajaxSetup({ cache: false });
-    function getMyFeed(url) {
-        $.getJSON(url, function(res){
-            $( "#msgTemplate" ).tmpl( res.data ).appendTo( "#dashboard_tasks_list" );
-            $("#get_more_feed").attr('name', res.next_page);
-        });  
-    }
-
-    getMyFeed('/home/getMyFeed');
 
     //查看更多
     $("#get_more_feed").click(function() {
@@ -881,6 +883,10 @@ $(function(){
 			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
 			$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","margin-left":"auto",width:dash_40+"px","overflow":"hidden"});
 			$("#task-details-content").css({"overflow-y":"scroll",height:(h_window)+"px"});
+			if(MzBrowser.ie && MzBrowser.version < 7){
+				alert(ie);
+				$("#dashboard #task-details").css({position:"static",right:"0",top:"0","margin-left":"auto",width:dash_40+"px","overflow":"hidden"});
+			}
 		}else{
 			$("#wrapper #sidebar").css({position:"static","z-index":"998"});
 			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0", "margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
@@ -897,9 +903,8 @@ $(function(){
 
 	$(window).scroll(function(){
 		reheight();
-		if(MzBrowser.ie && MzBrowser.version < 7){
-			position_f();
-		}
+		position_f();
+		
 		
 	});
 	
