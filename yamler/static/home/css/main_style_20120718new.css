@@ -3683,6 +3683,7 @@ body.body-messages #project {
     /*margin-left: 220px;  */ 
 	margin-left:150px; 
     min-height:100%;
+	position:relative;
 }
 
 #wrapper.sidebar-disbabled #dashboard {
@@ -3748,8 +3749,12 @@ body.body-messages #project {
     background:  #eceff2;
     margin-left: 55%;
     display: block;
-    position: relative;
-    *position:static;
+	position:absolute;
+	top:0;
+	right:0;
+	z-index:998;
+    /*position: relative;
+    *position:static;*/
 }
 
 #dashboard.calendar #task-details {
@@ -6554,12 +6559,13 @@ li.task.active .label .title {
 
 #task-details-content {     
     display: block;
-    position: absolute;  
+    /*position: absolute; */ 
     width: 100%;
    /* height:100%;*/
     background:  #f8f8f8 url(../images/index_img_20120718/td_panel_bg.png) 0 0 repeat-y;
-    overflow-x:hidden;
-    overflow-y:auto;  
+/*    overflow-x:hidden;
+    overflow-y:auto;*/
+	overflow:hidden;  
 }
 
 #task-details-notes-list {
@@ -6652,7 +6658,7 @@ ul#header-btns li.menu-item {
     float:left;
     margin:6px 6px 0px 0px;
     color: #666;
-    position: relative;
+    /*position: relative;*/
 }
 
 ul#header-btns li.menu-item a.btn {
@@ -6675,6 +6681,9 @@ ul#header-btns li.menu-item.delete a.btn {
     width: 28px;
     margin-top: 1px;
     height: 24px;
+	display:block;
+	float:left;
+	position:relative;
 }
 
 ul#header-btns li.menu-item #pop-up-share {
@@ -7371,7 +7380,7 @@ ul#header-btns li.menu-item.more.active .params-icon {
 }
 
 #task-details-notes li.note {
-    position: relative;
+   /* position: relative;*/
     font-size: 0.8em;
     margin-bottom: 10px;
     min-height: 36px;
@@ -7408,7 +7417,7 @@ ul#header-btns li.menu-item.more.active .params-icon {
 
 #task-details-notes li.note .right-side .content {
     padding: 5px;
-    position: relative;
+    /*position: relative;*/
     background: #F0F2F4;
 }
 
@@ -7496,7 +7505,7 @@ ul#header-btns li.menu-item.more.active .params-icon {
 #task-details-notes-create {
     margin: 0px 0px 0px 0px;
     width: 100%;
-    position: relative;
+    /*position: relative;*/
     border: 1px solid #C4CDE4;
 }
 
@@ -7734,7 +7743,9 @@ iframe.iframe-crocodoc-preview {
 }
 
 /*** FILES MANAGEMENT ***/
-
+#task-details{
+	background: url("../images/index_img_20120718/td_panel_bg.png") repeat-y scroll 0 0 #F8F8F8;
+	}
 #task-details-notes-create .upload-form {
     height: 30px;
     width: 30px;
