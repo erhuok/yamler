@@ -362,10 +362,6 @@
                         <a class="close-notes-popin" href="javascript:;"></a>
                         <div id="title-notes-popin"> </div>
                         <div id="notes-and-form">
-                            
-                            <!--回复内容列表-->
-                            <ul id="task-details-notes-list"> </ul><!--回复内容列表 end-->	
-                            
                             <!--回复块-->
                             <div id="task-details-notes-create">
                                 <form id="task-details-note-create" class="default" enctype="multipart/form-data" action="#" method="POST">
@@ -385,6 +381,10 @@
                                     </fieldset>
                                 </form>
                             </div><!--回复块 end-->
+							
+                            <!--回复内容列表-->
+                            <ul id="task-details-notes-list"> </ul><!--回复内容列表 end-->	
+                            
                         </div>
                     </div>
                 </div>
@@ -421,6 +421,7 @@
 </script>
 
 <script type="text/javascript" defer>
+
 $(function(){
    $.ajaxSetup({ cache: false });
     function getMyFeed(url) {
@@ -453,12 +454,14 @@ $(function(){
 		
         //设置高度
 		var dash_width = $("#dashboard").width();
+		var getf_top = $(window).scrollTop();
 		var dash_40 = dash_width*0.45;
 		var dash_60 = dash_width*0.55;
+		listHeight_scroll();
 		
         $("#dashboard_tasks_list li").removeClass('active');
         $("#task_list_"+id).addClass('active');
-
+		
         var display = $("#task-details").attr('display');
         if(id == selected_id && display == 'show') {
             $("#dashboard #task-details").hide();
@@ -470,7 +473,13 @@ $(function(){
 			$("#list-view").css({width: dash_60+"px"});
             $("#dashboard #task-list").css({width: "100%"});
             $("#task-details").attr('display', 'show');
-			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0", "z-index":"998","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
+			
+			if(getf_top > 51){
+				$("#dashboard #task-details").css({position:"fixed", right:"0",top:"0","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
+			} else{
+				$("#dashboard #task-details").css({position:"absolute","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
+			}
+			
 
             $.getJSON('/task/get/'+id,function(res) { 
                 var task_detail = $("#task-details");
@@ -818,12 +827,12 @@ $(function(){
 
     */
 	function listHeight_scroll(){
-		var TD_height = $("#task-details").height();
+		var TD_height = $("#task-details-content").height();
 		var w_height = $(window).height();
 		if(TD_height > w_height){
-			$("#notes-section-container").css({"overflow-y":"scroll",height:(w_height-300)+"px"});
+			$("#task-details-content").css({"overflow-y":"scroll",height:(w_height-51)+"px"});
 		}else if(TD_height < w_height){
-			$("#notes-section-container").css({"overflow":"none"});
+			$("#task-details-content").css({"overflow":"none"});
 		}
 	}
 	
@@ -850,7 +859,7 @@ $(function(){
 			
 			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
 			//$("#list-view").css({top: "0"});
-			$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","z-index":"998","margin-left":"auto",width:dash_40+"px","overflow":"hidden"});
+			$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","margin-left":"auto",width:dash_40+"px","overflow":"hidden"});
 			
 				//$("#dashboard #task-details").hide();
 				//$("#list-view").css({width: "100%"});
@@ -858,21 +867,19 @@ $(function(){
 			
 		}else{
 			$("#wrapper #sidebar").css({position:"static","z-index":"998"});
-			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0", "z-index":"998","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
+			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
 		}
 	}
 	
 	$(window).load(function(){
 		reheight();
-		//listHeight_scroll();
+		listHeight_scroll();
 	});
 	$(window).resize(function(){
 		reheight();
-		//listHeight_scroll();
+		listHeight_scroll();
 	});
-	
-	//listHeight_scroll();
-	//reheight();
+
 	$(window).scroll(function(){
 		reheight();
 		listHeight_scroll();
