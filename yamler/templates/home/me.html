@@ -328,7 +328,19 @@
 </script>
 
 <script type="text/javascript" defer>
+	//浏览器版本
+	window["MzBrowser"]={};
+	(function(){
+		var ua = window.navigator.userAgent;
+		MzBrowser.platform = window.navigator.platform;
 
+		MzBrowser.ie = !MzBrowser.opera && ua.indexOf("MSIE")>0;
+		if(MzBrowser.ie) 
+			var re = /MSIE( )(\d+(\.\d+)?)/;
+		if("undefined"!=typeof(re)&&re.test(ua))
+			MzBrowser.version = parseFloat(RegExp.$2);
+	})(); 
+    
 $(function(){
    $.ajaxSetup({ cache: false });
     function getMyFeed(url) {
@@ -789,7 +801,10 @@ $(function(){
 
 	$(window).scroll(function(){
 		reheight();
-		position_f();
+		if(MzBrowser.ie && MzBrowser.version < 7){
+			position_f();
+		}
+		
 	});
 	
 	
@@ -908,7 +923,7 @@ $(function(){
         }
 	}
 	
-    
+	
    
 
    
