@@ -77,24 +77,7 @@
                         <input type="hidden" name="submit_user_id" id="submit_user_id"/>
                         <input type="hidden" name="submit_users" id="submit_users"/>
                         <div id="add-task-options" class="task-options transition-effect">
-                            <div class="options-menu-cntr">
-                                <!--
-                                <div class="block">
-                                    <div class="bulk-btn radius-only-left hover-object" >
-                                        <i class="icon assign"></i>
-                                    </div>
-                                    <div class="bulk-btn no-left-border hover-object" >
-                                        <i class="icon labelit"></i>
-                                    </div>
-                                    <div class="bulk-btn no-left-border hover-object">
-                                        <i class="icon deadline"></i>
-                                    </div>
-                                    <div class="bulk-btn no-left-border hover-object" >
-                                        <i class="icon star"></i>
-                                    </div>
-                                </div>
-                                -->
-                            </div>
+                            <div class="options-menu-cntr"> </div>
                             <div class="dashboards-area">
                                 <select name="dashboard-selector"> </select>
                             </div>
@@ -112,38 +95,7 @@
                     <div id="context-title-ctnr" class="displayed"> </div>
                     <!--<div class="list-separator first"> 今天 </div>-->
                     <div class="list-separator-border" id="first_task_list"></div>
-                    <ul id="dashboard_tasks_list">
-                        <!--
-                        {% for data in task_data %}
-                        <li id="task_list_01" class="task {% if status %} done {% else %} undone {% endif %} has-notes star_2-0 " title="{{ data.title }}" >
-                            <div class="dnd-handler"></div>
-                            <span id="task_list_{{ data.id }}_status" class="status" > </span>
-                            <i class="v-separator"></i>
-                            <span id="task_list_{{ data.id }}_stars" class="stars" > </span>
-                            <i class="v-separator"></i>
-                            <span class="responsible">
-                                <img class="radius-3" title="" alt="" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }} ">
-                            </span>
-                            <span class="task-body">
-                                <span class="task-middle" rel="task_list_{{ data.id }}" name="{{ data.id }}">
-                                    <span class="task-title ellipsis"> {{ data.title }} </span>
-                                    <span class="task-right">
-                                        <div class="notes has-notes">
-                                            <span class="bubble radius-3">
-                                                {{ data.comment_count }}
-                                                <i class="tail"></i>
-                                            </span>
-                                        </div>
-                                    </span>
-                                </span>
-                            </span>
-                        </li>
-                        {% endfor %}
-                    
-                        <div class="list-separator first"> 今天以前 </div>
-                        <div class="list-separator-border"></div>
-                    -->        
-                    </ul>
+                    <ul id="dashboard_tasks_list"> </ul>
 
                     <!--更多任务-->
                     <div class="task_list_more bor_radius_5">
@@ -174,13 +126,22 @@
     <span id="task_list_${id}_stars" class="stars" name="${id}" priority="${priority}" title="重要性"> </span>
     <i class="v-separator"></i>
     <span class="responsible">
+        {% raw %}
+        {{if ismine}}
+            <span>我</span>
+        {{else}}
+            <span>${realname}</span>
+        {{/if}}
+        {% endraw %}
+        <!--
         <img class="radius-3" title="" alt="" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
+        -->
     </span>
     <span class="task-body">
         <span class="task-middle" name="${id}">
             <span class="task-title ellipsis" id="title_${id}"> ${title}</span>
             <span class="task-right">
-                <!--<div class="deadline ellipsis"> <span>Schedule it</span> </div>-->
+                <div class="deadline ellipsis"> <span>${created_at}</span> </div>
                 <div class="notes has-notes">
                     <span class="bubble radius-3">
                         <span id="comment_count_${id}" title="回复数">${comment_count}</span>
@@ -200,11 +161,13 @@
                 	<div class="header-task-details">
                         <ul id="header-btns">
                             <div class="action-btns-container">
+                                {% raw %}
+                                {{if ismine}}
                                 <li class="menu-item delete" >
-                                    <a class="btn btn_bluegray delete_task" href="javascript:;" name="${id}">
-                                        <img class="icon" src="{{ url_for('static', filename='home/images/index_img_20120718/td-header-delete.png') }}">
-                                    </a>
+                                    <a class="btn btn_bluegray delete_task" href="javascript:;" name="${id}"> <img class="icon" src="/static/home/images/index_img_20120718/td-header-delete.png"> </a>
                                 </li>
+                                {{/if}}
+                                {% endraw %}
                                 <div class="clear"></div>
                             </div>
                             <li class="close">
@@ -243,50 +206,18 @@
                                     </div>
 
                                     <ul id="submit_user_id_box"> </ul>
+                                    {% raw %}
+                                    {{if ismine}}
                                     <div class="followers-avatars">
-                                        <!--    
-                                        <img class="avatar radius-2 transition-effect" title="" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
-                                        -->
-                                        <a class="icon radius-3 add-follower-btn btn btn_grey follow_plan" title="" href="javascript:;" id="follow_plan_${id}" name="${submit_user_id}">
-                                            <img border="0" src="{{ url_for('static', filename='home/images/index_img_20120718/add_follower.png') }}">
-                                        </a>
+                                        <a class="icon radius-3 add-follower-btn btn btn_grey follow_plan" title="" href="javascript:;" id="follow_plan_${id}" name="${submit_user_id}"> 
+                                        <img border="0" src="/static/home/images/index_img_20120718/add_follower.png" alt=""> </a>
                                     </div>
+                                    {{/if}}
+                                    {% endraw %}
                                 </div>
-                            <!--<div id="followers-follow-btn">
-                                <a class="btn_following"  href="javascript:;">
-                                    <span class="following-text">Following</span>
-                                    <span class="unfollow-text">Unfollow</span>
-                                </a>
-                            </div>-->
                             <div class="clear"></div>
                         </div>
                         <div class="clear"></div>
-                        <div id="contacts-section" class="row contacts radius-3 no_contact ">
-                            <form id="contact-form" method="post" action="#">
-                                <span class="default-row name" >Add a contact</span>
-                                <input id="contact-name-input" class="contact-input name" type="text" readonly="readonly" value="" name="contact-name">
-                                <div id="contact-fields" class="">
-                                    <i class="action remove radius-2"></i>
-                                    <i class="action edit radius-2"></i>
-                                    <i class="action mail radius-2"></i>
-                                    <div class="contact-row email">
-                                        <input id="contact-email-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-email">
-                                    </div>
-                                    <div class="contact-row phone">
-                                        <input id="contact-phone-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-phone">
-                                    </div>
-                                    <div class="contact-row url">
-                                        <input id="contact-url-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-url">
-                                    </div>
-                                    <div class="contact-row note">
-                                        <input id="contact-note-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-note">
-                                    </div>
-                                    <a class="save-btn">Save</a>
-                                    <input class="submit-btn" type="submit" value="">
-                                    <div class="clear"></div>
-                                </div>
-                            </form>
-                        </div>
                     </div><!--安排块 end-->
                     
                     <!--递交块-->
@@ -299,45 +230,19 @@
                                     </div>
 
                                     <ul id="to_user_id_box"> </ul>
-                            
+                                    {% raw %}
+                                    {{if ismine}}
                                     <div class="followers-avatars">
-                                        <!--
-                                        <img class="avatar radius-2 transition-effect" title="" src="{{ url_for('static', filename='home/images/index_img_20120718/479510-1342579213.jpg') }}">
-                                        -->
                                         <a class="icon radius-3 add-follower-btn btn btn_grey follow_hand" title="" href="javascript:;" name="${to_user_id}" id="follow_hand_${id}">
-                                            <img border="0" src="{{ url_for('static', filename='home/images/index_img_20120718/add_follower.png') }}">
+                                            <img border="0" src="/static/home/images/index_img_20120718/add_follower.png">
                                         </a>
                                     </div>
+                                    {{/if}}
+                                    {% endraw %}
                                 </div>
                             <div class="clear"></div>
                         </div>
                         <div class="clear"></div>
-                        <div id="contacts-section" class="row contacts radius-3 no_contact ">
-                            <form id="contact-form" method="post" action="#">
-                                <span class="default-row name" >Add a contact</span>
-                                <input id="contact-name-input" class="contact-input name" type="text" readonly="readonly" value="" name="contact-name">
-                                <div id="contact-fields" class="">
-                                    <i class="action remove radius-2"></i>
-                                    <i class="action edit radius-2"></i>
-                                    <i class="action mail radius-2"></i>
-                                    <div class="contact-row email">
-                                        <input id="contact-email-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-email">
-                                    </div>
-                                    <div class="contact-row phone">
-                                        <input id="contact-phone-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-phone">
-                                    </div>
-                                    <div class="contact-row url">
-                                        <input id="contact-url-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-url">
-                                    </div>
-                                    <div class="contact-row note">
-                                        <input id="contact-note-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-note">
-                                    </div>
-                                    <a class="save-btn">Save</a>
-                                    <input class="submit-btn" type="submit" value="">
-                                    <div class="clear"></div>
-                                </div>
-                            </form>
-                        </div>
                     </div><!--递交块 end-->
                     
                     
@@ -487,24 +392,35 @@ $(function(){
                 $("#task_detail_template").tmpl(res.row).appendTo(task_detail);
                 if(res.row.to_user_id) {
                     $("#to_user_id_count").text(res.row.to_user_id.split(',').length);
+                    $("#to_user_id_box").empty();
+                    $("#user_id_template").tmpl(res.share_users).appendTo("#to_user_id_box");
+                    /*
                     $.getJSON('/user/get/'+res.row.to_user_id, function(res_user) {
                         $("#to_user_id_box").empty();
                         $("#user_id_template").tmpl(res_user.data).appendTo("#to_user_id_box");
                     });
+                    */
                 }
 
                 if(res.row.submit_user_id) {
                     $("#submit_user_id_count").text(res.row.submit_user_id.split(',').length);
+                    $("#submit_user_id_box").empty();
+                    $("#user_id_template").tmpl(res.submit_users).appendTo("#submit_user_id_box");
+                    /*
                     $.getJSON('/user/get/'+res.row.submit_user_id, function(res_user) {
                         $("#submit_user_id_box").empty();
                         $("#user_id_template").tmpl(res_user.data).appendTo("#submit_user_id_box");
                     });
+                    */
                 }
-            });  
 
+                $( "#comment_template_list" ).tmpl( res.comment_data ).appendTo( "#task-details-notes-list" );
+            });  
+            /*
             $.getJSON('/comment/get/'+id, function(res) {
                 $( "#comment_template_list" ).tmpl( res.data ).appendTo( "#task-details-notes-list" );
             }); 
+            */
 
             $("#task-details-note-create-button").die('click'); 
             //回复
@@ -519,7 +435,7 @@ $(function(){
                         url: "/comment/create/"+task_id,
                         dataType: "json",
                         success: function(data) {
-                            $( "#comment_template_list" ).tmpl( data ).appendTo( "#task-details-notes-list" );
+                            $( "#comment_template_list" ).tmpl( data ).prependTo( "#task-details-notes-list" );
                             form.each(function(){ this.reset(); });
                             var comment_count = parseInt($("#comment_count_"+task_id).text());
                             $("#comment_count_"+task_id).text(comment_count + 1);

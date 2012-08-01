@@ -112,24 +112,36 @@ def submit(id):
 def get(id):
     row = g.db.execute(text("SELECT id,user_id,to_user_id,title,status,comment_count,submit_user_id,created_at,priority FROM tasks WHERE id=:id"), id=id).first()
     row = dict(row)
-    row['share_users'] = []
-    row['submit_users'] = []   
-    row['created_at'] = row['created_at'].strftime('%m月%d日 %H:%m') 
-    '''
+    row['created_at'] = datetimeformat(row['created_at']) if row['created_at'] else ''
+    row['ismine'] = 1 if g.user.id == row['user_id'] else 0
+    
+    share_users = []
     if row and row.has_key('to_user_id') and row['to_user_id']:
         user_ids = row['to_user_id'].lstrip(',').split(',')
         user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
         result = g.db.execute(text(user_sql)).fetchall()
-        row['share_users'] = [dict(zip(res.keys(), res)) for res in result]  
-     
+        share_users = [dict(zip(res.keys(), res)) for res in result]  
+
+    submit_users = [] 
     if row and row.has_key('submit_user_id') and row['submit_user_id'] :
         user_ids = row['submit_user_id'].lstrip(',').split(',')
         user_sql = "SELECT id, realname  FROM `users` WHERE id IN ({0})".format(','.join(user_ids))
         result = g.db.execute(text(user_sql)).fetchall()
-        row['submit_users'] = [dict(zip(res.keys(), res)) for res in result]   
-    '''
-    return jsonify(row=row)
+        submit_users = [dict(zip(res.keys(), res)) for res in result]   
+    
+    comment_rows = g.db.execute(text("SELECT id, task_id, user_id, content, created_at FROM task_comments WHERE task_id=:task_id ORDER BY id DESC"), task_id=id).fetchall() 
+    comment_data = []
+    for comment in comment_rows:
+        new_row = {'id': comment['id'], 'user_id': comment['user_id'], 'content': comment['content']} 
+        new_row['created_at'] = datetimeformat(comment.created_at) if comment.created_at else '' 
+        if comment['user_id'] != g.user.id:
+            result = g.db.execute(text("SELECT id, realname from users WHERE id=:user_id LIMIT 1"), user_id=comment['user_id']).first()
+            new_row['realname'] = result['realname']
+        else:
+            new_row['realname'] = g.user.realname
+        comment_data.append(new_row)
 
+    return jsonify(row=row, share_users=share_users, submit_users=submit_users, comment_data=comment_data)
 
 @mod.route('/delete/<int:id>')
 def delete(id):
