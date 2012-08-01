@@ -53,9 +53,14 @@ def monday():
 def twodays():
     cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> '' GROUP BY iphone_token")
     rows = cursor.fetchall() 
-    start_time = datetime.datetime.now() - datetime.timedelta(days=2)
+    today = datetime.datetime.now() 
+    week = int(today.strftime('%w'))
+    if week == 1 or week = 0 or week = 6:
+        start_time = today - datetime.timedelta(days=4)
+    else:
+        start_time = today - datetime.timedelta(days=2)
     for row in rows:
-        sql = "SELECT id FROM tasks WHERE user_id=%s AND created_at > %s" % (row['user_id'], start_time)
+        sql = "SELECT id FROM tasks WHERE user_id=%s AND created_at > %s" % (row['id'], start_time)
         cursor.execute(sql)
         result = cursor.fetchone()
         if result is None:
@@ -66,11 +71,11 @@ def task_status():
     cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> '' GROUP BY iphone_token")
     rows = cursor.fetchall() 
     for row in rows:
-        sql = "SELECT count(*) AS status_count FROM tasks WHERE user_id=%s AND status=%s AND is_del=%s" % (row['user_id'], 0, 0)
+        sql = "SELECT count(*) AS status_count FROM tasks WHERE user_id=%s AND status=%s AND is_del=%s" % (row['id'], 0, 0)
         cursor.execute(sql)
         result = cursor.fetchone()
         if result and result['status_count'] > 3:
-            value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：您还有三个工作未完成哦！'}
+            value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：您还有三个未完成的工作等待您的处理！'}
             res = redis.lpush('notify',json.dumps(value))
 
 
