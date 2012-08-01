@@ -29,14 +29,14 @@ conn = MySQLdb.connect(host='127.0.0.1',user='souduanzu',passwd='hifly@2012',db=
 cursor = conn.cursor(MySQLdb.cursors.DictCursor)
 
 def morning():
-    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> ''")
+    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> '' GROUP BY iphone_token")
     rows = cursor.fetchall() 
     for row in rows:
         value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：一天工作开始了，先写点你将要做什么吧！'}
         res = redis.lpush('notify',json.dumps(value))
 
 def evening():
-    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> ''")
+    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> '' GROUP BY iphone_token")
     rows = cursor.fetchall() 
     for row in rows:
         value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：快下班了哦，总结下今天的工作吧！'}
@@ -44,7 +44,7 @@ def evening():
 
 #周一工作计划提醒
 def monday():
-    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> ''")
+    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> '' GROUP BY iphone_token")
     rows = cursor.fetchall() 
     for row in rows:
         value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：新的一周开始了，写下本周的工作计划吧！'}
