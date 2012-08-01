@@ -3740,13 +3740,14 @@ body.body-messages #project {
 }
 
 #dashboard #task-details {
+	background: url("../images/index_img_20120718/td_panel_bg.png") repeat-y scroll 0 0 #F8F8F8;
     width: 45%;
     height: 100%;
-    -moz-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
+    /*-moz-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
     -webkit-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
     -o-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
     box-shadow: inset 0px 0px 5px 1px #cbd0d7;
-    background:  #eceff2;
+    background:  #eceff2;*/
     margin-left: 55%;
     display: block;
 	position:absolute;
@@ -4848,6 +4849,7 @@ body.search li.task .anchor{
     line-height: 1em;
     width: 70%;
     display: inline-block;
+	font-size:14px;
 }
 
 #dashboard_tasks_list li.task .task-title .title_highlighted {
@@ -4919,6 +4921,14 @@ li.task.checked .anchor i.box {
     height: 34px!important;
     margin-top: 7px;
 }
+#dashboard_tasks_list li.task .responsible, 
+#calendar-right-tasks-box li.task .responsible .my_name{
+	line-height:34px;
+	font-size:11px;
+	display:inline-block;
+	padding-left:5px;
+}
+
 
 #dashboard_tasks_list li.task.done .responsible img, 
 #calendar-right-tasks-box li.task.done .responsible img{
@@ -5338,7 +5348,8 @@ body.notifications li.task {
 #sidebar_content {
     text-shadow: 0px 1px 0px rgba(255,255,255,0.6);
     padding: 0px 1px 0px 0px; 
-    width: 149px;
+    /*width: 149px;*/
+	width:100%;
 }
 
 body.overview #sidebar_content{
@@ -5733,7 +5744,8 @@ ul li.smartfilter.selected .icon.filter {
 
 #people-section .sidebar-people {
     float:left;
-    width: 219px;
+    width: 100%;
+	
 }
 
 
@@ -5774,7 +5786,7 @@ ul li.smartfilter.selected .icon.filter {
     height: 48px;
     display: table-cell;
     vertical-align: middle;
-    width: 140px;    
+    /*width: 140px; */   
     text-transform: uppercase;
     color: #798B99;
     font-weight:bold;
@@ -6561,10 +6573,10 @@ li.task.active .label .title {
     display: block;
     /*position: absolute; */ 
     width: 100%;
-   /* height:100%;*/
-    background:  #f8f8f8 url(../images/index_img_20120718/td_panel_bg.png) 0 0 repeat-y;
-/*    overflow-x:hidden;
-    overflow-y:auto;*/
+    height:100%;
+    /*background:  #f8f8f8 url(../images/index_img_20120718/td_panel_bg.png) 0 0 repeat-y;*/
+    overflow-x:hidden;
+    overflow-y:auto;
 	overflow:hidden;  
 }
 
@@ -6592,12 +6604,16 @@ li.task.active .label .title {
 #task-details-content .task-info {
     padding: 15px 15px 0px 15px;
     position: relative;
+	*+position:static;
 }
 
 ul#status_prio  {
     top: 16px;
     left: 14px;
     position: absolute;
+	*+position: static;
+	
+	*+float:left;
     width: 56px;
 }
 
@@ -6643,12 +6659,14 @@ ul#status_prio li .status {
 }
 
 ul#header-btns {
-   position: relative;
+   /*position: relative;*/
+   height:40px;
 }
 
 ul#header-btns .action-btns-container {
     height: 40px;
     margin-right: 40px;
+	float:left;
 }
 
 ul#header-btns li.menu-item { 
@@ -6666,9 +6684,10 @@ ul#header-btns li.menu-item a.btn {
 }
 
 ul#header-btns li.menu-item a.btn .icon {
-    position: absolute;
+    /*position: absolute;
     top: 5px;
-    left: 6px;
+    left: 6px;*/
+	
 }
 
 ul#header-btns li.menu-item.delete {
@@ -6678,12 +6697,13 @@ ul#header-btns li.menu-item.delete {
 
 ul#header-btns li.menu-item.delete a.btn {
     padding: 0px;
-    width: 28px;
+    width: 22px;
     margin-top: 1px;
-    height: 24px;
+    height: 19px;
 	display:block;
 	float:left;
-	position:relative;
+	/*position:relative;*/
+	padding:5px 0 0 6px;
 }
 
 ul#header-btns li.menu-item #pop-up-share {
@@ -6725,9 +6745,11 @@ ul#header-btns li.menu-item#td-share-button.active #pop-up-share{
 ul#header-btns li.close {
     cursor: pointer;
     padding: 5px;
-    top: 10px;
+	float:right;
+	margin-top:10px;
+    /*top: 10px;
     right: 10px;
-    position: absolute;  
+    position: absolute; */ 
 }
 
 ul#header-btns li.close .icon{    
@@ -6782,8 +6804,9 @@ ul#header-btns li.menu-item.more.active .params-icon {
 	height:100%;
 	background-color:#fff;
 	border:1px solid #C4CDE4;
-	
-}
+	*+float:left;
+	*+display:block;
+	}
 
 #task-details-labels {
     margin:8px 0px 5px 60px;
@@ -6848,7 +6871,7 @@ ul#header-btns li.menu-item.more.active .params-icon {
     margin-top: 5px;
     background: white;
     min-height: 32px;
-    position: relative;
+    /*position: relative;*/
     padding: 5px 10px;
     border: 1px solid #C4CDE4;
     -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0px 1px 2px rgba(199, 189, 172, 0.3);
@@ -7506,11 +7529,18 @@ ul#header-btns li.menu-item.more.active .params-icon {
     margin: 0px 0px 0px 0px;
     width: 100%;
     /*position: relative;*/
+	overflow:hidden;
     border: 1px solid #C4CDE4;
 }
-
+#task-details-notes-create form{
+	width:100%;
+}
+#task-details-notes-create fieldset{
+	width:100%;
+}
 #task-details-note-create textarea {
     width: 98%;
+	/**+width: 80%;*/
     padding: 5px 1%;
     background: white;
     line-height: 20px;
@@ -7743,9 +7773,7 @@ iframe.iframe-crocodoc-preview {
 }
 
 /*** FILES MANAGEMENT ***/
-#task-details{
-	background: url("../images/index_img_20120718/td_panel_bg.png") repeat-y scroll 0 0 #F8F8F8;
-	}
+
 #task-details-notes-create .upload-form {
     height: 30px;
     width: 30px;
@@ -7873,7 +7901,7 @@ iframe.iframe-crocodoc-preview {
 #task-details-uploaded {
     color: red;
     height: 30px;
-    position: relative;
+    /*position: relative;*/
     border-top: 1px solid #C4CDE4;
     font-size: 0.7em;
     color: #666;

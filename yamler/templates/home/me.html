@@ -128,9 +128,9 @@
     <span class="responsible">
         {% raw %}
         {{if ismine}}
-            <span>我</span>
+            <span class="my_name">我</span>
         {{else}}
-            <span>${realname}</span>
+            <span class="my_name">${realname}</span>
         {{/if}}
         {% endraw %}
         <!--
@@ -189,6 +189,7 @@
                             </ul>
                             <div id="task-details-title-text" >${title}</div>
                             <textarea id="task-details-title-input" name="task_title">${title}</textarea>
+							<div class="clear"></div>
                         </form>
                         
                     </div><!--对应任务块 end-->
@@ -290,6 +291,7 @@
                             <!--回复内容列表-->
                             <ul id="task-details-notes-list"> </ul><!--回复内容列表 end-->	
                             
+                            
                         </div>
                     </div>
                 </div>
@@ -359,13 +361,13 @@ $(function(){
 		
         //设置高度
 		var dash_width = $("#dashboard").width();
-		var getf_top = $(window).scrollTop();
 		var dash_40 = dash_width*0.45;
 		var dash_60 = dash_width*0.55;
-		listHeight_scroll();
 		
         $("#dashboard_tasks_list li").removeClass('active');
         $("#task_list_"+id).addClass('active');
+		
+		
 		
         var display = $("#task-details").attr('display');
         if(id == selected_id && display == 'show') {
@@ -378,13 +380,6 @@ $(function(){
 			$("#list-view").css({width: dash_60+"px"});
             $("#dashboard #task-list").css({width: "100%"});
             $("#task-details").attr('display', 'show');
-			
-			if(getf_top > 51){
-				$("#dashboard #task-details").css({position:"fixed", right:"0",top:"0","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
-			} else{
-				$("#dashboard #task-details").css({position:"absolute","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
-			}
-			
 
             $.getJSON('/task/get/'+id,function(res) { 
                 var task_detail = $("#task-details");
@@ -742,7 +737,7 @@ $(function(){
 	});
 
     */
-	function listHeight_scroll(){
+	/*function listHeight_scroll(){
 		var TD_height = $("#task-details-content").height();
 		var w_height = $(window).height();
 		if(TD_height > w_height){
@@ -750,7 +745,7 @@ $(function(){
 		}else if(TD_height < w_height){
 			$("#task-details-content").css({"overflow":"none"});
 		}
-	}
+	}*/
 	
 	function reheight(){
 		var w_height = $(window).height();
@@ -760,6 +755,7 @@ $(function(){
 		if(d_height > w_height){
 			$("#wrapper #sidebar").css("height",b1_height+"px");
 			$("#dashboard #task-details").css("height",b1_height+"px");
+			
 		}else{
 			$("#wrapper #sidebar").css("height",b_height+"px");
 			$("#dashboard #task-details ").css("height",b_height+"px");
@@ -768,37 +764,31 @@ $(function(){
 	
 	function position_f(){
 		var f_top = $(window).scrollTop();
+		var h_window = $(window).height();
 		var dash_width = $("#dashboard").width();
+		var con_height = $("#task-details-content").height();
 		var dash_40 = dash_width*0.45;
 		var dash_60 = dash_width*0.55;
 		if(f_top > 51){
-			
 			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
-			//$("#list-view").css({top: "0"});
 			$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","margin-left":"auto",width:dash_40+"px","overflow":"hidden"});
-			
-				//$("#dashboard #task-details").hide();
-				//$("#list-view").css({width: "100%"});
-				//$("#dashboard #task-list").css({width: "100%"});
-			
+			$("#task-details-content").css({"overflow-y":"scroll",height:(h_window)+"px"});
 		}else{
 			$("#wrapper #sidebar").css({position:"static","z-index":"998"});
-			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0","margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
+			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0", "margin-left":dash_60+"px",width:dash_40+"px","overflow":"hidden"});
+			$("#task-details-content").css({"overflow-y":"scroll",height:(h_window-51)+"px"});
 		}
 	}
 	
 	$(window).load(function(){
 		reheight();
-		listHeight_scroll();
 	});
 	$(window).resize(function(){
 		reheight();
-		listHeight_scroll();
 	});
 
 	$(window).scroll(function(){
 		reheight();
-		listHeight_scroll();
 		position_f();
 	});
 	
