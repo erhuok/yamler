@@ -72,12 +72,31 @@
                     <div class="add-task-ctnr">
                         <!--<label id="add-task-placeholder"> <span>Type here to create a task...</span> </label> <input id="add-task-field" class="never_focused" type="text" autocomplete="off" name="task_title"/>-->
                         <textarea id="add-task-field" class="never_focused" type="text" autocomplete="off" name="title" cols="" rows="" ></textarea>
+                        <p id="share_users_name"></p>
+                        <p id="submit_users_name"></p>
                         <input type="hidden" name="to_user_id" id="to_user_id"/>
                         <input type="hidden" name="share_users" id="share_users"/>
                         <input type="hidden" name="submit_user_id" id="submit_user_id"/>
                         <input type="hidden" name="submit_users" id="submit_users"/>
                         <div id="add-task-options" class="task-options transition-effect">
-                            <div class="options-menu-cntr"> </div>
+                            <div class="options-menu-cntr">
+                                <div class="block">
+                                    <div class="bulk-btn radius-only-left hover-object">
+                                        <i class="icon assign submit_users" title="安排" name=""></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object">
+                                        <i class="icon labelit share_users" title="递交" name=""></i>
+                                    </div>
+                                    <!--
+                                    <div class="bulk-btn no-left-border hover-object">
+                                        <i class="icon deadline"></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object">
+                                        <i class="icon star"></i>
+                                    </div>
+                                    -->
+                                </div> 
+                            </div>
                             <div class="dashboards-area">
                                 <select name="dashboard-selector"> </select>
                             </div>
@@ -709,6 +728,76 @@ $(function(){
         return false;
     });
 
+    $(".share_users").live('click', function() {
+        $("#popin_header_task").text('添加递交人员');
+        $("#popin_header_desc_task").text('您选择的递交人员，可以看到您递交的信息');
+        follow_show(this);         
+        var check_ids = $("#to_user_id").val();
+        if(check_ids) {
+            check_ids = check_ids.split(','); 
+            $.each(check_ids, function(index, value) { 
+                $("#checkbox_"+value).attr('checked','true');
+            });
+        }
+    
+        $("#save_share").unbind('click'); 
+        $("#cancel_share").unbind('click'); 
+
+
+        $("#save_share").click(function() {
+            var ids = [];
+            var names = [];
+            $('input:checked').each(function() {
+                ids.push(this.value);
+                names.push(this.title);
+            });
+            if(ids.length) {
+                $("#to_user_id").val(ids.join(',')); 
+            }
+            if(names.length) {
+                var content = '递交给：'+names.join(',');
+                $("#share_users_name").text(content);
+            }
+            $(".popin_taskfollowers").hide();
+        });
+    });
+    
+    $(".submit_users").live('click', function() {
+        $("#popin_header_task").text('添加安排人员');
+        $("#popin_header_desc_task").text('您选择的安排人员，可以收到您发的信息');
+        follow_show(this);         
+        var check_ids = $("#submit_user_id").val();
+        if(check_ids) {
+            check_ids = check_ids.split(','); 
+            $.each(check_ids, function(index, value) { 
+                $("#checkbox_"+value).attr('checked','true');
+            });
+        }
+
+        $("#save_share").unbind('click'); 
+        $("#cancel_share").unbind('click'); 
+
+        $("#save_share").click(function() {
+            var ids = [];
+            var names = [];
+            $('input:checked').each(function() {
+                ids.push(this.value);
+                names.push(this.title);
+            });
+            if(ids.length) {
+                $("#submit_user_id").val(ids.join(',')); 
+            }
+            if(names.length) {
+                var content = '安排给：'+names.join(',');
+                $("#submit_users_name").text(content);
+            }
+            $(".popin_taskfollowers").hide();
+        });
+    });
+
+    $("#cancel_share").live('click', function() {
+        $(".popin_taskfollowers").hide();
+    });
 
     /*
 	$("#dashboard_tasks_list li.task .status").toggle(function(){

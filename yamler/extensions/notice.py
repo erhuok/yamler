@@ -1,5 +1,5 @@
 #-*- encoding:utf-8 -*-
-
+import datetime
 import redis
 import json
 import MySQLdb
@@ -50,9 +50,43 @@ def monday():
         value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：新的一周开始了，写下本周的工作计划吧！'}
         res = redis.lpush('notify',json.dumps(value))
 
+def twodays():
+    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> '' GROUP BY iphone_token")
+    rows = cursor.fetchall() 
+    today = datetime.datetime.now() 
+    week = int(today.strftime('%w'))
+    if week == 1 or week == 0 or week == 6:
+        start_time = today - datetime.timedelta(days=4)
+    else:
+        start_time = today - datetime.timedelta(days=2)
+    for row in rows:
+        sql = "SELECT id FROM tasks WHERE user_id='%s' AND created_at > '%s'" % (row['id'], start_time)
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        if result is None:
+            value = {'iphone_token': row['iphone_token'], 'message': '云秘书提醒您：您有两天没有写工作日志了！'}
+            res = redis.lpush('notify',json.dumps(value))
+
+def task_status():
+    cursor.execute("SELECT id, iphone_token FROM users WHERE iphone_token <> '' GROUP BY iphone_token")
+    rows = cursor.fetchall() 
+    for row in rows:
+        sql = "SELECT count(*) AS status_count FROM tasks WHERE user_id='%s' AND status='%s' AND is_del='%s'" % (row['id'], 0, 0)
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        if result and result['status_count'] > 3:
+            message = '云秘书提醒您：您还有%s个未完成的工作等待您的处理！' %  str(result['status_count']) 
+            value = {'iphone_token': row['iphone_token'], 'message': message }
+            res = redis.lpush('notify',json.dumps(value))
+
+
 if type == 'morning':
     morning()
 elif type == 'evening':
     evening()
 elif type == 'monday':
     monday()
+elif type == 'task_status':
+    task_status()
+elif type == 'twodays':
+    twodays()

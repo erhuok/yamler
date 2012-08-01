@@ -182,7 +182,7 @@
                 {% if row.id != g.user.id %}
                 <li>
                     <label>
-                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}">
+                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}" title="{{ row.realname }}">
                             <span class="avatar">
                                 <!--<img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">-->
                             </span>
@@ -195,7 +195,7 @@
                 {% if row.id != g.user.id %}
                 <li>
                     <label>
-                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}">
+                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}" title="{{ row.realname }}">
                             <span class="avatar">
                                 <!--<img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">-->
                             </span>
