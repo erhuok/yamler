@@ -521,8 +521,9 @@ $(function(){
         $(".close").die('click');
         $(".close").live('click', function() {
             $("#dashboard #task-details").hide();
+			$("#list-view").css({width: "100%"});
             $("#dashboard #task-list").css({width: "100%"});
-            $("#task-details").attr('display', 'hide');     
+            $("#task-details").attr('display', 'hide');
         }) 
         //delete
         $(".delete_task").die('click');
