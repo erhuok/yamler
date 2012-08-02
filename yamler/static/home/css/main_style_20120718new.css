@@ -3613,10 +3613,8 @@ body.body-messages #project {
     overflow: hidden;
     position: relative;
     min-height: 100%;    
-    display: block; 
-	background-color:#eaf0f6;   
-    background: url("../images/index_img_20120718/separation-line.png") repeat-y right 0px;
-	_background: url("../images/index_img_20120718/separation-line.gif") repeat-y right 0px;
+    display: block;    
+    background: #eaf0f6 url(../images/index_img_20120718/separation-line.png) right 0px repeat-y;
     float:left;
 }
 
@@ -3690,16 +3688,15 @@ body.body-messages #project {
 	margin-left:150px; 
     min-height:100%;
 	_height:100%;
-	_border:1px solid #F00;
 	position:relative;
 }
-#wrapper #list-view{ _height:100%; _border:1px solid #F00;}
+#wrapper #list-view{ _height:100%; }
 #wrapper.sidebar-disbabled #dashboard {
     margin-left: 24px;
 }
 
 #dashboard #task-list {
-    width: 55%;    
+    width: 55%; 
     z-index: 3;
     min-height: 100%;
     float: left;
@@ -3707,7 +3704,7 @@ body.body-messages #project {
     top:0;
     left:0;
 	_height:100%;
-	_border:1px solid #F00;
+	
 }
 
 #dashboard.calendar #task-list {
@@ -3750,10 +3747,8 @@ body.body-messages #project {
 }
 
 #dashboard #task-details {
-	background-color:#F8F8F8;
-	background: url("../images/index_img_20120718/td_panel_bg.png") repeat-y  0 0;
-	_background: url("../images/index_img_20120718/td_panel_bg.gif") repeat-y  0 0;
-    width: 45%;fff
+	background: url("../images/index_img_20120718/td_panel_bg.png") repeat-y scroll 0 0 #F8F8F8;
+    width: 45%;
     height: 100%;
     /*-moz-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
     -webkit-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
@@ -3774,9 +3769,7 @@ body.body-messages #project {
     width: 45%;
     margin-left: 55%;
 }
-#task-list-bottom{
-	_border:1px solid #f00;
-	}
+
 #dashboard.calendar #task-list-bottom,
 #dashboard.list #calendar-view
 {
