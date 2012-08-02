@@ -96,6 +96,7 @@ body #loader_global img {
     background: #C6C6C6;
     width: 100%;
     margin:0px 0px 0px 0px;
+	_overflow:hidden;
     /*display: none;*/
 }
 
@@ -295,9 +296,6 @@ li.notification .right-notif .info {
 
 /*** HACKS ***/
 
-.clear {
-    clear: both;
-}
 
 .div-xwidth-center
 {
@@ -936,7 +934,8 @@ form.processing .hide-on-processing {
     top: -10px;
     width: 20px;
     height: 12px;
-    background: url(../images/index_img_20120718/nipple.png) 0 0 no-repeat;
+    background: url("../images/index_img_20120718/nipple.png") 0 0 no-repeat;
+	_background: url("../images/index_img_20120718/nipple.gif") 0 0 no-repeat;
     z-index: 2;
 }
 
@@ -1490,6 +1489,7 @@ form.processing .hide-on-processing {
     float:left;    
     display: inline-block;
     max-width: 90px;
+	_width:50px;
     padding: 3px 6px;
     height: 18px;
     line-height: 18px;
@@ -3448,11 +3448,14 @@ body.settings .popin-hover {
 /*** MAIN ARCHITECTURE ***/
 
 body #wrapper {
-    width: 100%;       
-    min-width: 1000px;  
-    /*overflow-x: hidden;*/
+    width: 100%;    
+	min-height: 100%;   
+    min-width: 1000px;
+	_width:100%;
+	margin:0;
+   	_overflow: hidden;
     position: relative;
-    min-height: 100%;
+    /*_border:1px solid #f00;*/
 }
 
 body.notifications #project {
@@ -3616,6 +3619,7 @@ body.body-messages #project {
     display: block;    
     background: #eaf0f6 url(../images/index_img_20120718/separation-line.png) right 0px repeat-y;
     float:left;
+	/*_border:1px solid #00C;*/
 }
 
 #wrapper #sidebar #sidebar_content {
@@ -3685,10 +3689,13 @@ body.body-messages #project {
 #wrapper #dashboard {
     display: block;    
     /*margin-left: 220px;  */ 
-	margin-left:150px; 
+	margin-left:150px;
+	_margin-left:147px;
+	 
     min-height:100%;
 	_height:100%;
 	position:relative;
+	/*_border:1px solid #F00;*/
 }
 #wrapper #list-view{ _height:100%; }
 #wrapper.sidebar-disbabled #dashboard {
@@ -3794,7 +3801,7 @@ body.body-messages #project {
     text-transform: uppercase;
     font-weight: bold;
     font-size: 11px;
-    background: url(../images/index_img_20120718/bar_filters_info.png) 0 0 repeat-x;
+    background: url("../images/index_img_20120718/bar_filters_info.png") 0 0 repeat-x;
 }
 
 #context-title .chevron {
@@ -4855,10 +4862,10 @@ body.search li.task .anchor{
 
 #dashboard_tasks_list li.task .task-title,
 #calendar-right-tasks-box li.task .task-title {
-    line-height: 1em;
     width: 70%;
     display: inline-block;
 	font-size:14px;
+	line-height: 17px;
 }
 
 #dashboard_tasks_list li.task .task-title .title_highlighted {
@@ -4936,6 +4943,7 @@ li.task.checked .anchor i.box {
 	font-size:11px;
 	display:inline-block;
 	padding-left:5px;
+	color:#43494F;
 }
 
 
@@ -4959,7 +4967,8 @@ li.task.checked .anchor i.box {
 #task_autocomplete_popin .star,
 #calendar-right-tasks-box li.task .stars,
 #calendar-left li.task .stars {
-    background-image: url(../images/index_img_20120718/stars.png);
+    background-image: url("../images/index_img_20120718/stars.png");
+	_background-image: url("../images/index_img_20120718/stars.gif");
     background-repeat: no-repeat;
 }
 
@@ -4978,6 +4987,7 @@ li.task.checked .anchor i.box {
 #dashboard_tasks_list li.task .status,
 #calendar-right-tasks-box li.task .status {
     background-image: url(../images/index_img_20120718/task-status.png);
+	_background-image: url(../images/index_img_20120718/task-status.gif);
     background-repeat: no-repeat;
 }
 
@@ -5357,8 +5367,9 @@ body.notifications li.task {
 #sidebar_content {
     text-shadow: 0px 1px 0px rgba(255,255,255,0.6);
     padding: 0px 1px 0px 0px; 
-    /*width: 149px;*/
-	width:100%;
+	width:149px;
+	_width: 149px;
+	_overflow:hidden;
 }
 
 body.overview #sidebar_content{
@@ -5375,6 +5386,7 @@ body.overview #sidebar_content{
 
 #sidebar_content ul {
     min-height: 20px;
+	_height:20px;
 }
 
 #sidebar_content ul li {
@@ -5421,7 +5433,8 @@ body.overview #sidebar_content{
 }
 
 #sidebar_content ul {
-    min-height:20px;   
+    min-height:20px; 
+	_height:20px;  
 }
 
 #sidebar_content ul li:hover {
@@ -5508,7 +5521,8 @@ body.overview #sidebar_content{
     width: 20px;
     height: 20px;
     float: left;
-    background-image: url(../images/index_img_20120718/sidebar-sprite.png);
+    background-image: url("../images/index_img_20120718/sidebar-sprite.png");
+	_background-image: url("../images/index_img_20120718/sidebar-sprite.gif");
     background-repeat: no-repeat;   
     margin: 3px 7px 0px 0px;   
 }
@@ -5546,7 +5560,8 @@ ul li.today.selected .icon.filter  {
 }
 
 #sidebar_content ul li.archived .icon.filter {
-	background-image: url(../images/index_img_20120718/leftMenu_icon.png);
+	background-image: url("../images/index_img_20120718/leftMenu_icon.png");
+	_background-image: url("../images/index_img_20120718/leftMenu_icon.gif");
     background-position: 0 -77px;
 	height:35px; width:36px;  margin:0 auto;
 }
@@ -5557,7 +5572,8 @@ ul li.archived.selected .icon.filter {
 
 
 #sidebar_content ul li.recipient .icon.filter {
-	background-image: url(../images/index_img_20120718/leftMenu_icon.png);
+	background-image: url("../images/index_img_20120718/leftMenu_icon.png");
+	_background-image: url("../images/index_img_20120718/leftMenu_icon.gif");
     background-position: 0 0;
 	height:35px; width:36px;  margin:0 auto;
 }
@@ -5575,7 +5591,8 @@ ul li.late.selected .icon.filter  {
 }
 
 #sidebar_content ul li.starred .icon.filter {
-	background-image: url(../images/index_img_20120718/leftMenu_icon.png);
+	background-image: url("../images/index_img_20120718/leftMenu_icon.png");
+	_background-image: url("../images/index_img_20120718/leftMenu_icon.gif");
     background-position: 0 -157px;
 	height:35px; width:36px; 
 }
@@ -5744,6 +5761,7 @@ ul li.smartfilter.selected .icon.filter {
     background: #d7ddef;
     height: 1px;
     border-bottom: 1px solid #f6f7f9;
+	_overflow:hidden;
 }
 
 #people-section, #filter-section, #label-section, #smartfilters-section {
@@ -5752,9 +5770,7 @@ ul li.smartfilter.selected .icon.filter {
 } 
 
 #people-section .sidebar-people {
-    float:left;
-    width: 100%;
-	
+    width: 149px;
 }
 
 
@@ -5791,26 +5807,30 @@ ul li.smartfilter.selected .icon.filter {
 }
 
 #id_target_user .target-user-name {
-    line-height: 1.4em;
-    height: 48px;
     display: table-cell;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     /*width: 140px; */   
     text-transform: uppercase;
     color: #798B99;
-    font-weight:bold;
-    font-size: 12px;
-   
+   	width:69px;
 }
 
 #id_target_user .target-user-name span{
+	font-weight:bold;
+	font-size: 12px;
     word-wrap: break-word;
     display: block;
-
+	line-height: 48px;
+    height: 48px;
+	width:69px;
+	overflow:hidden;
 }
 
 #people-section .sidebar-people .colleagues-in { 
     padding: 6px 24px 6px 10px;
+	*+padding: 6px 0 6px 10px;
+	*+height:28px;
+	*+overflow:hidden;
 }
 
 .sidebar-people.is_team .colleagues-in span.invite-help, 
@@ -5952,16 +5972,19 @@ ul li.smartfilter.selected .icon.filter {
 #sidebar_content .sidebar-people .sidebar-invite-people i.icon {
     float:left;
     width: 16px;
-    margin: 2px;   
+    margin: 2px;  
+	_margin: 2px 2px 2px 1px; 
     height: 16px;
     padding: 3px;
     display: block;
     color: white;
     line-height: 16px;
+	_line-height:1em;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+	
 }
 
 #sidebar_content .sidebar-people .sidebar-avatar i.icon {
@@ -6619,11 +6642,13 @@ li.task.active .label .title {
 ul#status_prio  {
     top: 16px;
     left: 14px;
+	_left:8px;
     position: absolute;
 	*+position: static;
 	
 	*+float:left;
     width: 56px;
+	_width:70px;
 }
 
 ul#status_prio li {
@@ -6640,7 +6665,8 @@ ul#status_prio li i {
 }
 
 ul#status_prio li .status {
-    background-image: url(../images/index_img_20120718/task-status.png);
+    background-image: url("../images/index_img_20120718/task-status.png");
+	_background-image: url("../images/index_img_20120718/task-status.gif");
     background-repeat: no-repeat;
     background-position: -3px -4px;
 }
@@ -6650,7 +6676,8 @@ ul#status_prio li .status {
 }
 
 #task-details-content ul#status_prio li .stars {
-    background-image: url(../images/index_img_20120718/stars.png);
+    background-image: url("../images/index_img_20120718/stars.png");
+	_background-image: url("../images/index_img_20120718/stars.gif");
     background-repeat: no-repeat;
     background-position: -4px -4px;
 }
@@ -6702,6 +6729,7 @@ ul#header-btns li.menu-item a.btn .icon {
 ul#header-btns li.menu-item.delete {
     margin-left: 15px;
     margin-right: 15px;
+	_margin-left: 8px;
 }
 
 ul#header-btns li.menu-item.delete a.btn {
@@ -6765,12 +6793,14 @@ ul#header-btns li.close .icon{
     display: block;    
     height: 11px;
     width: 11px;
-    background: url(../images/index_img_20120718/td-close.png) 0 0 no-repeat;
-    
+	_overflow:hidden;
+    background: url("../images/index_img_20120718/td-close.png") 0 0 no-repeat;
+    _background: url("../images/index_img_20120718/td-close.gif") 0 0 no-repeat;
 }
 
 ul#header-btns li.close:hover .icon{
-    background: url(../images/index_img_20120718/td-close.png) 0 -11px no-repeat;
+    background: url("../images/index_img_20120718/td-close.png") 0 -11px no-repeat;
+	_background: url("../images/index_img_20120718/td-close.gif") 0 -11px no-repeat;
 }
 
 
@@ -6813,7 +6843,8 @@ ul#header-btns li.menu-item.more.active .params-icon {
 	height:100%;
 	background-color:#fff;
 	border:1px solid #C4CDE4;
-	*+float:left;
+	*+margin-left:72px;
+	/**+float:left;*/
 	*+display:block;
 	}
 
@@ -6880,6 +6911,7 @@ ul#header-btns li.menu-item.more.active .params-icon {
     margin-top: 5px;
     background: white;
     min-height: 32px;
+	_height:32px;
     /*position: relative;*/
     padding: 5px 10px;
     border: 1px solid #C4CDE4;
@@ -7416,6 +7448,7 @@ ul#header-btns li.menu-item.more.active .params-icon {
     font-size: 0.8em;
     margin-bottom: 10px;
     min-height: 36px;
+	_height:36px;
 }
 
 #task-details-notes li.note .message a{

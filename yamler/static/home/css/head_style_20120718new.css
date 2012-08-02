@@ -62,11 +62,17 @@
     min-width: 1000px;  
     z-index: 2;
     height: 51px;
-    background: url(../images/index_img_20120718/header_bg.png) 0 0 repeat-x;     
+    background: url("../images/index_img_20120718/header_bg.png") 0 0 repeat-x;
+	_width:100%;  
 }
 
 #header .logo {
+	background: url("../images/index_img/logo_img.png") no-repeat center center ;
+	_background: url("../images/index_img/logo_img.gif") no-repeat center center ;
+	width:133px;
+	height:34px;  
     margin:6px 0px 0px 6px;
+	display:block;
     float:left;
 }
 
@@ -83,18 +89,22 @@
 }
 
 #header.dashboard .back_logo .nav-icon {
-    background: url(../images/index_img_20120718/icon-nav.png) 0 0 repeat-x;         
+    background: url("../images/index_img_20120718/icon-nav.png") 0 0 repeat-x;
+	_background: url("../images/index_img_20120718/icon-nav.gif") 0 0 repeat-x;         
 }
 
 #header.not_dashboard .back_logo .nav-icon {
-    background: url(../images/index_img_20120718/icon-nav.png) 0 -16px repeat-x;         
+    background: url("../images/index_img_20120718/icon-nav.png") 0 -16px repeat-x; 
+	_background: url("../images/index_img_20120718/icon-nav.gif") 0 -16px repeat-x;      
 }
 
 #header .menu {
     float:right;
     height: 51px;
     margin-right: 15px;
+	_margin-right: 8px;
     max-width: 810px;
+	_width:810px;
     z-index: 6;
     top: 0px;
     position:relative;
@@ -160,7 +170,8 @@
     float:left;
     width: 20px;
     height: 20px;
-    background-image: url(../images/index_img_20120718/sprite_header.png);
+    background-image: url("../images/index_img_20120718/sprite_header.png");
+	_background-image: url("../images/index_img_20120718/sprite_header.gif");
     background-repeat: no-repeat;
     margin: 3px 8px 0px 0px;
 }
@@ -280,7 +291,8 @@ li.menu-item.unread .bubble-notif {
 #header .menu li.account i.arrow {
     width: 7px;
     height: 6px;
-    background: url(../images/index_img_20120718/arrow_account.png) 0 0 no-repeat;
+    background: url("../images/index_img_20120718/arrow_account.png") 0 0 no-repeat;
+	_background: url("../images/index_img_20120718/arrow_account.gif") 0 0 no-repeat;
     top: 11px;
     right: 7px;
     position: absolute;
@@ -384,11 +396,13 @@ li.account .account-dropdown a.link:hover {
     left: 7px;
     width: 18px;
     height: 18px;
-    background: url(../images/index_img_20120718/magni_glass.png) 0 0 no-repeat;
+    background: url("../images/index_img_20120718/magni_glass.png") 0 0 no-repeat;
+	_background: url("../images/index_img_20120718/magni_glass.gif") 0 0 no-repeat;
 }
 
 .menu li.search form.active .glass {
-    background: url(../images/index_img_20120718/magni_glass.png) 0 -18px no-repeat;
+    background: url("../images/index_img_20120718/magni_glass.png") 0 -18px no-repeat;
+	_background: url("../images/index_img_20120718/magni_glass.gif") 0 -18px no-repeat;
 }
 
 .menu li.search form input.search-field {

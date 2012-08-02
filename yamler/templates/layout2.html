@@ -2,18 +2,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>我的工作</title>
+<title>无标题文档</title>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/Public_style_20120718new.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/head_style_20120718new.css') }}"/>
 <link rel="stylesheet" media="all" type="text/css" href="{{ url_for('static', filename='home/css/main_style_20120718new.css') }}"/>
 <script src="{{ url_for('static', filename='js/libs/jquery-1.7.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/jquery.tmpl.min.js') }}"></script>
+
+
 </head>
 
 <body>
 <!--头部-->
 <div id="header">
-    <a class="logo" href="{{ url_for('home.me') }}"><img class="back_logo" src="{{ url_for('static', filename='home/images/index_img/logo_img.png') }}"/></a>
+    <a class="logo" href="{{ url_for('home.me') }}">
+    	<!--<img class="back_logo" src="{{ url_for('static', filename='home/images/index_img/logo_img.png') }}"/>-->
+    </a>
     <ul class="menu">
     	<li class="menu-item account radius-4 transition-effect">
             <a class="menu-link" href="{{ url_for('home.me') }}">
@@ -73,7 +77,7 @@
 <div id="wrapper" class="content">
 	<!--左边布局-->
 	<div id="sidebar">
-    	<a id="sidebar-handler" class="handler sidebar" href="javascript:;"></a>
+    	<!--<a id="sidebar-handler" class="handler sidebar" href="javascript:;"></a>-->
         <div id="sidebar_content" class="dashboard-panel-effect">
         	<!--people块-->
             <div id="people-section">
@@ -142,7 +146,6 @@
                         </div>
                     </a>    
                     </li>
-                    <!--
                     <li id="filter_4" class="filter filter_li starred"  name="4">
                         <i class="drag-handler"></i>
                         <div class="leftMenu_link">
@@ -151,7 +154,7 @@
                         </div>
                         
                     </li>
-                    --> 
+                    
                 </ul>
             </div>
             <div id="smartfilters-section"> </div>
@@ -179,30 +182,26 @@
             <form id="form-task-followers" onsubmit="return (false);" name="form-task-followers">
                 <input type="hidden" value="10549862" name="id_task">
                 {% for row in contact_data %}
-                {% if row.id != g.user.id %}
                 <li>
                     <label>
-                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}" title="{{ row.realname }}">
+                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}">
                             <span class="avatar">
                                 <!--<img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">-->
                             </span>
                         <span> {{ row.realname }} </span>
                     </label>
                 </li>
-                {% endif %}
                 {% endfor %}
                 {% for row in data %}
-                {% if row.id != g.user.id %}
                 <li>
                     <label>
-                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}" title="{{ row.realname }}">
+                        <input class="radio" type="checkbox" value="{{ row.id }}" name="id_followers[]" id="checkbox_{{ row.id }}">
                             <span class="avatar">
                                 <!--<img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">-->
                             </span>
                         <span> {{ row.realname }} </span>
                     </label>
                 </li>
-                {% endif %}
                 {% endfor %}
                 <!--
                 <li>

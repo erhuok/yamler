@@ -28,8 +28,6 @@ body {
   font: 75%/1.5 Tahoma,Arial,Helvetica,STHeiti;
   font-family: "Microsoft Yahei","微软雅黑",Tahoma,Arial,Helvetica,STHeiti;
   letter-spacing:0.08em;
-  min-width: 1000px;
-  min-height: 100%;
   }
   
 body ::-webkit-scrollbar {

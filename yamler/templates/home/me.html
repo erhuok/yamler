@@ -1,5 +1,4 @@
 {% extends "layout2.html" %}
-
 {% block content %}
   <!--右边大块-->
     <div id="dashboard" class=" dashboard-panel-effect list">
@@ -189,7 +188,6 @@
                                 </li>
                                 {{/if}}
                                 {% endraw %}
-                                <div class="clear"></div>
                             </div>
                             <li class="close">
                             	<i class="icon"></i>
@@ -522,6 +520,7 @@ $(function(){
         $(".close").die('click');
         $(".close").live('click', function() {
             $("#dashboard #task-details").hide();
+			$("#dashboard #list-view").css({width: "100%"});
             $("#dashboard #task-list").css({width: "100%"});
             $("#task-details").attr('display', 'hide');     
         }) 
@@ -878,30 +877,33 @@ $(function(){
 		var f_top = $(window).scrollTop();
 		var h_window = $(window).height();
 		var d_height = $(document).height();
+		var on_scroll = h_window+51;
+		var off_scroll = h_window-51;
+		var IE6Height = d_height-51;
 		var dash_width = $("#dashboard").width();
 		var con_height = $("#task-details-content").height();
 		var dash_40 = dash_width*0.45;
 		var dash_60 = dash_width*0.55;
 
 		if(f_top > 51){
-			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999",height:(h_window+51)+"px"});
+			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999",height:on_scroll+"px"});
 			$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","margin-left":"auto",width:dash_40+"px", 
-			height:(h_window+51)+"px","overflow":"hidden"});
-			$("#task-details-content").css({"overflow-y":"scroll",height:(h_window+51)+"px"});
+			height:on_scroll+"px","overflow":"hidden"});
+			$("#task-details-content").css({"overflow-y":"scroll",height:on_scroll+"px"});
 			if(MzBrowser.ie && MzBrowser.version < 7){
-				$("#wrapper #sidebar").css({"position":"static", height:(d_height-51)+"px"});
-				$("#dashboard #task-details").css({"position":"absolute", height:(d_height-51)+"px"});
-				$("#task-details-content").css({"overflow-y":"auto",height:(d_height-51)+"px"});
+				$("#wrapper #sidebar").css({"position":"static", height:IE6Height+"px"});
+				$("#dashboard #task-details").css({"position":"absolute", height:IE6Height+"px"});
+				$("#task-details-content").css({"overflow-y":"auto",height:IE6Height+"px"});
 			}
 		}else{
-			$("#wrapper #sidebar").css({position:"static","z-index":"998",height:(h_window-51)+"px"});
+			$("#wrapper #sidebar").css({position:"static","z-index":"998",height:off_scroll+"px"});
 			$("#dashboard #task-details").css({position:"absolute", right:"0",top:"0", "margin-left":dash_60+"px",width:dash_40+"px",
-			height:(h_window-51)+"px","overflow":"hidden"});
-			$("#task-details-content").css({"overflow-y":"scroll",height:(h_window-51)+"px"});
+			height:off_scroll+"px","overflow":"hidden"});
+			$("#task-details-content").css({"overflow-y":"scroll",height:off_scroll+"px"});
 			if(MzBrowser.ie && MzBrowser.version < 7){
-				$("#wrapper #sidebar").css({"position":"static", height:(d_height-51)+"px"});
-				$("#dashboard #task-details").css({"position":"absolute", height:(d_height-51)+"px"});
-				$("#task-details-content").css({"overflow-y":"auto",height:(d_height-51)+"px"});
+				$("#wrapper #sidebar").css({"position":"static", height:IE6Height+"px"});
+				$("#dashboard #task-details").css({"position":"absolute", height:IE6Height+"px"});
+				$("#task-details-content").css({"overflow-y":"auto",height:IE6Height+"px"});
 			}
 		}
 		
