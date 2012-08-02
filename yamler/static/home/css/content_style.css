@@ -134,7 +134,8 @@ body {
 }
 /**************修改于2012_07_31 end******************/
 
-body.extra-large-window.full-content #content, body.large-window.full-content #content{ margin: 0; width: 100%; }
+body.extra-large-window.full-content #content, body.large-window.full-content #content{ 
+	margin: 0; width: 100%; *+overflow-x:hidden;*+overflow-y:auto;}
 
 #content { position: relative;}
 #board-header { height: 30px; overflow: hidden; padding: 4px 8px; position: relative;}
