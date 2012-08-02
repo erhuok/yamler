@@ -1,0 +1,1355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link rel="stylesheet" media="all" type="text/css" href="../css/Public_style_20120718new.css"/>
+<link rel="stylesheet" media="all" type="text/css" href="../css/main_style_20120718new.css"/>
+<script src="../js/jquery.js" language="javascript"></script>
+<script>
+$(function(){
+	var show_flag = 1;
+	//点击展开右边
+	//$("#dashboard #task-details").hide();
+	//$("#list-view").css({width: "100%"});
+	//$("#dashboard #task-list").css({width: "100%"});
+	
+	$("#dashboard_tasks_list li.task .task-middle").toggle(function(){
+		$(this).parent().parent().addClass("active");
+		if( $(this).parent().parent().hasClass("active") ){
+			$("#dashboard #task-details").show();
+			$("#dashboard #task-list").css({width: "55%"});
+		}
+		$("#dashboard_tasks_list li.task").not($(this).parent().parent()).removeClass("active");
+	},function(){
+		$(this).parent().parent().addClass("active");
+		$("#dashboard_tasks_list li.task").not($(this).parent().parent()).removeClass("active");
+		if($(this).parent().parent().hasClass("active")){
+			$("#dashboard #task-details").hide();
+			$("#list-view").css({width: "100%"});
+			$("#dashboard #task-list").css({width: "100%"});
+		}
+	});
+
+	
+	function reheight(){
+		var w_height = $(window).height();
+		var d_height = $(document).height();
+		var b_height = w_height-51;
+		var b1_height = d_height-51;
+		$("#wrapper #sidebar").css("height",b_height+"px");
+		$("#dashboard #task-details ").css("height",b_height+"px");
+		if(d_height > w_height){
+			$("#wrapper #sidebar").css("height",b1_height+"px");
+			$("#dashboard #task-details").css("height",b1_height+"px");
+			
+		}
+	}
+	function position_f(show_flag){
+		var f_top = $(window).scrollTop();
+		var dash_width = $("#dashboard").width();
+		var dash_40 = dash_width*0.45;
+		var dash_60 = dash_width*0.55;
+		if(f_top > 51){
+			$("#wrapper #sidebar").css({position:"fixed",left:"0",top:"0","z-index":"999"});
+			$("#list-view").css({top: "0"});
+			if(show_flag == 1){
+				$("#dashboard #task-details").css({position:"fixed",right:"0",top:"0","z-index":"998","margin-left":"auto",width:dash_40+"px"});
+			}else{
+				//$("#dashboard #task-details").hide();
+				$("#list-view").css({width: "100%"});
+				$("#dashboard #task-list").css({width: "100%"});
+			}
+		}else{
+			$("#wrapper #sidebar").css({position:"static","z-index":"auto"});
+			$("#dashboard #task-details").css({position:"relative" ,"z-index":"auto","margin-left":"55%",width:"45%"});
+		}
+	}
+	
+	$(window).load(function(){
+		reheight();
+	});
+	$(window).resize(function(){
+		reheight();
+		if(show_flag == 1){
+			position_f(show_flag == 1);
+		}else{
+			position_f(show_flag == 0);
+		}
+	}); 
+	$(window).scroll(function(){
+		reheight();
+		if(show_flag == 1){
+			position_f(show_flag == 1);
+		}else{
+			position_f(show_flag == 0);
+		}
+	}); 
+	
+	//添加人员
+	$(".sidebar-invite-people").click(function(){
+		$(".popin_addPeople").show();
+	})
+	
+	$(".people_close").click(function(){
+		$(".popin_addPeople").hide();
+	})
+	
+	//任务完成状态控制
+	$("#dashboard_tasks_list li.task .status").toggle(function(){
+		if( $(this).parent().addClass("undone")){
+			$(this).parent().removeClass("undone");
+			$(this).parent().addClass("done");
+		}
+	},function(){
+		if( $(this).parent().addClass("done")){
+			$(this).parent().removeClass("done");
+			$(this).parent().addClass("undone");
+		}
+	});
+	
+	//排序下拉控制
+	var Sort_clickState = 1;
+	//任务列表菜单显示隐藏
+	$(document).click(function(ev){
+		ev = ev || window.event;
+		var target = ev.target || ev.srcElement;
+		if(target.id !="STL_01" && target.id !="STL_02" && target.id !="STL_03" && target.id !="STL_04" && target.id !="STL_05" && target.id !="STL_06" && target.id !="STL_07" ){
+			$("#sortby_list").hide();
+			Sort_clickState = 1;
+		}
+	});
+	$("#sortby_current").toggle(function(){
+		if( Sort_clickState == 0 ){
+			Sort_clickState = 1;
+			$("#sortby_list").hide();
+		}else{
+			Sort_clickState = 0;
+			$("#sortby_list").show();	
+		}
+	},function(){
+		if( Sort_clickState == 1 ){
+			Sort_clickState = 0;
+			$("#sortby_list").show();	
+		}else{
+			Sort_clickState = 1;
+			$("#sortby_list").hide();	
+		}
+	});
+	
+	
+	//我的面板下拉效果控制
+	var My_clickState = 1;
+	$(document).click(function(My_e){
+		My_e = My_e || window.event;
+		var My_target = My_e.target || My_e.srcElement;
+		if(My_target.class !="account_first" && My_target.class !="account_link" ){
+			$(".account-dropdown").hide();
+			My_clickState = 1;
+		}
+	});
+
+	$(".menu-link").toggle(function(){
+		if( My_clickState == 0 ){
+			My_clickState = 1;
+			$(".account-dropdown").hide();
+		}else{
+			My_clickState = 0;
+			$(".account-dropdown").show();	
+		}
+	},function(){
+		if( My_clickState == 1 ){
+			My_clickState = 0;
+			$(".account-dropdown").show();	
+		}else{
+			My_clickState = 1;
+			$(".account-dropdown").hide();	
+		}
+	});
+	
+	//安排控件
+	var follow_clickState = 1;
+	$(document).click(function(follow_e){
+		follow_e = follow_e || window.event;
+		var follow_target = follow_e.target || follow_e.srcElement;
+		if(follow_target.class !="account_first" && follow_target.class !="account_link" ){
+			$(".popin_taskfollowers").hide();
+			follow_clickState = 1;
+		}
+	});
+	function follow_show(e){
+		var offset_plan = $(e).offset();
+		var plan_left = offset_plan.left-130;
+		var plan_top = offset_plan.top+45;
+		var plan_scrolltop = $(e).scrollTop();
+		$(".popin_taskfollowers").show();
+		$(".popin_taskfollowers").css({top:+(plan_top-plan_scrolltop)+"px",left:+plan_left+"px","z-index":"1000",position:"absolute"});
+	}
+	
+	$(".follow_plan").toggle(function(){
+		if( follow_clickState == 0 ){
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();
+		}else{
+			follow_clickState = 0;
+			follow_show(this);
+		}
+	},function(){
+		if( follow_clickState == 1 ){
+			follow_clickState = 0;
+			follow_show(this);
+		}else{
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();	
+		}
+	});
+	
+	//递交控件
+	$(".follow_hand").toggle(function(){
+		if( follow_clickState == 0 ){
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();
+		}else{
+			follow_clickState = 0;
+			follow_show(this);
+		}
+	},function(){
+		if( follow_clickState == 1 ){
+			follow_clickState = 0;
+			follow_show(this);
+		}else{
+			follow_clickState = 1;
+			$(".popin_taskfollowers").hide();	
+		}
+	});
+	
+	$(".task_list_more").hover(function(){
+		$(this).addClass("hover");
+	},function(){
+		$(this).removeClass("hover");
+	}).click(function(){
+		$(".test_listBlock").show();
+	})
+	
+});
+</script>
+
+</head>
+
+<body>
+<!--头部-->
+<div id="header">
+	<a class="logo"><img class="back_logo" src="../images/index_img/logo_img.png"/></a>
+    <ul class="menu">
+    	<li class="menu-item account radius-4 transition-effect">
+        	<a class="menu-link" href="javascript:;">
+                <div class="avatar radius-2">
+                	<img src="../images/index_img_20120718/479510-1342579213.jpg">
+                </div>
+                我的面板
+                <i class="arrow"></i>
+            </a>
+            <!--我的面板控件-->
+            <div class="account-dropdown" style=" display:none;">
+                <h4 class="first account_first">Preferences</h4>
+                <a class="link account_link" href="javascript:;">我的任务</a>
+                <a class="link account_link" href="javascript:;">我的管理中心</a>
+                <a class="link account_link" href="javascript:;">添加人员</a>
+                <a class="link account_link" href="javascript:;">管理人员</a>
+                <a class="link account_link" href="javascript:;">My subscription</a>
+                <a class="link account_link more-pro" href="javascript:;">More Pro Workspaces</a>
+                <h4 class="first account_first">Apps</h4>
+                <a class="link account_link" target="_blank" href="javascript:;">Download iPhone app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Android app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Mac OSX app</a>
+                <a class="link account_link" target="_blank" href="javascript:;">Download Windows app</a>
+                <h4 class="first account_first">Support</h4>
+                <a class="link account_link" href="javascript:UserVoice.showPopupWidget();">Feedback & support</a>
+                <div class="separator account_first"></div>
+                <a class="link account_link logout" href="ajax/users/logout.php">Log out</a>
+            </div><!--我的面板控件 end-->
+            
+        </li>
+        <a href="">
+            <li class="menu-item radius-4 transition-effect">
+            	<i class="icon settings"></i>
+            </li>
+        </a>
+        
+        
+        <!--搜索块
+        <li class="search">
+            <form id="search-form" class="radius-4 transition-effect" action="/search.php" onsubmit="pdt_loader.set_loading(); if(tools.trim($('search-form-input').value) == '') {return false;}" method="post">
+                <input id="search-form-input" class="search-field placeholder" type="text" name="search_str" onblur="dashboard.onblur_search_field();" onfocus="dashboard.onfocus_search_field();" value="">
+                <script type="text/javascript">
+                	new input_placeholder('search-form-input', 'Search Tasks...');
+                </script>
+                <div class="glass"></div>
+            </form>
+        </li>-->
+        
+        
+    </ul>
+</div>
+<!--头部 end-->
+
+<!--主体块-->
+<div id="wrapper" class="content">
+	<!--左边布局-->
+	<div id="sidebar">
+    	<a id="sidebar-handler" class="handler sidebar" href="javascript:;"></a>
+        <div id="sidebar_content" class="dashboard-panel-effect">
+        	<!--people块-->
+            <div id="people-section">
+                <div id="sidebar-people-content" class="sidebar-people ">
+                	<!--个人添加块-->
+                    <div class="colleagues-in">
+                        <div id="dashboard_sidebar_648918_team" class="sidebar-avatar team ">
+                            <img class="icon hover-object" src="../images/index_img_20120718/icon-team.png">
+                        </div>
+                        <div id="dashboard_sidebar_648918_avatar_479510" class="sidebar-avatar selected radius-3" canvas="canvas_479510">
+                            <img class="radius-2 transition-effect hover-object"  src="../images/index_img_20120718/479510-1342579213.jpg">
+                        </div>
+                        <div id="dashboard_sidebar_invite_648918" class="sidebar-invite-people hover-object" >
+                            <a class="sidebar-invite-people"  href="javascript:;">
+                                <i class="icon radius-3 btn btn_green">
+                                    <img border="0" src="../images/index_img_20120718/add_colleague.png">
+                                </i>
+                            </a>
+                        </div>
+                        <a class="sidebar-invite-people" href="javascript:;">
+                            <span class="invite-help">添加人员</span>
+                        </a>
+                        <div class="clear"></div>
+                    </div><!--个人添加块 end-->
+                    <div class="colleagues-divider"></div>
+                    <!--用户显示块-->
+                    <div id="id_target_user" name="479510">
+                        <img class="target_user_avatar radius-3" src="../images/index_img_20120718/479510-1342579213.jpg">
+                        <b class="user-border radius-3"></b>
+                        <div class="name-container">
+                            <div class="target-user-name">
+                                <span>谭少华</span>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div><!--用户显示块 end-->
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!--people块 end-->
+            
+            <div id="filter-section">
+                <ul id="filter_list_in" style="position: relative;">
+                    <li id="filter_1" class="filter filter_li mytasks selected"  name="1">
+                        <i class="drag-handler"></i>
+                        <i class="icon filter"></i>
+                        <!--<i class="task-counter radius-10 ellipsis">1</i>-->
+                        <span class="title ellipsis"> 所有任务 </span>
+                        <!--<i class="task-counter radius-10 ellipsis filter-task-nb" title="1">1</i>-->
+                    </li>
+                    <li id="filter_2" class="filter filter_li recipient"  name="2">
+                        <i class="drag-handler"></i>
+                        <div class="leftMenu_link">
+                            <i class="icon filter"></i>
+                            <span class="title ellipsis"> 我的任务 </span>
+                        </div>
+                        
+                    </li>
+                    <li id="filter_3" class="filter filter_li archived"  name="3">
+                        <i class="drag-handler"></i>
+                        <div class="leftMenu_link">
+                            <i class="icon filter"></i>
+                            <span class="title ellipsis">他人任务</span>
+                        </div>
+                        
+                    </li>
+                    <li id="filter_4" class="filter filter_li starred"  name="4">
+                        <i class="drag-handler"></i>
+                        <div class="leftMenu_link">
+                            <i class="icon filter"></i>
+                            <span class="title ellipsis">通知 </span>
+                        </div>
+                        
+                    </li>
+                    
+                </ul>
+            </div>
+            <div id="smartfilters-section"> </div>
+            
+        </div>
+    </div>
+    <!--左边布局 end-->
+    
+    <!--右边大块-->
+    <div id="dashboard" class=" dashboard-panel-effect list">
+    	<!--右边每一列-->
+    	<div id="list-view">
+        	<div id="task-list" class="dashboard-panel-effect">
+            	<!--右边第一列头部-->
+            	<div id="sortby" class="">
+                    <!--<div class="right">
+                        <a class="btn btn_bluegray float_right extra-padding-left" >
+                            <img class="icon" src="../images/index_img_20120718/calendar-icon.png">
+                            Calendar
+                        </a>
+                    </div>-->
+                    <div class="left">
+                        <div id="sortby-container" style="display: inline;" class="active">
+                            <a id="sortby_current" class="btn btn_bluegray"  href="javascript:;">
+                                <span class="title-sortby">排序:</span>
+                                <span class="title-sortby">请选择方式</span>
+                                <i class="arrow">
+                                    <img alt="arrow" title="arrow" src="../images/index_img_20120718/bulk-arrow.png">
+                                </i>
+                            </a>
+                            <!--任务过滤下拉控件-->
+                            <ul id="sortby_list" style="display:none;">
+                                <li>
+                                    <a onclick="sortby.load('1');" id="STL_01" href="javascript:;"> Deadline </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('2');" id="STL_02" href="javascript:;"> Manager </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('4');" id="STL_03" href="javascript:;"> Last Changed </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('5');" id="STL_04" href="javascript:;"> Workspace </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('6');" id="STL_05" href="javascript:;"> Priority </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('7');" id="STL_06" href="javascript:;"> Title </a>
+                                </li>
+                                <li>
+                                    <a onclick="sortby.load('8');" id="STL_07" href="javascript:;"> Date Created </a>
+                                </li>
+                            </ul><!--任务过滤下拉控件 end-->
+                        </div>
+                        <!--<a class="btn btn_bluegray extra-padding-left" >
+                            <img class="icon" src="../images/index_img_20120718/print-icon.png">
+                            Print
+                        </a>
+                        <a class="btn btn_bluegray extra-padding-left" title="Export the task list currently on your screen to a CSV file" >
+                            <img class="icon" src="../images/index_img_20120718/csv-icon.png">
+                            Export
+                        </a>
+                        <a class="btn btn_bluegray extra-padding-left appmanager-inline-block" >
+                            <img class="icon" src="../images/index_img_20120718/csv-icon.png">
+                            Download PDF
+                        </a>-->
+                    </div>
+                </div><!--右边第一列头部 end-->
+                
+                <!--任务表单区-->
+                <form id="form-add-task" class="add-task transition-effect"  method="POST">
+                    <input type="hidden" value="648918" name="id_dashboard"/>
+                    <div class="add-task-ctnr">
+                        <!--<label id="add-task-placeholder">
+                            <span>Type here to create a task...</span>
+                        </label>
+                        <input id="add-task-field" class="never_focused" type="text" autocomplete="off" name="task_title"/>-->
+                        <textarea id="add-task-field" class="never_focused" type="text" autocomplete="off" name="task_title" cols="" rows="" ></textarea>
+                        <div id="add-task-options" class="task-options transition-effect">
+                            <div class="options-menu-cntr">
+                                <div class="block">
+                                    <div class="bulk-btn radius-only-left hover-object" >
+                                        <i class="icon assign"></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object" >
+                                        <i class="icon labelit"></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object">
+                                        <i class="icon deadline"></i>
+                                    </div>
+                                    <div class="bulk-btn no-left-border hover-object" >
+                                        <i class="icon star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboards-area">
+                                <select name="dashboard-selector"> </select>
+                            </div>
+                            <div class="btn-area">
+                                <input id="add-task-btn" class="btn btn_green" type="submit" value="发布" />
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </form><!--任务表单区 end-->
+                <script type="text/javascript">
+					task_create.init_placeholder($('add-task-field'));
+				</script>
+                <!--任务列表展示块-->
+                <div id="task-list-bottom">
+                    <div id="context-title-ctnr" class="displayed"> </div>
+                    <ul id="dashboard_tasks_list">
+                        <div class="list-separator first"> 5 小时前 </div>
+                        <div class="list-separator-border"></div>
+                        <li id="task_list_01" class="task undone has-notes star_2-0 active" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle" rel="task_list_01">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        <li id="task_list_02" class="task undone is_last has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        <div class="list-separator first"> 1 天前 </div>
+                        <div class="list-separator-border"></div>
+                        <li id="task_list_03" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        
+                        <li id="task_list_04" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        
+                        
+                        <li id="task_list_05" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        
+                        <li id="task_list_06" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        
+                        <li id="task_list_07" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        
+                        <li id="task_list_08" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        <li id="task_list_09" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        <li id="task_list_10" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        
+                        <li id="task_list_11" class="task undone has-notes star_2-0" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        
+                        <li id="task_list_12" class="task undone has-notes star_2-0 test_listBlock" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        <li id="task_list_13" class="task undone is_last has-notes star_2-0 test_listBlock" title="第一次用这个东西" >
+                            <div class="dnd-handler"></div>
+                            <!--<span class="anchor" >
+                            	<i class="box"></i>
+                            </span>-->
+                            <span id="task_list_10530079_status" class="status" > </span>
+                            <i class="v-separator"></i>
+                            <span id="task_list_10530079_stars" class="stars" > </span>
+                            <i class="v-separator"></i>
+                            <span class="responsible">
+                            	<img class="radius-3" title="tan xiaohua" alt="tan xiaohua" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                            <span class="task-body">
+                                <span class="task-middle">
+                                    <span class="task-title ellipsis"> 第一次用这个东西 </span>
+                                    <!--<div class="labels-ctnr ellipsis">
+                                        <div class="dashboard"> My workspace </div>
+                                        <span id="task_list_10530079_labels" class="labels " >
+                                            <a class="nolabel" href="#">Label it</a>
+                                        </span>
+                                    </div>-->
+                                    <span class="task-right">
+                                        <div class="deadline ellipsis">
+                                            <span>Schedule it</span>
+                                        </div>
+                                        <div class="notes has-notes">
+                                            <span class="bubble radius-3">
+                                                1
+                                                <i class="tail"></i>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                        
+                        <!--更多任务-->
+                        <div class="task_list_more bor_radius_5">
+                            <a class="btn_more">更多任务</a>
+                        </div>
+                        
+                        
+                    </ul>
+                </div><!--任务列表展示块 end-->
+                
+            </div>
+        </div><!--右边每一列 end-->
+        
+        <!--右边第二列-->
+        <div id="task-details" class="dashboard-panel-effect">
+        	<div id="task-details-content" class="done has-notes star_2-0">
+            	<div class="overflow-container">
+                	<!--右边第二列头部-->
+                	<div class="header-task-details">
+                        <ul id="header-btns">
+                            <div class="action-btns-container">
+                                <li class="menu-item delete" >
+                                    <a class="btn btn_bluegray" href="javascript:;">
+                                        <img class="icon" src="../images/index_img_20120718/td-header-delete.png">
+                                    </a>
+                                </li>
+                                <!--<li class="menu-item">
+                                    <a class="btn btn_bluegray" href="javascript:;">
+                                        <img class="icon" src="../images/index_img_20120718/td-header-privacy.png">
+                                        All workspace members
+                                    </a>
+                                </li>
+                                <li id="td-share-button" class="menu-item">
+                                    <a class="btn btn_bluegray" href="javascript:;">
+                                        <img class="icon" src="../images/index_img_20120718/td-header-share.png">
+                                        Share
+                                    </a>
+                                    <div id="pop-up-share">
+                                        <p> Quick access to this task (accessible by members of this workspace). </p>
+                                        <input class="link-field" type="text" value="http://www.pdtv.me/t10530079p4d239">
+                                    </div>
+                                </li>
+                                <li class="menu-item">
+                                    <a class="btn btn_bluegray" href="javascript:;">
+                                        <img class="icon" src="../images/index_img_20120718/td-header-moveto.png">
+                                        Move to
+                                    </a>
+                                </li>-->
+                                <div class="clear"></div>
+                            </div>
+                            <li class="close">
+                            	<i class="icon"></i>
+                            </li>
+                        </ul>
+                    </div><!--右边第二列头部 end-->
+                    
+                    <!--对应任务块-->
+                    <div class="task-info">
+                        <form method="POST" action="#">
+                            <ul id="status_prio">
+                                <li id="task-details-resume-status" >
+                                    <i class="status"></i>
+                                </li>
+                                <li id="task-details-resume-stars">
+                                    <i class="stars"></i>
+                                </li>
+                            </ul>
+                            <div id="task-details-title-text" >第一次用这个东西</div>
+                            <textarea id="task-details-title-input" >第一次用这个东西</textarea>
+                        </form>
+                        
+                    </div><!--对应任务块 end-->
+                    
+                    <!--任务安排递交块-->
+                    <div class="info-ctnr">
+                        
+                        <!--安排块-->
+                        <div class="main-actions">
+                            <div class="row-followers radius-3">
+                                <div id="followers-section">
+                                    <div class="followers-count">
+                                        <span>1</span>
+                                        安排给:
+                                    </div>
+                                    <div class="followers-avatars">
+                                        <img class="avatar radius-2 transition-effect" title="" src="../images/index_img_20120718/479510-1342579213.jpg">
+                                        <a class="icon radius-3 add-follower-btn btn btn_grey follow_plan" title="" href="javascript:;">
+                                            <img border="0" src="../images/index_img_20120718/add_follower.png">
+                                        </a>
+                                    </div>
+                                </div>
+                            <!--<div id="followers-follow-btn">
+                                <a class="btn_following"  href="javascript:;">
+                                    <span class="following-text">Following</span>
+                                    <span class="unfollow-text">Unfollow</span>
+                                </a>
+                            </div>-->
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                        <div id="contacts-section" class="row contacts radius-3 no_contact ">
+                            <form id="contact-form" method="post" action="#">
+                                <span class="default-row name" >Add a contact</span>
+                                <input id="contact-name-input" class="contact-input name" type="text" readonly="readonly" value="" name="contact-name">
+                                <div id="contact-fields" class="">
+                                    <i class="action remove radius-2"></i>
+                                    <i class="action edit radius-2"></i>
+                                    <i class="action mail radius-2"></i>
+                                    <div class="contact-row email">
+                                        <input id="contact-email-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-email">
+                                    </div>
+                                    <div class="contact-row phone">
+                                        <input id="contact-phone-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-phone">
+                                    </div>
+                                    <div class="contact-row url">
+                                        <input id="contact-url-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-url">
+                                    </div>
+                                    <div class="contact-row note">
+                                        <input id="contact-note-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-note">
+                                    </div>
+                                    <a class="save-btn">Save</a>
+                                    <input class="submit-btn" type="submit" value="">
+                                    <div class="clear"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!--安排块 end-->
+                    
+                    <!--递交块-->
+                    <div class="main-actions">
+                            <div class="row-followers radius-3">
+                                <div id="followers-section">
+                                    <div class="followers-count">
+                                        <span>1</span>
+                                        递交给:
+                                    </div>
+                                    <div class="followers-avatars">
+                                        <img class="avatar radius-2 transition-effect" title="" src="../images/index_img_20120718/479510-1342579213.jpg">
+                                        <a class="icon radius-3 add-follower-btn btn btn_grey follow_hand" title="" href="javascript:;">
+                                            <img border="0" src="../images/index_img_20120718/add_follower.png">
+                                        </a>
+                                    </div>
+                                </div>
+                            <!--<div id="followers-follow-btn">
+                                <a class="btn_following"  href="javascript:;">
+                                    <span class="following-text">Following</span>
+                                    <span class="unfollow-text">Unfollow</span>
+                                </a>
+                            </div>-->
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                        <div id="contacts-section" class="row contacts radius-3 no_contact ">
+                            <form id="contact-form" method="post" action="#">
+                                <span class="default-row name" >Add a contact</span>
+                                <input id="contact-name-input" class="contact-input name" type="text" readonly="readonly" value="" name="contact-name">
+                                <div id="contact-fields" class="">
+                                    <i class="action remove radius-2"></i>
+                                    <i class="action edit radius-2"></i>
+                                    <i class="action mail radius-2"></i>
+                                    <div class="contact-row email">
+                                        <input id="contact-email-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-email">
+                                    </div>
+                                    <div class="contact-row phone">
+                                        <input id="contact-phone-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-phone">
+                                    </div>
+                                    <div class="contact-row url">
+                                        <input id="contact-url-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-url">
+                                    </div>
+                                    <div class="contact-row note">
+                                        <input id="contact-note-input" class="contact-input" type="text" readonly="readonly" value="" name="contact-note">
+                                    </div>
+                                    <a class="save-btn">Save</a>
+                                    <input class="submit-btn" type="submit" value="">
+                                    <div class="clear"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!--递交块 end-->
+                    
+                    
+                 </div><!--任务安排递交块 end-->
+                 
+                 <!--分离块-->
+                 	<div class="notes-title">
+                        <h6> 回复列表: </h6>
+                        <a class="full-screen" href="javascript:;">
+                            <img src="../images/index_img_20120718/full-screen.png">
+                            滚动展示
+                        </a>
+                    </div>   
+                 <!--分离块 end-->
+                 
+                 <!--任务回复-->
+                <div id="notes-section-container">
+                    <div id="task-notes-popin-mask"></div>
+                    <div id="task-details-notes">
+                        <a class="close-notes-popin" href="javascript:;"></a>
+                        <div id="title-notes-popin"> 第一次用这个东西 </div>
+                        <div id="notes-and-form">
+                            
+                            <!--回复内容列表-->
+                            <ul id="task-details-notes-list">
+                                <li id="task-details-note-5193519" class="note owner">
+                                    <img class="avatar radius-3" title="avatar" alt="avatar" src="../images/index_img_20120718/479510-1342579213.jpg">
+                                    <div class="right-side radius-3">
+                                        <div class="content">
+                                            <p class="comment">
+                                                <span class="full_name name">谭少华</span>
+                                            </p>
+                                            <div class="from_to"> </div>
+                                            <span class="message">新闻事件</span>
+                                            <p></p>
+                                            <div class="info">2 小时前 (07/18/2012 - 01:19am) 来自Web消息 </div>
+                                            <div class="delete">
+                                                <a href="javascript:;"></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul><!--回复内容列表 end-->	
+                            
+                            <!--回复块-->
+                            <div id="task-details-notes-create">
+                                <form id="task-details-note-create" class="default" enctype="multipart/form-data" action="#" method="POST">
+                                    <fieldset>
+                                        <div class="field">
+                                            <textarea id="task-details-note-create_message" class="text placeholder" autocomplete="off" name="message"></textarea>
+                                        </div>
+                                        <div class="field-options">
+                                            <input type="hidden" value="0" name="id_file">
+                                            <input type="hidden" value="10530079" name="id_task">
+                                            <div class="button-box">
+                                                <input id="task-details-note-create-button" class="btn btn_green radius-2" type="submit" value="回复" />
+                                            </div>
+                                        </div>
+                                        <div id="task-details-uploaded" class="ellipsis">
+                                            <div id="task-details-file-uploading-filename" class="filename ellipsis"></div>
+                                            <a class="cancel-file-uploaded" href="javascript:;"></a>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                                <form id="form-upload-file-task-details" class="upload-form hover-object" target="" method="POST" action="" name="form-upload-file-task-details" hoverstr="Attach a file" enctype="multipart/form-data">
+                                    <input type="hidden" value="" name="APC_UPLOAD_PROGRESS">
+                                    <div class="input-file-container">
+                                    <input id="form-upload-file-task-details-btn" type="file"  name="Filedata"/>
+                                    </div>
+                                    <input type="hidden" value="648918" name="id_dashboard">
+                                </form>
+                                <div id="e2573dd4f5b3f2a826ea0be9d68da34f-progressbar-container" class="progress-bar-container task-details radius-3" style="display:none;">
+                                    <div id="e2573dd4f5b3f2a826ea0be9d68da34f-progressbar" class="progress radius-8 transition-effect">
+                                        <div id="percent_counter" class="radius-3"></div>
+                                    </div>
+                                </div>
+                            </div><!--回复块 end-->
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                <!--任务回复 end-->
+                
+                <div class="task-details-creator">
+                    <span title="07/17/2012 - 10:43pm">任务 5 小时前 </span>
+                    <a href="javascript:;"> 谭少华 </a>
+                    发布
+                </div>
+                 
+                </div>
+            </div>
+        </div>
+        <!--右边第二列 end-->
+        
+    </div><!--右边大块 end-->
+    
+    
+</div>
+<!--主体块 end-->
+
+<!--递交给和安排给弹窗-->
+<div id="popin_taskfollowers_10549862" class="popin regular radius-4 radius popin_taskfollowers" style="top: 180px; left: 960px; display:none;">
+    <i class="nipple" style="left: 135px;"></i>
+    <div class="popin_header"> 添加安排人员 </div>
+    <div id="popin_taskfollowers_10549862_content" class="popin-content">
+        <div class="invite-to-use" id="invite-to-use">
+        
+        您可以选择想安排给谁，这样他就可以看到你写的任务了！
+        <a hreg="javascript:;"> 添加人员 </a>
+        </div>
+        <ul class="popin-radio-list" id="popin-radio-list">
+            <form id="form-task-followers" onsubmit="return (false);" name="form-task-followers">
+                <input type="hidden" value="10549862" name="id_task">
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="479510" name="id_followers[]" disabled="disabled" checked="checked">
+                            <span class="avatar">
+                                <img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                        <span> 谭少华 </span>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="479510" name="id_followers[]" disabled="disabled" checked="checked">
+                            <span class="avatar">
+                                <img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                        <span> 谭少华 </span>
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input class="radio" type="checkbox" value="479510" name="id_followers[]" disabled="disabled" checked="checked">
+                            <span class="avatar">
+                                <img class="radius-2" title="#" alt="#" src="../images/index_img_20120718/479510-1342579213.jpg">
+                            </span>
+                        <span> 谭少华 </span>
+                    </label>
+                </li>
+            </form>
+        </ul>
+        <div class="clear"></div>
+    </div>
+    <div class="popin-btns">
+        <div class="help-link">
+            <a target="_blank" href="javascript:;">  </a>
+        </div>
+        <a class="btn btn_green" webdrivername="popin-btn-save" href="javascript:;"> 保存 </a>
+        <a class="btn btn_grey" href="javascript:;"> 取消 </a>
+        <div class="clear"></div>
+    </div>
+</div>
+<!--递交给和安排给弹窗 end-->
+
+<!--新加人员弹窗-->
+<div id="popin__0" class="popin blackout radius popin_addPeople"  style="top: 5px; left: 3px; position: absolute; z-index:1001; display:none;">
+    <i class="nipple" style="left: 0px;"></i>
+    <div class="popin_header"> </div>
+    <div id="popin__0_content" class="popin-content">
+        <a class="close-btn people_close" href="javascript:;">
+            <i class="close-cross"></i>
+            关闭
+        </a>
+        <div class="content">
+            <h2>
+                添加人员到
+                <strong>我的工作组</strong>
+            </h2>
+            <form class="form-invite" onsubmit="invitation_invite.on_submit(this); return (false);" method="post" action="#">
+                <div class="row">
+                    <label>Email(s)</label>
+                    <div class="field">
+                        <input id="form-invite-email-input" class="appended radius-3" type="text" value="" name="email" autocomplete="off">
+                        <div class="clear"></div>
+                        <p class="help"> 在这里填写添加人员的电子邮箱地址 </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <label>内容</label>
+                    <div class="field">
+                        <textarea class="large radius-3" name="message"></textarea>
+                        <p class="help"> 添加人员描述 </p>
+                    </div>
+                </div>
+                <input type="hidden" value="648918" name="id_dashboard">
+                <div class="action-btns">
+                    <input class="btn btn_green" type="submit" value="添加人员">
+                    <div class="more">
+                        <strong>Unlimited (Free trial)</strong>
+                        在这个工作区的中邀请剩余的人员. 想了解更多有关功能请关注我们?
+                        <a href="javascript:;">最新动态</a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </form>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="popin-btns">
+        <div class="help-link"> </div>
+        <div class="clear"></div>
+    </div>
+</div>
+<!--新加人员弹窗 end-->
+
+</body>
+</html>
