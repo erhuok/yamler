@@ -12,6 +12,10 @@
 
 
 /*** LOADER_GLOBAL ***/
+/*#dashboard,#list-view,#task-list,#sortby,#form-add-task,#task-list-bottom,#task-details{
+	_height:auto;
+	_border-bottom:1px;
+	}*/
 
 body #loader_global {
     background: #FFF9D3;
@@ -3609,8 +3613,10 @@ body.body-messages #project {
     overflow: hidden;
     position: relative;
     min-height: 100%;    
-    display: block;    
-    background: #eaf0f6 url(../images/index_img_20120718/separation-line.png) right 0px repeat-y;
+    display: block; 
+	background-color:#eaf0f6;   
+    background: url("../images/index_img_20120718/separation-line.png") repeat-y right 0px;
+	_background: url("../images/index_img_20120718/separation-line.gif") repeat-y right 0px;
     float:left;
 }
 
@@ -3623,7 +3629,7 @@ body.body-messages #project {
     width: 20px;
     display: block;
     height: 20px;
-    background: url(../images/index_img_20120718/handler_panels.png);
+    /*background: url(../images/index_img_20120718/handler_panels.png);*/
     background-repeat: no-repeat;
     position: absolute;
 }
@@ -3683,9 +3689,11 @@ body.body-messages #project {
     /*margin-left: 220px;  */ 
 	margin-left:150px; 
     min-height:100%;
+	_height:100%;
+	_border:1px solid #F00;
 	position:relative;
 }
-
+#wrapper #list-view{ _height:100%; _border:1px solid #F00;}
 #wrapper.sidebar-disbabled #dashboard {
     margin-left: 24px;
 }
@@ -3698,6 +3706,8 @@ body.body-messages #project {
     position:relative;
     top:0;
     left:0;
+	_height:100%;
+	_border:1px solid #F00;
 }
 
 #dashboard.calendar #task-list {
@@ -3740,8 +3750,10 @@ body.body-messages #project {
 }
 
 #dashboard #task-details {
-	background: url("../images/index_img_20120718/td_panel_bg.png") repeat-y scroll 0 0 #F8F8F8;
-    width: 45%;
+	background-color:#F8F8F8;
+	background: url("../images/index_img_20120718/td_panel_bg.png") repeat-y  0 0;
+	_background: url("../images/index_img_20120718/td_panel_bg.gif") repeat-y  0 0;
+    width: 45%;fff
     height: 100%;
     /*-moz-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
     -webkit-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0, 0.5);
@@ -3762,7 +3774,9 @@ body.body-messages #project {
     width: 45%;
     margin-left: 55%;
 }
-
+#task-list-bottom{
+	_border:1px solid #f00;
+	}
 #dashboard.calendar #task-list-bottom,
 #dashboard.list #calendar-view
 {
@@ -5247,7 +5261,7 @@ li.task.done .stars {
 #calendar-right-tasks-box li.task .task-right .has-notes .tail{
     width: 5px;
     height: 5px;
-    background: url(../images/index_img_20120718/bubble_tail.png) 0 0 no-repeat;
+    /*background: url(../images/index_img_20120718/bubble_tail.png) 0 0 no-repeat;*/
     position: absolute;
     right: 3px;
     bottom:-4px;
